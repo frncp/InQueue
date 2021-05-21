@@ -9,8 +9,11 @@ To build this app the following technologies have been used:
 - HTML5
 - CSS3
 - Javascript
+- Python
 - JQuery
 - Leaflet
+- Bootstrap
+- Flask
 
 ## Assets
 Here's a list of the assets we used and their authors:
