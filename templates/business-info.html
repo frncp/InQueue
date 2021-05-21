@@ -1,0 +1,157 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Prenota da {{ bsname }} - Prenota con InQueue
+{% endblock %}
+
+{% block main %}
+
+  <div class="d-md-flex justify-content-center align-items-start mt-5">
+
+    <div class="flex-row rounded" style="height: 300px; width: 300px">
+          <img src="../static/images/barbershop.jpg" style="width:100%">
+      </div>
+
+      <div class="col-md-6 px-3">
+        <h1 class="">Barbershop</h1>
+        ⭐⭐⭐⭐⭐ <span class="text-secondary">37</span>
+        <div id="businessPositionMap"></div>
+
+        <script type="text/javascript">
+          /* LEAFLET */
+          let businessPositionMap = L.map('businessPositionMap').setView([40.85652, 14.28377], 13);
+          businessPositionMap.zoomControl.remove()
+          L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a>',
+          }).addTo(businessPositionMap);
+
+          let marker = L.icon({
+            iconUrl: '../static/images/leafletimages/marker-icon.png',
+            shadowUrl: '../static/images/leafletimages/marker-shadow.png',
+
+            iconSize: [25, 41],
+            iconAnchor: [12, 41],
+            popupAnchor: [1, -34],
+            shadowSize: [41, 41]
+          });
+
+          L.marker([40.85652, 14.28377], {icon: marker}).addTo(businessPositionMap);
+        </script>
+
+
+    </div>
+
+  </div>
+
+
+  <!-- Booking -->
+  <h2 class="mt-5 mb-4">Prenota il tuo servizio</h2>
+  <div class="container" >
+    <form action="#" method="POST" id="form">
+    <section id="form1">
+    <div class="row">
+    <div class="col mt-3">
+       <label for="fname">Nome</label>
+       <input required type="text" autocomplete="given-name" class="form-control" id="fname" name="fname" placeholder="Nome">
+    </div>
+    <div class="col-md mt-3">
+        <label for="lname">Cognome</label>
+          <input required type="text" autocomplete="family-name" class="form-control" id="lname" name ="lname" placeholder="Cognome">
+    </div>
+    </div>
+    <div class="row">
+    <div class="col-md mt-3">
+        <label for="email">Email</label>
+        <input required type="email" autocomplete="email" class="form-control" id="email" name="email" placeholder="Email">
+    </div>
+    <div class="col mt-3">
+        <label for="cellphone">Telefono</label>
+        <input type="tel" class="form-control" id="cellphone" name="cellphone" placeholder="Telefono" pattern="^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$" title="Inserisci un numero di telefono valido">
+    </div>    
+    </div>
+    
+      <button class="btn btn-inqueue-purple w-100 mt-3 d-none" id="nextForm2Button" type="button" onclick="showNextForm('form2', this, validateFirstForm)"> AVANTI</button>
+      </section>
+      
+      <section id="form2">
+        <div class="row mt-5">
+          <div class="col-md">
+          <label for="date">Giorno</label>
+            <input required class="form-select form-select-md mb-3" type="date" autocomplete="date" id="date" name="date" min="2021-05-20" max="2021-05-30">
+          </div>
+          <div class="col-sm">
+            <label for="slot2">Alle</label>
+            <select class="form-select form-select-md mb-3" id="slot2" name="slot2">
+              <option value="sl1">12:15</option>
+              <option value="sl2">13:00</option>
+              <option value="sl3">14:45</option>
+              <option value="sl4">16:15</option>
+              <option value="sl5">17:45</option>
+            </select>
+          </div>
+        </div><br>
+        <div class="row">
+          <div class="col-sm">
+          <label for="service">Servizio</label>
+            <select class="form-select form-select-md mb-3" id="service" name="service">
+              <option value="s1">Taglio</option>
+              <option value="s2">Barba</option>
+              <option value="s2">Taglio+Barba</option>
+            </select>
+          </div>
+          <div class="col-sm">
+          <label for="operator">Operatore</label>
+            <select  class="form-select form-select-md mb-3" id="operator" name="operator">
+              <option value="op1">Giggino</option>
+              <option value="op2">Rafael</option>
+            </select>
+          </div>
+        </div>
+        <input class="btn btn-danger w-100" type="submit" onclick="addValidateCSS()">
+        </section>
+      </form>
+  </div>
+  
+  <script type="text/javascript">
+    window.onload = function () {
+      document.getElementById('form2').classList.add('d-none')
+      document.getElementById('nextForm2Button').classList.remove('d-none')
+    }
+
+  function showNextForm(toID, buttonID, checkFunction)  {
+    if (checkFunction()) {
+        removeValidateCSS()
+        let toElement = document.getElementById(toID)
+        toElement.classList.remove('d-none')
+        window.location.replace("#"+toID)
+        let button = document.getElementById(buttonID.id)
+        button.classList.add('d-none')
+        button.parentNode.appendChild(document.createElement("hr")).classList.add('mt-5')
+    }
+   }
+    
+    
+    function validateFirstForm() {
+        let name = document.getElementById('fname')
+        let surname = document.getElementById('lname')
+        let email = document.getElementById('email')
+        let phone = document.getElementById('cellphone')
+    
+        if (name.checkValidity() && surname.checkValidity() && email.checkValidity() && phone.checkValidity())
+            return true
+            
+        addValidateCSS()
+        return false
+    
+    }
+    
+    
+    function addValidateCSS() {
+        document.getElementById('form').classList.add('was-validated')
+    }
+    
+    function removeValidateCSS() {
+      document.getElementById('form').classList.remove('was-validated')
+    }
+  </script>
+{% endblock %}

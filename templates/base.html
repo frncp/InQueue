@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+<title>{% block title %}{% endblock %}</title>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="white"/>
+<link rel="manifest" crossorigin="use-credentials" href="{{ url_for('static', filename='manifest.json') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.css') }}"/>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"/>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/leaflet.css') }}"/>
+<script src="{{ url_for('static', filename='js/leaflet.js') }}"></script>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block head %}{% endblock %}
+</head>
+
+
+<body>
+  
+    <nav class="container pt-3">
+        <div class="row">
+          <div class="col-9">
+            <a class="text-decoration-none" href="/"><span class="h4 inqueue-purple ">InQueue</span></a>
+          </div>
+        </div>
+      </nav>
+
+<main class="container">
+    {% block main %}{% endblock %}
+</main>
+
+
+
+
+<footer class="bg-inqueue-purple mt-5 text-white p-2 pb-3">
+
+    <div class="d-flex flex-row justify-content-between align-items-end">
+        <div>
+            © InQueue project <br>
+
+            Centro Direzionale di Napoli, Isola C4 <br>
+            80142 Napoli, Italia <br>
+        </div>
+
+        <div>
+            <a class="text-decoration-none text-white" href="/partner">Possiedi un'attività? Registrati al servizio</a>
+        </div>
+    </div>
+</footer>
+
+</body>
+
+</html>
