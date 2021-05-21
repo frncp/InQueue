@@ -1,8 +1,8 @@
 # InQueue
 ![](https://img.shields.io/badge/license-Apache%202-blue)
 
-InQueue is a small **web application** aimed at helping people with **booking a service in their area**.
-This is a university project made for the 2021 edition of the Tecnologie Web (Web Technologies) course at the Università degli Studi di Napoli *Parthenope*.
+InQueue is a small **web application** aimed at helping people with **booking a service in their area**.  
+This is a university project made for the 2021 edition of the Tecnologie Web (Web Technologies) course at the [*Università degli Studi di Napoli Parthenope*](https://github.com/uniparthenope).
 
 ## Technologies
 To build this app the following technologies have been used:
@@ -21,6 +21,6 @@ Here's a list of the assets we used and their authors:
 
 ## Authors
 The authors of this project are
-- Antonio Morelli @antoniototimorelli
-- Mattia Ripoli @ManOnSaturn
-- Francesco Pollasto @frncp
+- Antonio Morelli [@antoniototimorelli](https://github.com/antoniototimorelli)
+- Mattia Ripoli [@ManOnSaturn](https://github.com/ManOnSaturn)
+- Francesco Pollasto [@frncp](https://github.com/frncp)
