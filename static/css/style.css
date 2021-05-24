@@ -204,3 +204,16 @@
     height: 100%;
     width: 100%;
 }
+
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+main {
+  min-height: 90%;
+}
+
+footer {
+    bottom: 0;
+}
