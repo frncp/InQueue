@@ -21,7 +21,9 @@ window.onload = () => {
 }
 
 // TODO: Add cookie for last position
+function setCookie(){
 
+}
 function localityModifier() {
     getPosition(getLatLonAndUpdateCityName)    
 }

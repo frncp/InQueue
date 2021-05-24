@@ -18,7 +18,12 @@ To build this app the following technologies have been used:
 ## Assets
 Here's a list of the assets we used and their authors:
 (*to be added*)
-
+# How to get started
+1) Open a mongoDB database
+2) Create a file named password.py in the root folder and insert the following  parameters
+- DB_USER (The name of the database user)
+- DB_PASSWORD (The password for the database user)
+- (*to be completed...*)
 ## Authors
 The authors of this project are
 - Antonio Morelli [@antoniototimorelli](https://github.com/antoniototimorelli)

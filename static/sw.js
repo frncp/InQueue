@@ -1,8 +1,7 @@
 let cacheName = 'pwa_2021';
 let filesToCache = [ //Commented out because of pages not refreshing
-//    'templates/index.html',
 //    'static/css/style.css',
-//    'static/js/main.js'
+//    'static/js/main.js',
     'static/css/bootstrap.css',
     'static/css/leaflet.css',
     'static/js/leaflet.js',
@@ -10,7 +9,7 @@ let filesToCache = [ //Commented out because of pages not refreshing
     'static/images/waiter.png',
     'static/images/soccer-field.png',
     'static/images/OOjs_UI_icon_upload.svg.png',
-   'static/images/museum.png',
+    'static/images/museum.png',
     'static/images/nail-polish.png',
     'static/images/muscle.png',
     'static/images/mechanic.png',
