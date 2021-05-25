@@ -5,8 +5,11 @@ from http import cookies
 import pymongo
 from pymongo import MongoClient
 from passwords import DB_USER, DB_PASSWORD
-app = Flask(__name__)
+# import ssl
+# context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+# context.load_cert_chain('certificate.crt', 'private.key')
 
+app = Flask(__name__)
 @app.route('/')
 def homepage():
     city_from_cookie = request.cookies.get("city")
@@ -68,6 +71,10 @@ if __name__ == "__main__":
     mongo_client_string = "mongodb+srv://"+DB_USER+":"+DB_PASSWORD+"@cluster0.dfin1.mongodb.net/sample_airbnb?retryWrites=true&w=majority"
     client = pymongo.MongoClient(mongo_client_string)
     db = client.test
-
-    app.run(debug=True)
+    local_only = True # True = Accessible only in local loop; False = Accessible also from out of intranet
+    if local_only:
+        app.run(debug=True)
+    else:
+        app.run(host='0.0.0.0', port='8150', debug=True) # Port forwarding needed on router
+    # app.run(host='0.0.0.0', port='8150', debug=True, ssl_context=context)
 

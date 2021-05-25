@@ -21,11 +21,10 @@ window.onload = () => {
 }
 
 // TODO: Add cookie for last position
-function setCookie(){
 
-}
+
 function localityModifier() {
-    getPosition(getLatLonAndUpdateCityName)    
+    getPosition(getLatLonAndUpdateCityName)
 }
 
 function getLatLonAndUpdateCityName(position) {
