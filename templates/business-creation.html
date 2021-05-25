@@ -69,10 +69,12 @@ Aggiungi la tua attività su InQueue
                 <div class="row mt-5">
                     <div class="col-md">
                         <label for="timepicker">Mattina</label>
-                        <div id="timepicker"></div>
-                        <div id="start"></div>
-                        <div id="end"></div>
-                        <div id="duration"></div>
+                        <div id="timepicker">
+                            <div id="start"></div>
+                            <div id="end"></div>
+                            <div id="duration"></div>
+                        </div>
+
                     </div>
                     <div class="col-sm">
                         <div class="col-md">
@@ -176,12 +178,13 @@ Aggiungi la tua attività su InQueue
             "end":"02:00"
         }
     });
-
+</script>
+<script type="text/javascript">
     $("#timepicker").timerangewheel({
         onChange: function (timeObj) {
-            $(".start").html("Da: "+timeObj.start);
-            $(".end").html("A: "+timeObj.end);
-            $(".duration").html("Durata: "+timeObj.duration);
+            $("#start").html("Da: "+timeObj.start);
+            $("#end").html("A: "+timeObj.end);
+            $("#duration").html("Durata: "+timeObj.duration);
         }
     });
 </script>

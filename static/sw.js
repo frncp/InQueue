@@ -6,6 +6,8 @@ let filesToCache = [ //Commented out because of pages not refreshing
     'static/css/leaflet.css',
     'static/js/leaflet.js',
     'static/js/jquery.js',
+    'static/js/plugin.min.js',
+    'static/js/d3.min.js',
     'static/images/waiter.png',
     'static/images/soccer-field.png',
     'static/images/OOjs_UI_icon_upload.svg.png',

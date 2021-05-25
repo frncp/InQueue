@@ -13,27 +13,12 @@ app = Flask(__name__)
 @app.route('/')
 def homepage():
     city_from_cookie = request.cookies.get("city")
-    ip_address = request.remote_addr
 
-    # Required for local testing
-    if request.remote_addr.startswith("192") or request.remote_addr.startswith("127") or request.remote_addr.startswith("172"):
-        city_from_cookie = "{click}"
-
-    # If there is no cookie, find geolocation approx. and set cookie
     if not city_from_cookie:
-        api_url = "http://ip-api.com/json/"+ip_address
-        json_data = (requests.get(url=api_url)).json()
-        lat = json_data["lat"]
-        lon = json_data["lon"]
-        city_api_url = "https://nominatim.openstreetmap.org/reverse?lat=" + str(lat) + "&lon=" + str(lon) +"&format=jsonv2&accept-language=it&zoom=10"
-        city_json = (requests.get(url=city_api_url)).json()
-        ip_city = city_json["name"]
         # set_cookie(lat, value=lat, max_age=60*60*24)
         # set_cookie(lon, value=lon, max_age=60*60*24)
-        rendered_template = render_template('index.html', city=ip_city)
-        resp = make_response(rendered_template)
-        resp.set_cookie('city', value=ip_city, max_age=60*60*1)
-        return resp
+        rendered_template = render_template('index.html', city="clicca")
+        return make_response(rendered_template)
     # elif request.cookies.get("lat"):
     else:
         return render_template('index.html', city=city_from_cookie)
