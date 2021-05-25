@@ -9,10 +9,15 @@ app = Flask(__name__)
 
 @app.route('/')
 def homepage():
-    city_cookie = request.cookies.get("city")
-    if not city_cookie:
-        ip_address = request.remote_addr
-        ip_address = "2.45.237.235"
+    city_from_cookie = request.cookies.get("city")
+    ip_address = request.remote_addr
+
+    # Required for local testing
+    if request.remote_addr.startswith("192") or request.remote_addr.startswith("127") or request.remote_addr.startswith("172"):
+        city_from_cookie = "{click}"
+
+    # If there is no cookie, find geolocation approx. and set cookie
+    if not city_from_cookie:
         api_url = "http://ip-api.com/json/"+ip_address
         json_data = (requests.get(url=api_url)).json()
         lat = json_data["lat"]
@@ -24,11 +29,11 @@ def homepage():
         # set_cookie(lon, value=lon, max_age=60*60*24)
         rendered_template = render_template('index.html', city=ip_city)
         resp = make_response(rendered_template)
-        resp.set_cookie('city', value=ip_city, max_age=60*60*24)
+        resp.set_cookie('city', value=ip_city, max_age=60*60*1)
         return resp
     # elif request.cookies.get("lat"):
     else:
-        return render_template('index.html', city=city_cookie)
+        return render_template('index.html', city=city_from_cookie)
 
 @app.route('/business/<name>', methods=["POST", "GET"])
 def businesspage(name):
