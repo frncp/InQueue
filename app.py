@@ -75,6 +75,6 @@ if __name__ == "__main__":
     if local_only:
         app.run(debug=True)
     else:
-        app.run(host='0.0.0.0', port='8150', debug=True) # Port forwarding needed on router
+        app.run(host='0.0.0.0', port='8150', debug=False) # Port forwarding needed on router
     # app.run(host='0.0.0.0', port='8150', debug=True, ssl_context=context)
 

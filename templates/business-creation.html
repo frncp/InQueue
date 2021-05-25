@@ -5,15 +5,146 @@ Aggiungi la tua attività su InQueue
 {% endblock %}
 
 {% block main %}
-    <div class="avatar-wrapper">
+    <!--<div class="avatar-wrapper">
         <img class="profile-pic" src="" />
         <div class="upload-button">
         </div>
         <input class="file-upload" type="file" accept="image/*"/>
+    </div>-->
+
+    <div class="avatar-wrapper">
+        <img class="profile-pic" src="" />
+        <div class="upload-button">
+            <i class="fa fa-arrow-circle-up" aria-hidden="true"></i>
+        </div>
+        <input class="file-upload" type="file" accept="image/*"/>
     </div>
 
+    <!-- Booking -->
+    <h2 class="mt-5 mb-4">Registra la tua attività</h2>
+    <div class="container" >
+        <form action="#" method="POST" id="form">
+            <section id="form1">
+                <div class="row">
+                    <div class="col mt-3">
+                        <label for="fname">Nome</label>
+                        <input required type="text" autocomplete="given-name" class="form-control" id="fname" name="fname" placeholder="Nome">
+                    </div>
+                    <div class="col-md mt-3">
+                        <label for="lname">Cognome</label>
+                        <input required type="text" autocomplete="family-name" class="form-control" id="lname" name ="lname" placeholder="Cognome">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md mt-3">
+                        <label for="email">Email</label>
+                        <input required type="email" autocomplete="email" class="form-control" id="email" name="email" placeholder="Email">
+                    </div>
+                    <div class="col mt-3">
+                        <label for="cellphone">Telefono</label>
+                        <input required type="tel" class="form-control" autocomplete="cellphone" id="cellphone" name="cellphone" placeholder="Telefono" pattern="^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$" title="Inserisci un numero di telefono valido">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md mt-3">
+                        <label for="aname">Nome attività</label>
+                        <input required type="text" autocomplete="activity-name" class="form-control" id="aname" name="aname" placeholder="Nome attività">
+                    </div>
+                    <div class="col mt-3">
+                        <label for="typo">Tipologia</label>
+                        <select class="form-select form-select-md mb-3" id="typo" name="typo">
+                            <option value="sl1">Barbiere - Estetista - Parrucchiere</option>
+                            <option value="sl2">Campo sportivo</option>
+                            <option value="sl3">Museo - Luogo d'interesse</option>
+                            <option value="sl4">Libero professionista</option>
+                            <option value="sl5">Meccanico</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button class="btn btn-inqueue-purple w-100 mt-3 d-none" id="nextForm2Button" type="button" onclick="showNextForm('form2', this, validateFirstForm)"> AVANTI</button>
+            </section>
+
+            <section id="form2">
+                <div class="row mt-5">
+                    <div class="col-md">
+                        <label for="timepicker">Mattina</label>
+                        <div id="timepicker"></div>
+                        <div id="start"></div>
+                        <div id="end"></div>
+                        <div id="duration"></div>
+                    </div>
+                    <div class="col-sm">
+                        <div class="col-md">
+                        </div>
+                </div><br>
+                <div class="row">
+                    <div class="col-sm">
+                        <label for="service">Servizio</label>
+                        <select class="form-select form-select-md mb-3" id="service" name="service">
+                            <option value="s1">Taglio</option>
+                            <option value="s2">Barba</option>
+                            <option value="s2">Taglio+Barba</option>
+                        </select>
+                    </div>
+                    <div class="col-sm">
+                        <label for="operator">Operatore</label>
+                        <select  class="form-select form-select-md mb-3" id="operator" name="operator">
+                            <option value="op1">Giggino</option>
+                            <option value="op2">Rafael</option>
+                        </select>
+                    </div>
+                </div>
+                <input class="btn btn-danger w-100" type="submit" onclick="addValidateCSS()">
+            </section>
+        </form>
+    </div>
 
     <script type="text/javascript">
+        window.onload = function () {
+            document.getElementById('form2').classList.add('d-none')
+            document.getElementById('nextForm2Button').classList.remove('d-none')
+        }
+
+        function showNextForm(toID, buttonID, checkFunction)  {
+            if (checkFunction()) {
+                removeValidateCSS()
+                let toElement = document.getElementById(toID)
+                toElement.classList.remove('d-none')
+                window.location.replace("#"+toID)
+                let button = document.getElementById(buttonID.id)
+                button.classList.add('d-none')
+                button.parentNode.appendChild(document.createElement("hr")).classList.add('mt-5')
+            }
+        }
+
+
+        function validateFirstForm() {
+            let name = document.getElementById('fname')
+            let surname = document.getElementById('lname')
+            let email = document.getElementById('email')
+            let phone = document.getElementById('cellphone')
+            let aname = document.getElementById('aname')
+
+            if (name.checkValidity() && surname.checkValidity() && email.checkValidity() && phone.checkValidity() && aname.checkValidity())
+                return true
+
+            addValidateCSS()
+            return false
+
+        }
+
+
+        function addValidateCSS() {
+            document.getElementById('form').classList.add('was-validated')
+        }
+
+        function removeValidateCSS() {
+            document.getElementById('form').classList.remove('was-validated')
+        }
+    </script>
+
+<script type="text/javascript">
         $(document).ready(function() {
 
             let readURL = function(input) {
@@ -37,4 +168,21 @@ Aggiungi la tua attività su InQueue
             });
         });
     </script>
+
+<script type="text/javascript">
+    $("#timepicker").timerangewheel({
+        data: {
+            "start":"18:00",
+            "end":"02:00"
+        }
+    });
+
+    $("#timepicker").timerangewheel({
+        onChange: function (timeObj) {
+            $(".start").html("Da: "+timeObj.start);
+            $(".end").html("A: "+timeObj.end);
+            $(".duration").html("Durata: "+timeObj.duration);
+        }
+    });
+</script>
 {% endblock %}
