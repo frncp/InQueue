@@ -51,35 +51,35 @@ Aggiungi la tua attività su InQueue
                         <input required type="text" autocomplete="activity-name" class="form-control" id="aname" name="aname" placeholder="Nome attività">
                     </div>
                     <div class="col mt-3">
-                        <label for="typo">Tipologia</label>
-                        <select class="form-select form-select-md mb-3" id="typo" name="typo">
-                            <option value="sl1">Barbiere - Estetista - Parrucchiere</option>
-                            <option value="sl2">Campo sportivo</option>
-                            <option value="sl3">Museo - Luogo d'interesse</option>
-                            <option value="sl4">Libero professionista</option>
-                            <option value="sl5">Meccanico</option>
+                        <label for="type">Tipologia</label>
+                        <select class="form-select form-select-md mb-3" id="type" name="type">
+                            <option value="barber">Barbiere - Estetista - Parrucchiere</option>
+                            <option value="field">Campo sportivo</option>
+                            <option value="museum">Museo - Luogo d'interesse</option>
+                            <option value="freelance">Libero professionista</option>
+                            <option value="car-repair">Meccanico</option>
                         </select>
                     </div>
                 </div>
 
-                <button class="btn btn-inqueue-purple w-100 mt-3 d-none" id="nextForm2Button" type="button" onclick="showNextForm('form2', this, validateFirstForm)"> AVANTI</button>
+                <button class="btn btn-inqueue-purple w-100 mt-3 d-none" id="nextForm2Button" type="button" onclick="showNextForm('form2', this, validateFirstForm)">AVANTI</button>
             </section>
 
             <section id="form2">
                 <div class="row mt-5">
-                    <div class="col-md">
-                        <label for="timepicker">Mattina</label>
-                        <div id="timepicker">
-                            <div id="start"></div>
-                            <div id="end"></div>
-                            <div id="duration"></div>
+                    <div class="col-sm">
+                        <label for="open-time">Orario di apertura:</label>
+                        <input type="time" id="open-time" name="open-time" class="form-control form-control-md mb-3">
                         </div>
 
+                        <div class="col-sm">
+                            <div class="col-sm">
+                                <label for="close-time">Orario di chiusura:</label>
+                                <input type="time" id="close-time" name="close-time" class="form-control form-control-md mb-3">
+                            </div>
                     </div>
-                    <div class="col-sm">
-                        <div class="col-md">
-                        </div>
-                </div><br>
+                    </div>
+                   
                 <div class="row">
                     <div class="col-sm">
                         <label for="service">Servizio</label>
@@ -97,8 +97,11 @@ Aggiungi la tua attività su InQueue
                         </select>
                     </div>
                 </div>
-                <input class="btn btn-danger w-100" type="submit" onclick="addValidateCSS()">
+                <button class="btn btn-inqueue-purple w-100 mt-3 d-none" id="nextForm3Button" type="button" onclick="showNextForm('form3', this, validateSecondForm)">AVANTI</button>
             </section>
+            <section id="form3">
+            <input class="btn btn-danger w-100" type="submit" onclick="addValidateCSS()">
+        </section>
         </form>
     </div>
 
@@ -106,44 +109,36 @@ Aggiungi la tua attività su InQueue
         window.onload = function () {
             document.getElementById('form2').classList.add('d-none')
             document.getElementById('nextForm2Button').classList.remove('d-none')
+            document.getElementById('form3').classList.add('d-none')
+            document.getElementById('nextForm3Button').classList.remove('d-none')
         }
-
-        function showNextForm(toID, buttonID, checkFunction)  {
-            if (checkFunction()) {
-                removeValidateCSS()
-                let toElement = document.getElementById(toID)
-                toElement.classList.remove('d-none')
-                window.location.replace("#"+toID)
-                let button = document.getElementById(buttonID.id)
-                button.classList.add('d-none')
-                button.parentNode.appendChild(document.createElement("hr")).classList.add('mt-5')
-            }
-        }
-
 
         function validateFirstForm() {
-            let name = document.getElementById('fname')
-            let surname = document.getElementById('lname')
-            let email = document.getElementById('email')
-            let phone = document.getElementById('cellphone')
-            let aname = document.getElementById('aname')
+    let name = document.getElementById('fname')
+    let surname = document.getElementById('lname')
+    let email = document.getElementById('email')
+    let phone = document.getElementById('cellphone')
+    let aname = document.getElementById('aname')
 
-            if (name.checkValidity() && surname.checkValidity() && email.checkValidity() && phone.checkValidity() && aname.checkValidity())
-                return true
+    if (name.checkValidity() && surname.checkValidity() && email.checkValidity() && phone.checkValidity() && aname.checkValidity())
+        return true
 
-            addValidateCSS()
-            return false
+    addValidateCSS()
+    return false
 
-        }
+}
 
+function validateSecondForm() {
+    let openTime = document.getElementById('open-time')
+    let closeTime = document.getElementById('close-time')
 
-        function addValidateCSS() {
-            document.getElementById('form').classList.add('was-validated')
-        }
+    if (openTime.value != closeTime.value)
+        return true
 
-        function removeValidateCSS() {
-            document.getElementById('form').classList.remove('was-validated')
-        }
+    addValidateCSS()
+    return false
+
+}
     </script>
 
 <script type="text/javascript">
@@ -171,21 +166,5 @@ Aggiungi la tua attività su InQueue
         });
     </script>
 
-<script type="text/javascript">
-    $("#timepicker").timerangewheel({
-        data: {
-            "start":"18:00",
-            "end":"02:00"
-        }
-    });
-</script>
-<script type="text/javascript">
-    $("#timepicker").timerangewheel({
-        onChange: function (timeObj) {
-            $("#start").html("Da: "+timeObj.start);
-            $("#end").html("A: "+timeObj.end);
-            $("#duration").html("Durata: "+timeObj.duration);
-        }
-    });
-</script>
+
 {% endblock %}
