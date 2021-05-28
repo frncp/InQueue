@@ -9,7 +9,10 @@ import base64
 import bson
 from bson.binary import Binary
 from datetime import date, datetime
+from io import BytesIO
+
 from passwords import DB_USER, DB_PASSWORD
+
 # import ssl
 # context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
 # context.load_cert_chain('certificate.crt', 'private.key')
@@ -35,7 +38,6 @@ def homepage():
         # set_cookie(lon, value=lon, max_age=60*60*24)
         rendered_template = render_template('index.html', city="clicca")
         return make_response(rendered_template)
-    # elif request.cookies.get("lat"):
     else:
         return render_template('index.html', city=city_from_cookie)
 
@@ -79,10 +81,8 @@ def partnerspage():
         close_time = request.form["close-time"]
         service = request.form["service"]
         operator = request.form["operator"]
-        today = str(date.today()).replace("/", "-",3)
-        print(today)
+        today = str(date.today()).replace("/", "-", 3)
         now = datetime.now().strftime('%H:%M:%S')
-        print(now)
         document = {"img": img, "fname": fname, "lname": lname, "email": email, "cellphone": cellphone,
                     "business_name": business_name, "open_time": open_time, "close_time": close_time,
                     "service": service, "operator": operator, "creation_date": today, "creation_time": now}
@@ -100,7 +100,7 @@ def partnerspage():
 def send_business_image(business_name, creation_date, creation_time):
     document = collection.find_one({"business_name": business_name, "creation_date": creation_date,
                                     "creation_time": creation_time})
-    photo = bytes(document["img"])
+    photo = BytesIO(document["img"])
     return send_file(photo, mimetype="image/gif")
 
 
@@ -110,5 +110,5 @@ if __name__ == "__main__":
     if local_only:
         app.run(debug=True)
     else:
-        app.run(host='0.0.0.0', port='8150', debug=False)  # Port forwarding needed on router
+        app.run(host='0.0.0.0', port=8150, debug=False)  # Port forwarding needed on router
     # app.run(host='0.0.0.0', port='8150', debug=True, ssl_context=context)
