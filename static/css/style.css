@@ -231,8 +231,7 @@
     transition: all 0.3s ease;
 }
 .avatar-wrapper .profile-pic:after {
-    font-family: FontAwesome;
-    content: "\f007";
+    content: "⬆️";
     top: 0;
     left: 0;
     width: 100%;
