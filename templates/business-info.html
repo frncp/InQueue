@@ -116,20 +116,7 @@ Prenota da {{ bsname }} - Prenota con InQueue
     window.onload = function () {
       document.getElementById('form2').classList.add('d-none')
       document.getElementById('nextForm2Button').classList.remove('d-none')
-    }
-
-  function showNextForm(toID, buttonID, checkFunction)  {
-    if (checkFunction()) {
-        removeValidateCSS()
-        let toElement = document.getElementById(toID)
-        toElement.classList.remove('d-none')
-        window.location.replace("#"+toID)
-        let button = document.getElementById(buttonID.id)
-        button.classList.add('d-none')
-        button.parentNode.appendChild(document.createElement("hr")).classList.add('mt-5')
-    }
-   }
-    
+    }   
     
     function validateFirstForm() {
         let name = document.getElementById('fname')
@@ -143,15 +130,6 @@ Prenota da {{ bsname }} - Prenota con InQueue
         addValidateCSS()
         return false
     
-    }
-    
-    
-    function addValidateCSS() {
-        document.getElementById('form').classList.add('was-validated')
-    }
-    
-    function removeValidateCSS() {
-      document.getElementById('form').classList.remove('was-validated')
     }
   </script>
 {% endblock %}

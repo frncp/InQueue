@@ -90,3 +90,25 @@ function addSpinner(id) {
 }
 
 
+/* FORMS */
+
+function showNextForm(toID, buttonID, checkFunction)  {
+    if (checkFunction()) {
+        removeValidateCSS()
+        let toElement = document.getElementById(toID)
+        toElement.classList.remove('d-none')
+        window.location.replace("#"+toID)
+        let button = document.getElementById(buttonID.id)
+        button.classList.add('d-none')
+        button.parentNode.appendChild(document.createElement("hr")).classList.add('mt-5')
+    }
+}
+
+
+function addValidateCSS() {
+    document.getElementById('form').classList.add('was-validated')
+}
+
+function removeValidateCSS() {
+    document.getElementById('form').classList.remove('was-validated')
+}
