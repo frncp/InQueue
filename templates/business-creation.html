@@ -5,166 +5,172 @@ Aggiungi la tua attività su InQueue
 {% endblock %}
 
 {% block main %}
-    <!--<div class="avatar-wrapper">
+<!--<div class="avatar-wrapper">
         <img class="profile-pic" src="" />
         <div class="upload-button">
         </div>
         <input class="file-upload" type="file" accept="image/*"/>
     </div>-->
 
-    <div class="avatar-wrapper">
-        <img class="profile-pic" src="" />
-        <div class="upload-button">
-            <i class="fa fa-arrow-circle-up" aria-hidden="true"></i>
-        </div>
-        <input class="file-upload" type="file" accept="image/*"/>
-    </div>
 
-    <!-- Booking -->
-    <h2 class="mt-5 mb-4">Registra la tua attività</h2>
-    <div class="container" >
-        <form action="#" method="POST" id="form">
-            <section id="form1">
-                <div class="row">
-                    <div class="col mt-3">
-                        <label for="fname">Nome</label>
-                        <input required type="text" autocomplete="given-name" class="form-control" id="fname" name="fname" placeholder="Nome">
-                    </div>
-                    <div class="col-md mt-3">
-                        <label for="lname">Cognome</label>
-                        <input required type="text" autocomplete="family-name" class="form-control" id="lname" name ="lname" placeholder="Cognome">
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md mt-3">
-                        <label for="email">Email</label>
-                        <input required type="email" autocomplete="email" class="form-control" id="email" name="email" placeholder="Email">
-                    </div>
-                    <div class="col mt-3">
-                        <label for="cellphone">Telefono</label>
-                        <input required type="tel" class="form-control" autocomplete="cellphone" id="cellphone" name="cellphone" placeholder="Telefono" pattern="^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$" title="Inserisci un numero di telefono valido">
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md mt-3">
-                        <label for="aname">Nome attività</label>
-                        <input required type="text" autocomplete="activity-name" class="form-control" id="aname" name="aname" placeholder="Nome attività">
-                    </div>
-                    <div class="col mt-3">
-                        <label for="type">Tipologia</label>
-                        <select class="form-select form-select-md mb-3" id="type" name="type">
-                            <option value="barber">Barbiere - Estetista - Parrucchiere</option>
-                            <option value="field">Campo sportivo</option>
-                            <option value="museum">Museo - Luogo d'interesse</option>
-                            <option value="freelance">Libero professionista</option>
-                            <option value="car-repair">Meccanico</option>
-                        </select>
-                    </div>
-                </div>
 
-                <button class="btn btn-inqueue-purple w-100 mt-3 d-none" id="nextForm2Button" type="button" onclick="showNextForm('form2', this, validateFirstForm)">AVANTI</button>
-            </section>
-
-            <section id="form2">
-                <div class="row mt-5">
-                    <div class="col-sm">
-                        <label for="open-time">Orario di apertura:</label>
-                        <input type="time" id="open-time" name="open-time" class="form-control form-control-md mb-3">
-                        </div>
-
-                        <div class="col-sm">
-                            <div class="col-sm">
-                                <label for="close-time">Orario di chiusura:</label>
-                                <input type="time" id="close-time" name="close-time" class="form-control form-control-md mb-3">
-                            </div>
-                    </div>
-                    </div>
-                   
-                <div class="row">
-                    <div class="col-sm">
-                        <label for="service">Servizio</label>
-                        <select class="form-select form-select-md mb-3" id="service" name="service">
-                            <option value="s1">Taglio</option>
-                            <option value="s2">Barba</option>
-                            <option value="s2">Taglio+Barba</option>
-                        </select>
-                    </div>
-                    <div class="col-sm">
-                        <label for="operator">Operatore</label>
-                        <select  class="form-select form-select-md mb-3" id="operator" name="operator">
-                            <option value="op1">Giggino</option>
-                            <option value="op2">Rafael</option>
-                        </select>
-                    </div>
+<!-- Booking -->
+<h2 class="mt-5 mb-4">Registra la tua attività</h2>
+<div class="container">
+    <form action="#" method="POST" id="form" enctype="multipart/form-data">
+        <section id="form1">
+            <div class="avatar-wrapper">
+                <img class="profile-pic" alt="" src="" />
+                <div class="upload-button">
+                    <i class="fa fa-arrow-circle-up" aria-hidden="true"></i>
                 </div>
-                <button class="btn btn-inqueue-purple w-100 mt-3 d-none" id="nextForm3Button" type="button" onclick="showNextForm('form3', this, validateSecondForm)">AVANTI</button>
-            </section>
-            <section id="form3">
-            <input class="btn btn-danger w-100" type="submit" onclick="addValidateCSS()">
+                <input class="file-upload" type="file" accept="image/*" id="img" name="img"/>
+            </div>
+            <div class="row">
+                <div class="col mt-3">
+                    <label for="fname">Nome</label>
+                    <input required type="text" autocomplete="given-name" class="form-control" id="fname" name="fname" placeholder="Nome">
+                </div>
+                <div class="col-md mt-3">
+                    <label for="lname">Cognome</label>
+                    <input required type="text" autocomplete="family-name" class="form-control" id="lname" name="lname" placeholder="Cognome">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md mt-3">
+                    <label for="email">Email</label>
+                    <input required type="email" autocomplete="email" class="form-control" id="email" name="email" placeholder="Email">
+                </div>
+                <div class="col mt-3">
+                    <label for="cellphone">Telefono</label>
+                    <input required type="tel" class="form-control" autocomplete="cellphone" id="cellphone" name="cellphone" placeholder="Telefono" pattern="^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$" title="Inserisci un numero di telefono valido">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md mt-3">
+                    <label for="bname">Nome attività</label>
+                    <input required type="text" autocomplete="activity-name" class="form-control" id="bname" name="bname" placeholder="Nome attività">
+                </div>
+                <div class="col mt-3">
+                    <label for="type">Tipologia</label>
+                    <select class="form-select form-select-md mb-3" id="type" name="type">
+                        <option value="barber">Barbiere - Estetista - Parrucchiere</option>
+                        <option value="field">Campo sportivo</option>
+                        <option value="museum">Museo - Luogo d'interesse</option>
+                        <option value="freelance">Libero professionista</option>
+                        <option value="car-repair">Meccanico</option>
+                    </select>
+                </div>
+            </div>
+
+            <button class="btn btn-inqueue-purple w-100 mt-3 d-none" id="nextForm2Button" type="button" onclick="showNextForm('form2', this, validateFirstForm)">AVANTI</button>
         </section>
-        </form>
-    </div>
 
-    <script type="text/javascript">
-        window.onload = function () {
-            document.getElementById('form2').classList.add('d-none')
-            document.getElementById('nextForm2Button').classList.remove('d-none')
-            document.getElementById('form3').classList.add('d-none')
-            document.getElementById('nextForm3Button').classList.remove('d-none')
-        }
+        <section id="form2">
+            <div class="row mt-5">
+                <div class="col-sm">
+                    <label for="open-time">Orario di apertura:</label>
+                    <input type="time" id="open-time" name="open-time" class="form-control form-control-md mb-3">
+                </div>
 
-        function validateFirstForm() {
-    let name = document.getElementById('fname')
-    let surname = document.getElementById('lname')
-    let email = document.getElementById('email')
-    let phone = document.getElementById('cellphone')
-    let aname = document.getElementById('aname')
+                <div class="col-sm">
+                    <div class="col-sm">
+                        <label for="close-time">Orario di chiusura:</label>
+                        <input type="time" id="close-time" name="close-time" class="form-control form-control-md mb-3">
+                    </div>
+                </div>
+            </div>
 
-    if (name.checkValidity() && surname.checkValidity() && email.checkValidity() && phone.checkValidity() && aname.checkValidity())
-        return true
-
-    addValidateCSS()
-    return false
-
-}
-
-function validateSecondForm() {
-    let openTime = document.getElementById('open-time')
-    let closeTime = document.getElementById('close-time')
-
-    if (openTime.value != closeTime.value)
-        return true
-
-    addValidateCSS()
-    return false
-
-}
-    </script>
+            <div class="row">
+                <div class="col-sm">
+                    <label for="service">Servizio</label>
+                    <input type="text" class="form-select" id="service" name="service">
+                </div>
+                <div class="col-sm">
+                    <label for="operator">Operatore</label>
+                    <input type="text" class="form-select" id="operator" name="operator">
+                </div>
+            </div>
+            <button class="btn btn-inqueue-purple w-100 mt-3 d-none" id="nextForm3Button" type="button" onclick="showNextForm('form3', this, validateSecondForm)">AVANTI</button>
+        </section>
+        <section id="form3">
+            <input class="btn btn-danger w-100" type="submit" onclick="addValidateCSS(); checkValidity()">
+        </section>
+    </form>
+</div>
 
 <script type="text/javascript">
-        $(document).ready(function() {
+    window.onload = function() {
+        document.getElementById('form2').classList.add('d-none')
+        document.getElementById('nextForm2Button').classList.remove('d-none')
+        document.getElementById('form3').classList.add('d-none')
+        document.getElementById('nextForm3Button').classList.remove('d-none')
+    }
 
-            let readURL = function(input) {
-                if (input.files && input.files[0]) {
-                    let reader = new FileReader();
+    function validateFirstForm() {
+        let name = document.getElementById('fname')
+        let surname = document.getElementById('lname')
+        let email = document.getElementById('email')
+        let phone = document.getElementById('cellphone')
+        let bname = document.getElementById('bname')
 
-                    reader.onload = function (e) {
-                        $('.profile-pic').attr('src', e.target.result);
-                    }
+        if (name.checkValidity() && surname.checkValidity() && email.checkValidity() && phone.checkValidity() && bname.checkValidity())
+            return true
 
-                    reader.readAsDataURL(input.files[0]);
+        addValidateCSS()
+        return false
+
+    }
+
+    function validateSecondForm() {
+        let openTime = document.getElementById('open-time')
+        let closeTime = document.getElementById('close-time')
+
+        if (openTime.value !== closeTime.value) {
+            openTime.setCustomValidity("")
+            closeTime.setCustomValidity("")
+            return true
+        }
+
+
+        openTime.setCustomValidity("Invalid field.")
+        closeTime.setCustomValidity("Invalid field.")
+        addValidateCSS()
+        return false
+
+    }
+
+    function checkValidity() {
+        if (validateFirstForm() && validateSecondForm())
+            return true
+        return false
+    }
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+
+        let readURL = function(input) {
+            if (input.files && input.files[0]) {
+                let reader = new FileReader();
+
+                reader.onload = function(e) {
+                    $('.profile-pic').attr('src', e.target.result);
                 }
+
+                reader.readAsDataURL(input.files[0]);
             }
+        }
 
-            $(".file-upload").on('change', function(){
-                readURL(this);
-            });
-
-            $(".upload-button").on('click', function() {
-                $(".file-upload").click();
-            });
+        $(".file-upload").on('change', function() {
+            readURL(this);
         });
-    </script>
+
+        $(".upload-button").on('click', function() {
+            $(".file-upload").click();
+        });
+    });
+</script>
 
 
 {% endblock %}
