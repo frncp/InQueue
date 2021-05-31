@@ -5,6 +5,11 @@
     height: 100px;
     display: inline-block;
     position: relative;
+    transition: transform .2s;
+}
+
+.homepage-circle-container:hover {
+    transform: scale(1.2);
 }
 
 .homepage-circle {

@@ -1,28 +1,29 @@
 {% extends 'base.html' %}
 
 {% block title %}
-Prenota 
-{% if variable is defined %}
-{{ activity }}
-{% else %}
-attività
-{% endif %} 
-a 
-{{ city }}
+    Prenota
+    {% if variable is defined %}
+        {{ activity }}
+    {% else %}
+        attività
+    {% endif %}
+    a
+    {{ city }}
 {% endblock %}
 
 {% block main %}
-    <h1>Prenota attività a <span id="selectedCity" class="inqueue-orange" onclick="localityModifier()">{{ city }}</span></h1>
+    <h1>Prenota attività a <span id="selectedCity" class="inqueue-orange" onclick="localityModifier()">{{ city }}</span>
+    </h1>
 
     <!-- CIRCLES -->
-        <div class="d-flex justify-content-around align-items-center flex-xxl-wrap">
-                  
-       {% for i in range(5) %}
+    <div class="d-flex justify-content-around align-items-center flex-xxl-wrap">
+
+        {% for i in range(4) %}
             <div class="homepage-circle-container mt-3">
                 <img class="circle-img" src="../static/images/museum.png" width="40"/>
-            <div class="homepage-circle"></div>
-            <div class="homepage-circle-text">Musei</div>
-        </div>
+                <div class="homepage-circle"></div>
+                <div class="homepage-circle-text">Musei</div>
+            </div>
         {% endfor %}
 
 
@@ -66,30 +67,32 @@ a
 
 
 
-        <!-- Businesses loved by users -->
-        <h2 class="mt-5 mb-4">Attività amate dagli utenti</h2>
-        <div class="card" style="width: 18rem;">
+    <!-- Businesses loved by users -->
+    <h2 class="mt-5 mb-4">Attività amate dagli utenti</h2>
+    <div class="card" style="width: 18rem;">
 
-            <div class="position-relative">
-                <div class="homepage-circle-container mt-3 position-absolute" style="bottom: 30px; right: 8px; width: 50px; height: 50px">
-                    <img class="circle-img" src="../static/images/barber.png" width="30"/>
-                    <div class="homepage-circle"></div>
-                </div>
-                <img class="card-img-top" src="../static/images/barbershop.jpg" alt="Card image cap">
+        <div class="position-relative">
+            <div class="homepage-circle-container mt-3 position-absolute"
+                 style="bottom: 30px; right: 8px; width: 50px; height: 50px">
+                <img class="circle-img" src="../static/images/barber.png" width="30"/>
+                <div class="homepage-circle"></div>
             </div>
-            <div class="card-body">
-                <p class="card-title fw-bold h5">Barbershop</p>
-                <p class="text-muted">Via Roma, 40 - Napoli</p>
-                <div class="container">
-                    <div class="row align-items-start">
-                        <div class="col text-start">
-                            ⭐⭐⭐⭐⭐<span class="text-secondary">37</span>
-                        </div>
-                        <div class="col text-end">
-                            200m
-                        </div>
+            <img class="card-img-top" src="../static/images/barbershop.jpg" alt="Card image cap">
+        </div>
+        <div class="card-body">
+            <p class="card-title fw-bold h5">Barbershop</p>
+            <p class="text-muted">Via Roma, 40 - Napoli</p>
+            <div class="container">
+                <div class="row align-items-start">
+                    <div class="col text-start">
+                        ⭐⭐⭐⭐⭐<span class="text-secondary">37</span>
+                    </div>
+                    <div class="col text-end">
+                        200m
                     </div>
                 </div>
             </div>
         </div>
+    </div>
+
 {% endblock %}
