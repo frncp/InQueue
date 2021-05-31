@@ -8,6 +8,8 @@ from pymongo import MongoClient
 import base64
 import bson
 from bson.binary import Binary
+from bson.objectid import ObjectId
+
 from datetime import date, datetime
 from io import BytesIO
 
@@ -21,29 +23,37 @@ from passwords import DB_USER, DB_PASSWORD
 mongo_client_string = "mongodb+srv://" + DB_USER + ":" + DB_PASSWORD + "@cluster0.dfin1.mongodb.net/sample_airbnb?retryWrites=true&w=majority"
 client = pymongo.MongoClient(mongo_client_string)
 db = client["inQueue"]
-collection = db["businesses"]
+businesses_collection = db["businesses"]
+bookings_collection = db["bookings"]
 # Start app
 app = Flask(__name__)
 
-@app.route('/home')
+@app.route('/home', methods=["POST", "GET"])
 def homepage_new():
-    return render_template("home.html")
+    if request.method == "GET":
+        city_from_cookie = request.cookies.get("city")
+        if not city_from_cookie:
+            print("Cookie not found")
+            city_from_cookie = ""
+        return render_template("home.html", city_from_cookie=city_from_cookie)
+    else:
+        city = request.form["city"]
+        resp = make_response(render_template('index.html', city=city))
+        resp.set_cookie("city", value=city, max_age=60 * 60 * 24)
+        return resp
 
 @app.route('/')
 def homepage():
     city_from_cookie = request.cookies.get("city")
-
     if not city_from_cookie:
-        # set_cookie(lat, value=lat, max_age=60*60*24)
-        # set_cookie(lon, value=lon, max_age=60*60*24)
         rendered_template = render_template('index.html', city="clicca")
         return make_response(rendered_template)
     else:
         return render_template('index.html', city=city_from_cookie)
 
 
-@app.route('/business/<name>', methods=["POST", "GET"])
-def businesspage(name):
+@app.route('/business/<business_name>_<creation_date>_<creation_time>', methods=["POST", "GET"])
+def businesspage(business_name, creation_date, creation_time):
     if request.method == "POST":
         name = request.form["fname"]
         surname = request.form["lname"]
@@ -53,17 +63,36 @@ def businesspage(name):
         time = request.form["slot2"]
         service = request.form["service"]
         operator = request.form["operator"]
-        # document = {"name": name, "surname": surname, "email": email, "cellphone": cellphone, "day": day,
-        #            "open_time": open_time, "close_time": close_time, "service": service, "operator": operator}
-
-        return redirect(url_for("confirmationpage"))
+        document = {"business_name": business_name, "business_creation_date": creation_date,
+                    "business_creation_time": creation_time, "name": name, "surname": surname, "email": email,
+                    "cellphone": cellphone, "day": day, "time": time, "service": service, "operator": operator}
+        booking_result = bookings_collection.insert_one(document)
+        booking_result.inserted_id
+        return redirect("/booking_confirmation/"+str(booking_result.inserted_id))
         # TODO: Add parameters to function
     else:
-        return render_template("business-info.html", bsname=name)
+        return render_template("business-info.html", business_name=business_name, creation_date=creation_date,
+                               creation_time=creation_time)
 
 
-@app.route('/confirmation')
-def confirmationpage():
+@app.route('/booking_confirmation/<booking_id>')
+def bookings_confirmationpage(booking_id):
+    print("booking_id", booking_id)
+
+    query_result = bookings_collection.find_one({"_id": ObjectId(booking_id)})
+    print(query_result)
+    service = query_result["service"]
+    business_name = query_result["business_name"]
+    business_creation_date = query_result["business_creation_date"]
+    business_creation_time = query_result["business_creation_time"]
+    operator = query_result["operator"]
+    day = query_result["day"]
+    time = query_result["time"]
+    name = query_result["name"]
+    surname = query_result["surname"]
+    email = query_result["email"]
+    cellphone = query_result["cellphone"]
+    # Use parameters found from query
     return render_template("booked.html")
     # TODO: Add parameters to function
 
@@ -86,19 +115,14 @@ def partnerspage():
         document = {"img": img, "fname": fname, "lname": lname, "email": email, "cellphone": cellphone,
                     "business_name": business_name, "open_time": open_time, "close_time": close_time,
                     "service": service, "operator": operator, "creation_date": today, "creation_time": now}
-        collection.insert_one(document)
-        return redirect(url_for("confirmationpage"))
+        businesses_collection.insert_one(document)
+        return redirect(url_for("confirmationpage")) # !!This confirms a booking not a registration
     else:
         return render_template("business-creation.html")
 
-
-# @app.route('/<path:filename>')
-# def send_file(filename):
-#     return send_from_directory(app.static_folder, filename)
-
 @app.route('/photos/<business_name>_<creation_date>_<creation_time>.jpg', methods=["GET"])
 def send_business_image(business_name, creation_date, creation_time):
-    document = collection.find_one({"business_name": business_name, "creation_date": creation_date,
+    document = businesses_collection.find_one({"business_name": business_name, "creation_date": creation_date,
                                     "creation_time": creation_time})
     photo = BytesIO(document["img"])
     return send_file(photo, mimetype="image/gif")
