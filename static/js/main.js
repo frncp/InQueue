@@ -24,7 +24,11 @@ window.onload = () => {
 
 
 function localityModifier() {
-    getPosition(getLatLonAndUpdateCityName)
+    getPosition(getLatLonAndUpdateCityName, redirectToSelect)
+}
+
+function redirectToSelect() {
+    window.location.href = "/select"
 }
 
 function getLatLonAndUpdateCityName(position) {
@@ -40,13 +44,27 @@ function getLatLonAndUpdateCityName(position) {
 function updateCityNameByLatLon() {
     cityName = getCityName()
     changeCityName(cityName)
+    document.cookie = "city=" + cityName; 
 }
 
-function getPosition(doOnSuccess) {
+function GPSInput(){
+    getPosition(getLatLonAndAddToInput, function () {return true})
+}
+
+function getLatLonAndAddToInput(position) {
+    let oldPos = lat+lon
+    getLatLon(position)
+    if (oldPos != lat+lon) {
+        cityName = getCityName()
+        document.getElementById('city').value = cityName
+    }
+}
+
+function getPosition(doOnSuccess, doOnFailure) {
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(doOnSuccess)
     } else {
-        // TODO: Input manually
+        doOnFailure()
     }
 }
 
@@ -55,8 +73,7 @@ function getLatLon(position) {
     lon = position.coords.longitude
 }
 
-
-function getCityName() {
+function getNominatimData() {
     let NominatimAPI = "https://nominatim.openstreetmap.org/reverse?lat=" + lat + "&lon=" + lon + "&format=jsonv2&accept-language=it&zoom=10"
 
     let request = new XMLHttpRequest()
@@ -69,7 +86,12 @@ function getCityName() {
 
     request.send(null)
 
-    let data = JSON.parse(request.responseText)
+    return data = JSON.parse(request.responseText)
+
+}
+
+function getCityName() {
+    let data = getNominatimData()
     return data.name
 }
 

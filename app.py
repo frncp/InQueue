@@ -28,7 +28,7 @@ bookings_collection = db["bookings"]
 # Start app
 app = Flask(__name__)
 
-@app.route('/home', methods=["POST", "GET"])
+@app.route('/select', methods=["POST", "GET"])
 def homepage_new():
     if request.method == "GET":
         city_from_cookie = request.cookies.get("city")

@@ -5,27 +5,103 @@ Aggiungi la tua attività su InQueue
 {% endblock %}
 
 {% block main %}
-<!--<div class="avatar-wrapper">
-        <img class="profile-pic" src="" />
-        <div class="upload-button">
-        </div>
-        <input class="file-upload" type="file" accept="image/*"/>
-    </div>-->
 
 
-
-<!-- Booking -->
 <h2 class="mt-5 mb-4">Registra la tua attività</h2>
+<p class="text-muted">Registra la tua attività su InQueue per ricevere le prenotazioni online</p>
 <div class="container">
-    <form action="#" method="POST" id="form" enctype="multipart/form-data">
+    <form action="#" method="POST" id="form" enctype="multipart/form-data" class="mt-5">
         <section id="form1">
-            <div class="avatar-wrapper">
-                <img class="profile-pic" alt="" src="" />
-                <div class="upload-button">
-                    <i class="fa fa-arrow-circle-up" aria-hidden="true"></i>
+            <h3>Inizia col darci le informazioni sulla tua attività</h3>
+            <div class="mb-3">
+                <label for="img" class="form-label d-block">Immagine di presentazione</label>
+                <img id="output" width="200" class="my-2 mx-auto d-block"/>	
+                <input class="form-control" type="file" accept="image/*" id="img" name="img" onchange="loadFile(event)" required>
+              </div>
+            <div class="row">
+                <div class="col-md mt-3">
+                    <label for="bname">Nome attività</label>
+                    <input required type="text" autocomplete="activity-name" class="form-control" id="bname" name="bname" placeholder="Nome attività">
                 </div>
-                <input class="file-upload" type="file" accept="image/*" id="img" name="img"/>
+                <div class="col mt-3">
+                    <label for="type">Tipologia</label>
+                    <select class="form-select form-select-md mb-3" id="type" name="type" onchange="disableByType(this)">
+                        <option value="barber">Barbiere</option>
+                        <option value="beautician">Estetista</option>
+                        <option value="hairdresser">Parrucchiere</option>
+                        <option value="field">Campo sportivo</option>
+                        <option value="museum">Museo - Luogo d'interesse</option>
+                        <option value="freelance">Libero professionista</option>
+                        <option value="car-repair">Meccanico</option>
+                    </select>
+                </div>
             </div>
+
+            <label for="address">Indirizzo</label>
+            <div class="input-group mb-3">
+                <button class="btn btn-outline-secondary" type="button" onclick="businessGPS()">Localizzami</button>
+                <input type="text" class="form-control" id="address" placeholder="Via Nuova Poggioreale" required>
+              </div>
+            
+              <input type="text" class="form-control" id="lat" readonly hidden required>
+              <input type="text" class="form-control" id="lon" readonly hidden required>
+
+              <label for="city">Città</label>
+              <div class="mb-3 autocomplete">
+                  <input type="text" class="form-control" placeholder="Napoli" id="city" required>
+                </div>  
+            <div id="businessPositionMap"></div>
+            <script type="text/javascript">
+                /* LEAFLET */
+                let businessPositionMap = L.map('businessPositionMap').setView([40.85652, 14.28377], 5);
+                businessPositionMap.zoomControl.remove()
+                L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                  attribution: 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a>',
+                }).addTo(businessPositionMap);
+      
+                let marker = L.icon({
+                  iconUrl: '../static/images/leafletimages/marker-icon.png',
+                  shadowUrl: '../static/images/leafletimages/marker-shadow.png',
+                  iconSize: [25, 41],
+                  iconAnchor: [12, 41],
+                  popupAnchor: [1, -34],
+                  shadowSize: [41, 41]
+                });
+                
+              </script>
+            <button class="btn btn-inqueue-purple w-100 mt-3 d-none" id="nextForm2Button" type="button" onclick="showNextForm('form2', this, validateFirstForm)">AVANTI</button>
+        </section>
+
+        <section id="form2">
+            <h3>Ora aggiungi gli orari di apertura</h3>
+            <div class="row mt-5">
+                <div class="col-sm">
+                    <label for="open-time">Orario di apertura:</label>
+                    <input type="time" id="open-time" name="open-time" class="form-control form-control-md mb-3">
+                </div>
+
+                <div class="col-sm">
+                    <div class="col-sm">
+                        <label for="close-time">Orario di chiusura:</label>
+                        <input type="time" id="close-time" name="close-time" class="form-control form-control-md mb-3">
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm">
+                    <label for="service">Servizio</label>
+                    <input type="text" class="form-control" id="service" name="service">
+                </div>
+                <div class="col-sm">
+                    <label for="operator">Operatore</label>
+                    <input type="text" class="form-control" id="operator" name="operator">
+                </div>
+            </div>
+            <button class="btn btn-inqueue-purple w-100 mt-3 d-none" id="nextForm3Button" type="button" onclick="showNextForm('form3', this, validateSecondForm)">AVANTI</button>
+        </section>
+        <section id="form3">
+            <h3>Infine, dicci chi sei</h3>
             <div class="row">
                 <div class="col mt-3">
                     <label for="fname">Nome</label>
@@ -46,55 +122,7 @@ Aggiungi la tua attività su InQueue
                     <input required type="tel" class="form-control" autocomplete="cellphone" id="cellphone" name="cellphone" placeholder="Telefono" pattern="^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$" title="Inserisci un numero di telefono valido">
                 </div>
             </div>
-            <div class="row">
-                <div class="col-md mt-3">
-                    <label for="bname">Nome attività</label>
-                    <input required type="text" autocomplete="activity-name" class="form-control" id="bname" name="bname" placeholder="Nome attività">
-                </div>
-                <div class="col mt-3">
-                    <label for="type">Tipologia</label>
-                    <select class="form-select form-select-md mb-3" id="type" name="type">
-                        <option value="barber">Barbiere - Estetista - Parrucchiere</option>
-                        <option value="field">Campo sportivo</option>
-                        <option value="museum">Museo - Luogo d'interesse</option>
-                        <option value="freelance">Libero professionista</option>
-                        <option value="car-repair">Meccanico</option>
-                    </select>
-                </div>
-            </div>
-
-            <button class="btn btn-inqueue-purple w-100 mt-3 d-none" id="nextForm2Button" type="button" onclick="showNextForm('form2', this, validateFirstForm)">AVANTI</button>
-        </section>
-
-        <section id="form2">
-            <div class="row mt-5">
-                <div class="col-sm">
-                    <label for="open-time">Orario di apertura:</label>
-                    <input type="time" id="open-time" name="open-time" class="form-control form-control-md mb-3">
-                </div>
-
-                <div class="col-sm">
-                    <div class="col-sm">
-                        <label for="close-time">Orario di chiusura:</label>
-                        <input type="time" id="close-time" name="close-time" class="form-control form-control-md mb-3">
-                    </div>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-sm">
-                    <label for="service">Servizio</label>
-                    <input type="text" class="form-select" id="service" name="service">
-                </div>
-                <div class="col-sm">
-                    <label for="operator">Operatore</label>
-                    <input type="text" class="form-select" id="operator" name="operator">
-                </div>
-            </div>
-            <button class="btn btn-inqueue-purple w-100 mt-3 d-none" id="nextForm3Button" type="button" onclick="showNextForm('form3', this, validateSecondForm)">AVANTI</button>
-        </section>
-        <section id="form3">
-            <input class="btn btn-danger w-100" type="submit" onclick="addValidateCSS(); checkValidity()">
+            <input class="btn btn-danger w-100 mt-4" type="submit" onclick="addValidateCSS(); checkValidity()">
         </section>
     </form>
 </div>
@@ -108,17 +136,7 @@ Aggiungi la tua attività su InQueue
     }
 
     function validateFirstForm() {
-        let name = document.getElementById('fname')
-        let surname = document.getElementById('lname')
-        let email = document.getElementById('email')
-        let phone = document.getElementById('cellphone')
-        let bname = document.getElementById('bname')
-
-        if (name.checkValidity() && surname.checkValidity() && email.checkValidity() && phone.checkValidity() && bname.checkValidity())
-            return true
-
-        addValidateCSS()
-        return false
+        return true
 
     }
 
@@ -147,30 +165,56 @@ Aggiungi la tua attività su InQueue
     }
 </script>
 
-<script type="text/javascript">
-    $(document).ready(function() {
+<script>
+    var loadFile = function(event) {
+        var image = document.getElementById('output');
+        image.src = URL.createObjectURL(event.target.files[0]);
+    };
+    </script>
 
-        let readURL = function(input) {
-            if (input.files && input.files[0]) {
-                let reader = new FileReader();
+<script>
+    function businessGPS() {
+        getPosition(getLatLonAndAddToBusiness)
+}  
 
-                reader.onload = function(e) {
-                    $('.profile-pic').attr('src', e.target.result);
-                }
+function getLatLonAndAddToBusiness(position) {
+    let oldPos = lat+lon
+    getLatLon(position)
+    if (oldPos != lat+lon) {
+        data = getNominatimData()
+        document.getElementById('city').value = data.name
+        document.getElementById('lat').value = data.lat
+        document.getElementById('lon').value = data.lon
+        let m = L.marker([data.lat, data.lon], {icon: marker}).addTo(businessPositionMap);
+        centerLeafletMapOnMarker(businessPositionMap, m)
+    }
+}
 
-                reader.readAsDataURL(input.files[0]);
-            }
-        }
 
-        $(".file-upload").on('change', function() {
-            readURL(this);
-        });
+/* thanks https://jeffreymorgan.io/articles/how-to-center-a-leaflet-map-on-a-marker/ */
+function centerLeafletMapOnMarker(map, marker) {
+  var latLngs = [ marker.getLatLng() ];
+  var markerBounds = L.latLngBounds(latLngs);
+  map.fitBounds(markerBounds);
+}
 
-        $(".upload-button").on('click', function() {
-            $(".file-upload").click();
-        });
-    });
+function disableByType(element) {
+    if (element.value == 'field')
+        disable(document.getElementById('operator'))
+    else 
+        enable(document.getElementById('operator'))
+}
+
+function disable(element) {
+    element.disabled = true 
+}
+
+function enable(element) {
+    element.disabled = false 
+}
+
+
+autocomplete(document.getElementById('city'), countries)
 </script>
-
 
 {% endblock %}
