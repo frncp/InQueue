@@ -76,6 +76,10 @@ def business_page(business_name, creation_date, creation_time):
                                creation_time=creation_time)
 
 
+@app.route('/test/')
+def booktest():
+    return render_template('booked.html')
+
 @app.route('/booking_confirmation/<booking_id>')
 def bookings_confirmation_page(booking_id):
     print("booking_id", booking_id)

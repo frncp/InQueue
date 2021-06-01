@@ -1,10 +1,33 @@
 {% extends 'base.html' %}
 
 {% block title %}
-Aggiungi la tua attività su InQueue
+Hai prenotato su Inqueue
 {% endblock %}
 
 {% block main %}
-HAI PRENOTATO {{service}} da {{business}} con {{operator}} per il giorno {{day}} alle ore {{hour}} <br>
+
+<div class="text-center">
+
+<h1 class="mt-5">La tua prenotazione è andata a buon fine!</h1>
+<p class="text-muted">Abbiamo ricevuto la tua prenotazione e il tuo posto è stato riservato.</p>
+<p class="text-muted">Qui sotto puoi vedere un riepilogo della tua prenotazione e scaricare una ricevuta</p>
+
+<hr>
+
+<h2>Riepilogo</h2>
+
+        <p class="h4 mt-3">HAI PRENOTATO</p>
+        <p class="text-primary">{{service}}</p> 
+
+
+da {{business}} con {{operator}} per il giorno {{day}} alle ore {{hour}} <br>
 IL TUO NOME è {{name}} {{surname}} la tua email è {{email}}, il tuo cellulare è {{cellphone}}
 {% endblock %}
+
+</div>
+</div>
+<hr>
+
+
+
+</div>
