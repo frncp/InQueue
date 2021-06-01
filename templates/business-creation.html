@@ -37,6 +37,9 @@ Aggiungi la tua attività su InQueue
                 </div>
             </div>
 
+            <h3>Inserisci l'indirizzo della tua attività</h3>
+            <p class="text-muted">Clicca sulla mappa per aggiungere la posizione in cui si trova la tua attività</p>
+
             <label for="address">Indirizzo</label>
             <div class="input-group mb-3">
 
@@ -224,7 +227,8 @@ function updateData(new_lat, new_lon, m){
     document.getElementById('city').value = d
   document.getElementById('lat').value = data.lat
   document.getElementById('lon').value = data.lon
-
+  if(d = getCityRoad(data))
+    document.getElementById('address').value = d
   addMarker(m)
 }
 
@@ -245,6 +249,10 @@ function addMarker(marker){
 function positionClick(e) {
     updateData(e.latlng.lat, e.latlng.lng, e.marker)
     
+}
+
+if(!navigator.userAgent.toLowerCase().match(/mobile/i)) {
+    (document.getElementById('GPSButton')).classList.add('d-none')
 }
 
 autocomplete(document.getElementById('city'), countries)

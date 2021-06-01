@@ -42,7 +42,7 @@ function getLatLonAndUpdateCityName(position) {
 }
 
 function updateCityNameByLatLon() {
-    cityName = getCityName()
+    cityName = getCityName(getNominatimData())
     changeCityName(cityName)
     document.cookie = "city=" + cityName; 
 }
@@ -74,7 +74,7 @@ function getLatLon(position) {
 }
 
 function getNominatimData() {
-    let NominatimAPI = "https://nominatim.openstreetmap.org/reverse?lat=" + lat + "&lon=" + lon + "&format=jsonv2&accept-language=it&zoom=10"
+    let NominatimAPI = "https://nominatim.openstreetmap.org/reverse?lat=" + lat + "&lon=" + lon + "&format=jsonv2&accept-language=it&zoom=18"
 
     let request = new XMLHttpRequest()
     request.open('GET', NominatimAPI, false)//false is for synchronous request
@@ -90,9 +90,40 @@ function getNominatimData() {
 
 }
 
-function getCityName() {
-    let data = getNominatimData()
-    return data.name
+
+function searchNominatimData(query) {
+    let NominatimAPI = "https://nominatim.openstreetmap.org/search?" + query +"&format=jsonv2&accept-language=it&zoom=18"
+
+    let request = new XMLHttpRequest()
+    request.open('GET', NominatimAPI, false)//false is for synchronous request
+
+    request.onerror = function() {
+        // TODO?: Add different behaviour to find a position
+        console.log("Server connection error")
+    };
+
+    request.send(null)
+
+    return data = JSON.parse(request.responseText)
+
+}
+
+function getCityName(data) {
+    if (typeof data.address == "undefined")
+        return ""
+    if (typeof data.address.city != "undefined")
+        return data.address.city
+    else if (typeof data.address.village != "undefined")
+        return data.address.village
+    else if (typeof data.address.town != "undefined")
+        return data.address.town
+}
+
+function getCityRoad(data) {
+    if(typeof data.address == "undefined")
+        return ""
+    if (typeof data.address.road != "undefined")
+        return data.address.road
 }
 
 function changeCityName(cityName) {
