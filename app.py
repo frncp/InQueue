@@ -69,7 +69,6 @@ def business_page(business_name, creation_date, creation_time):
                     "cellphone": cellphone, "day": day, "time": time, "service": service, "operator": operator}
         booking_result = bookings_collection.insert_one(document)
         return redirect("/booking_confirmation/"+str(booking_result.inserted_id))
-        # TODO: Add parameters to function
     else:
         return render_template("business-info.html", business_name=business_name, creation_date=creation_date,
                                creation_time=creation_time)
@@ -111,11 +110,16 @@ def partners_page():
         close_time = request.form["close-time"]
         service = request.form["service"]
         operator = request.form["operator"]
+        city = request.form["city"]
+        address = request.form["address"]
+        lat = request.form["lat"]
+        lon = request.form["lon"]
         today = str(date.today()).replace("/", "-", 3)
         now = datetime.now().strftime('%H:%M:%S')
         document = {"img": img, "fname": fname, "lname": lname, "email": email, "cellphone": cellphone,
                     "business_name": business_name, "open_time": open_time, "close_time": close_time,
-                    "service": service, "operator": operator, "creation_date": today, "creation_time": now}
+                    "service": service, "operator": operator, "creation_date": today, "creation_time": now,
+                    "city": city, "address": address, "lat": lat, "lon": lon}
         b_sign_up_result = businesses_collection.insert_one(document)
         return redirect("/newBusiness_confirmation/"+str(b_sign_up_result.inserted_id))
     else:

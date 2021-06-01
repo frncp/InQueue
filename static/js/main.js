@@ -113,7 +113,6 @@ function addSpinner(id) {
 
 
 /* FORMS */
-
 function showNextForm(toID, buttonID, checkFunction)  {
     if (checkFunction()) {
         removeValidateCSS()
@@ -125,7 +124,6 @@ function showNextForm(toID, buttonID, checkFunction)  {
         button.parentNode.appendChild(document.createElement("hr")).classList.add('mt-5')
     }
 }
-
 
 function addValidateCSS() {
     document.getElementById('form').classList.add('was-validated')

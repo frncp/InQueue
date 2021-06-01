@@ -39,16 +39,18 @@ Aggiungi la tua attività su InQueue
 
             <label for="address">Indirizzo</label>
             <div class="input-group mb-3">
-                <button class="btn btn-outline-secondary" type="button" onclick="businessGPS()">Localizzami</button>
-                <input type="text" class="form-control" id="address" placeholder="Via Nuova Poggioreale" required>
+
+                <button class="btn btn-outline-secondary" type="button" onclick="businessGPS()" id="GPSButton">Localizzami</button>
+                <input type="text" class="form-control" name="address" id="address" placeholder="Via Nuova Poggioreale" required autocomplete="no">
+                <button class="btn btn-outline-secondary" type="button" onclick="console.log(getCityRoad(searchNominatimData(document.getElementById('address').value)))">Cerca</button>
               </div>
             
-              <input type="text" class="form-control" id="lat" readonly hidden required>
-              <input type="text" class="form-control" id="lon" readonly hidden required>
+              <input type="text" class="form-control" name="lat" id="lat" readonly hidden required>
+              <input type="text" class="form-control" name="lon" id="lon" readonly hidden required>
 
               <label for="city">Città</label>
               <div class="mb-3 autocomplete">
-                  <input type="text" class="form-control" placeholder="Napoli" id="city" required>
+                  <input type="text" class="form-control" placeholder="Napoli" name="city" id="city" required autocomplete="no" disabled>
                 </div>  
             <div id="businessPositionMap"></div>
             <script type="text/javascript">
@@ -190,8 +192,8 @@ function getLatLonAndAddToBusiness(position) {
 
 /* thanks https://jeffreymorgan.io/articles/how-to-center-a-leaflet-map-on-a-marker/ */
 function centerLeafletMapOnMarker(map, marker) {
-  var latLngs = [ marker.getLatLng() ];
-  var markerBounds = L.latLngBounds(latLngs);
+  let latLngs = [ marker.getLatLng() ];
+  let markerBounds = L.latLngBounds(latLngs);
   map.fitBounds(markerBounds);
 }
 
@@ -216,27 +218,27 @@ businessPositionMap.on('click', positionClick);
 function updateData(new_lat, new_lon, m){
   lat = new_lat;
   lon = new_lon;
-  data = getNominatimData()
-  document.getElementById('city').value = data.name
+  let data = getNominatimData()
+  let d
+  if(d = getCityName(data))
+    document.getElementById('city').value = d
   document.getElementById('lat').value = data.lat
   document.getElementById('lon').value = data.lon
 
   addMarker(m)
-  
-  showPositionOnMap();
 }
 
 
 function addMarker(marker){
-if (typeof marker != "undefined") {
-       businessPositionMap.removeLayer(marker);
-       centerLeafletMapOnMarker(businessPositionMap, marker)
-} else {
-  businessPositionMap.setView([lat, lon], 18);
-}
-marker = new L.marker([data.lat, data.lon], {icon: marker});
+    if (typeof marker != "undefined") {
+           businessPositionMap.removeLayer(marker);
+           centerLeafletMapOnMarker(businessPositionMap, marker)
+    } else {
+      businessPositionMap.setView([lat, lon], 18);
+    }
+    marker = new L.marker([data.lat, data.lon], {icon: marker});
 
-businessPositionMap.addLayer(marker);
+    businessPositionMap.addLayer(marker);
 }
 
 
