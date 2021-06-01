@@ -34,7 +34,6 @@ def homepage_new():
     if request.method == "GET":
         city_from_cookie = request.cookies.get("city")
         if not city_from_cookie:
-            print("Cookie not found")
             city_from_cookie = ""
         return render_template("home.html", city_from_cookie=city_from_cookie)
     else:
@@ -82,10 +81,7 @@ def booktest():
 
 @app.route('/booking_confirmation/<booking_id>')
 def bookings_confirmation_page(booking_id):
-    print("booking_id", booking_id)
-
     query_result = bookings_collection.find_one({"_id": ObjectId(booking_id)})
-    print(query_result)
     service = query_result["service"]
     business_name = query_result["business_name"]
     business_creation_date = query_result["business_creation_date"]
