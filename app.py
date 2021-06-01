@@ -20,13 +20,14 @@ from passwords import DB_USER, DB_PASSWORD
 # context.load_cert_chain('certificate.crt', 'private.key')
 
 # DB Connection
-mongo_client_string = "mongodb+srv://" + DB_USER + ":" + DB_PASSWORD + "@cluster0.dfin1.mongodb.net/sample_airbnb?retryWrites=true&w=majority"
+mongo_client_string = "mongodb+srv://" + DB_USER + ":" + DB_PASSWORD + "@cluster0.dfin1.mongodb.net/inQueue?retryWrites=true&w=majority"
 client = pymongo.MongoClient(mongo_client_string)
 db = client["inQueue"]
 businesses_collection = db["businesses"]
 bookings_collection = db["bookings"]
 # Start app
 app = Flask(__name__)
+
 
 @app.route('/select', methods=["POST", "GET"])
 def homepage_new():
@@ -42,6 +43,7 @@ def homepage_new():
         resp.set_cookie("city", value=city, max_age=60 * 60 * 24)
         return resp
 
+
 @app.route('/')
 def homepage():
     city_from_cookie = request.cookies.get("city")
@@ -53,7 +55,7 @@ def homepage():
 
 
 @app.route('/business/<business_name>_<creation_date>_<creation_time>', methods=["POST", "GET"])
-def businesspage(business_name, creation_date, creation_time):
+def business_page(business_name, creation_date, creation_time):
     if request.method == "POST":
         name = request.form["fname"]
         surname = request.form["lname"]
@@ -67,7 +69,6 @@ def businesspage(business_name, creation_date, creation_time):
                     "business_creation_time": creation_time, "name": name, "surname": surname, "email": email,
                     "cellphone": cellphone, "day": day, "time": time, "service": service, "operator": operator}
         booking_result = bookings_collection.insert_one(document)
-        booking_result.inserted_id
         return redirect("/booking_confirmation/"+str(booking_result.inserted_id))
         # TODO: Add parameters to function
     else:
@@ -76,7 +77,7 @@ def businesspage(business_name, creation_date, creation_time):
 
 
 @app.route('/booking_confirmation/<booking_id>')
-def bookings_confirmationpage(booking_id):
+def bookings_confirmation_page(booking_id):
     print("booking_id", booking_id)
 
     query_result = bookings_collection.find_one({"_id": ObjectId(booking_id)})
@@ -98,7 +99,7 @@ def bookings_confirmationpage(booking_id):
 
 
 @app.route("/partner", methods=["POST", "GET"])
-def partnerspage():
+def partners_page():
     if request.method == "POST":
         img = request.files['img'].read()
         fname = request.form["fname"]
@@ -115,15 +116,22 @@ def partnerspage():
         document = {"img": img, "fname": fname, "lname": lname, "email": email, "cellphone": cellphone,
                     "business_name": business_name, "open_time": open_time, "close_time": close_time,
                     "service": service, "operator": operator, "creation_date": today, "creation_time": now}
-        businesses_collection.insert_one(document)
-        return redirect(url_for("confirmationpage")) # !!This confirms a booking not a registration
+        b_sign_up_result = businesses_collection.insert_one(document)
+        return redirect("/newBusiness_confirmation/"+str(b_sign_up_result.inserted_id))
     else:
         return render_template("business-creation.html")
+
+
+@app.route('/newBusiness_confirmation/<b_sign_up_result>', methods=["GET"])
+def partner_confirmation_page(b_sign_up_result):
+    business_document = businesses_collection.find_one({"_id": ObjectId(b_sign_up_result)})
+    return render_template("signed-up.html")
+
 
 @app.route('/photos/<business_name>_<creation_date>_<creation_time>.jpg', methods=["GET"])
 def send_business_image(business_name, creation_date, creation_time):
     document = businesses_collection.find_one({"business_name": business_name, "creation_date": creation_date,
-                                    "creation_time": creation_time})
+                                               "creation_time": creation_time})
     photo = BytesIO(document["img"])
     return send_file(photo, mimetype="image/gif")
 

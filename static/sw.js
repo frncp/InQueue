@@ -1,7 +1,5 @@
 let cacheName = 'pwa_2021';
-let filesToCache = [ //Commented out because of pages not refreshing
-//    'static/css/style.css',
-//    'static/js/main.js',
+let filesToCache = [
     'static/css/bootstrap.css',
     'static/css/leaflet.css',
     'static/js/leaflet.js',
