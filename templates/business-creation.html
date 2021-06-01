@@ -181,14 +181,11 @@ function getLatLonAndAddToBusiness(position) {
     let oldPos = lat+lon
     getLatLon(position)
     if (oldPos != lat+lon) {
-        data = getNominatimData()
-        document.getElementById('city').value = data.name
-        document.getElementById('lat').value = data.lat
-        document.getElementById('lon').value = data.lon
-        let m = L.marker([data.lat, data.lon], {icon: marker}).addTo(businessPositionMap);
-        centerLeafletMapOnMarker(businessPositionMap, m)
+        updateData(lat, lon)
     }
 }
+
+
 
 
 /* thanks https://jeffreymorgan.io/articles/how-to-center-a-leaflet-map-on-a-marker/ */
@@ -213,6 +210,40 @@ function enable(element) {
     element.disabled = false 
 }
 
+
+businessPositionMap.on('click', positionClick);
+
+function updateData(new_lat, new_lon, m){
+  lat = new_lat;
+  lon = new_lon;
+  data = getNominatimData()
+  document.getElementById('city').value = data.name
+  document.getElementById('lat').value = data.lat
+  document.getElementById('lon').value = data.lon
+
+  addMarker(m)
+  
+  showPositionOnMap();
+}
+
+
+function addMarker(marker){
+if (typeof marker != "undefined") {
+       businessPositionMap.removeLayer(marker);
+       centerLeafletMapOnMarker(businessPositionMap, marker)
+} else {
+  businessPositionMap.setView([lat, lon], 18);
+}
+marker = new L.marker([data.lat, data.lon], {icon: marker});
+
+businessPositionMap.addLayer(marker);
+}
+
+
+function positionClick(e) {
+    updateData(e.latlng.lat, e.latlng.lng, e.marker)
+    
+}
 
 autocomplete(document.getElementById('city'), countries)
 </script>
