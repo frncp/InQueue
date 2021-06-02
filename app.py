@@ -17,9 +17,8 @@ import os
 
 from passwords import DB_USER, DB_PASSWORD
 
-# import ssl
-# context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
-# context.load_cert_chain('certificate.crt', 'private.key')
+#import ssl
+#context.load_cert_chain('certificate.crt', 'private.key')
 
 # DB Connection
 mongo_client_string = "mongodb+srv://" + DB_USER + ":" + DB_PASSWORD + "@cluster0.dfin1.mongodb.net/inQueue?retryWrites=true&w=majority"
@@ -173,15 +172,29 @@ def send_business_image(business_name, creation_date, creation_time):
 
 
 if __name__ == "__main__":
+    curr_path = os.path.dirname(__file__)
     try:
-        curr_path = os.path.dirname(__file__)
         os.mkdir(curr_path+"\\temp")
     except FileExistsError:
         pass
+    https_available = False
+    try:
+        # context = ssl.SSLContext()
+        # context.load_cert_chain(curr_path + '/cert.pem', curr_path + '/privkey.pem')
+        context = (curr_path + '/cert.pem', curr_path + '/privkey.pem')
+        https_available = True # False = create https page
+    except FileNotFoundError:
+        print("HTTPs certification files not found")
     # Server starting
-    local_only = True  # True = Accessible only in local loop; False = Accessible also from out of intranet
+    local_only = True  # False = Accessible also from out of intranet
     if local_only:
-        app.run(debug=True)
+        if https_available:
+            app.run(debug=True, ssl_context=context)
+        else:
+            app.run(debug=True)
     else:
-        app.run(host='0.0.0.0', port=8150, debug=False)  # Port forwarding needed on router
-    # app.run(host='0.0.0.0', port='8150', debug=True, ssl_context=context)
+        # Port forwarding needed on router
+        if https_available:
+            app.run(host='0.0.0.0', port='8150', debug=True, ssl_context=context)
+        else:
+            app.run(host='0.0.0.0', port=8150, debug=False)
