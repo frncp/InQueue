@@ -64,7 +64,7 @@ Aggiungi la tua attività su InQueue
                   attribution: 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a>',
                 }).addTo(businessPositionMap);
       
-                let marker = L.icon({
+                let markerIcon = L.icon({
                   iconUrl: '../static/images/leafletimages/marker-icon.png',
                   shadowUrl: '../static/images/leafletimages/marker-shadow.png',
                   iconSize: [25, 41],
@@ -216,9 +216,14 @@ function enable(element) {
 }
 
 
-businessPositionMap.on('click', positionClick);
+businessPositionMap.on('click', positionClick)
 
-function updateData(new_lat, new_lon, m){
+
+let marker = new L.marker([], {icon: markerIcon, draggable: true})
+
+marker.on('dragend', function() {updateData(marker._latlng.lat, marker._latlng.lng)})
+
+function updateData(new_lat, new_lon){
   lat = new_lat;
   lon = new_lon;
   let data = getNominatimData()
@@ -229,26 +234,21 @@ function updateData(new_lat, new_lon, m){
   document.getElementById('lon').value = data.lon
   if(d = getCityRoad(data))
     document.getElementById('address').value = d
-  addMarker(m)
+  addMarker()
 }
 
 
-function addMarker(marker){
-    if (typeof marker != "undefined") {
-           businessPositionMap.removeLayer(marker);
-           centerLeafletMapOnMarker(businessPositionMap, marker)
-    } else {
-      businessPositionMap.setView([lat, lon], 18);
-    }
-    marker = new L.marker([data.lat, data.lon], {icon: marker});
-
+function addMarker(){
+    if (typeof marker != "undefined")
+           businessPositionMap.removeLayer(marker)
+    marker.setLatLng([lat, lon])
+    centerLeafletMapOnMarker(businessPositionMap, marker)
     businessPositionMap.addLayer(marker);
 }
 
 
 function positionClick(e) {
-    updateData(e.latlng.lat, e.latlng.lng, e.marker)
-    
+    updateData(e.latlng.lat, e.latlng.lng)    
 }
 
 if(!navigator.userAgent.toLowerCase().match(/mobile/i)) {
