@@ -7,6 +7,12 @@ Aggiungi la tua attività su InQueue
 {% block main %}
 
 
+<style>
+    #businessPositionMap{
+        height: 30rem;
+    }
+</style>
+
 <h2 class="mt-5 mb-4">Registra la tua attività</h2>
 <p class="text-muted">Registra la tua attività su InQueue per ricevere le prenotazioni online</p>
 <div class="container">
@@ -59,11 +65,16 @@ Aggiungi la tua attività su InQueue
             
 
             <div class="col">
-              <label for="city">Città</label>              
-               <div class="input-group mb-3 autocomplete">
+              <label for="city">Città</label>   
+            <div class="row">           
+               <div class="col mb-3 autocomplete">
                   <input type="text" class="form-control" placeholder="Napoli" name="city" id="city" required autocomplete="no">
-                  <button class="btn btn-outline-secondary" type="button" onclick="getAddress((document.getElementById('address').value + ' ' + document.getElementById('city').value))">Cerca</button>
                 </div>  
+                <div class="col">
+                <button class="btn btn-outline-secondary" type="button" onclick="getAddress((document.getElementById('address').value + ' ' + document.getElementById('city').value))">Cerca</button>
+                </div>
+                </div>
+
              </div>
         </div>
 
@@ -283,9 +294,5 @@ if(!navigator.userAgent.toLowerCase().match(/mobile/i)) {
 
 autocomplete(document.getElementById('city'), countries)
 </script>
-<style>
-    #businessPositionMap{
-        height: 30rem;
-    }
-</style>
+
 {% endblock %}
