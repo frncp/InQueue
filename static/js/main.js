@@ -64,7 +64,7 @@ function getPosition(doOnSuccess, doOnFailure, doifNotSupported) {
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(doOnSuccess, doOnFailure)
     } else {
-        doifNotSupported
+        doifNotSupported()
     }
 }
 
