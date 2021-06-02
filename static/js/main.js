@@ -24,7 +24,7 @@ window.onload = () => {
 
 
 function localityModifier() {
-    getPosition(getLatLonAndUpdateCityName, redirectToSelect)
+    getPosition(getLatLonAndUpdateCityName, redirectToSelect, redirectToSelect)
 }
 
 function redirectToSelect() {
@@ -60,11 +60,11 @@ function getLatLonAndAddToInput(position) {
     }
 }
 
-function getPosition(doOnSuccess, doOnFailure) {
+function getPosition(doOnSuccess, doOnFailure, doifNotSupported) {
     if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(doOnSuccess)
+        navigator.geolocation.getCurrentPosition(doOnSuccess, doOnFailure)
     } else {
-        doOnFailure()
+        doifNotSupported()
     }
 }
 
