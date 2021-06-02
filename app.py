@@ -84,11 +84,14 @@ def book_test():
 
 @app.route('/files/tickets/<booking_id>.pdf')
 def send_booking_pdf(booking_id):
+    # File path
     curr_path = os.path.dirname(__file__)
     file_name = curr_path + "\\temp\\"+booking_id+".pdf"
+    # PDF creation
     canvas = Canvas(file_name, pagesize=(612.0, 792.0))
     canvas.drawString(72, 72, "Hello, World")
     canvas.save()
+
     file = open(file_name, "rb")
     query_result = PDFs_collection.find_one({"_id": booking_id})
     if query_result is None:
@@ -110,12 +113,9 @@ def bookings_confirmation_page(booking_id):
     operator = query_result["operator"]
     day = query_result["day"]
     time = query_result["time"]
-    name = query_result["name"]
-    surname = query_result["surname"]
-    email = query_result["email"]
-    cellphone = query_result["cellphone"]
     # Use parameters found from query
-    return render_template("booked.html")
+    return render_template("booked.html", service=service, business_name=business_name, operator=operator,
+                           day=day, time=time)
     # TODO: Add parameters to function
 
 
