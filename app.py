@@ -4,7 +4,7 @@ import json
 from http import cookies
 
 import pymongo
-from pymongo import MongoClient
+from pymongo import MongoClient, errors
 import base64
 import bson
 from bson.binary import Binary
@@ -12,6 +12,9 @@ from bson.objectid import ObjectId
 
 from datetime import date, datetime
 from io import BytesIO
+from reportlab.pdfgen.canvas import Canvas
+import os
+import getpass
 
 from passwords import DB_USER, DB_PASSWORD
 
@@ -25,6 +28,7 @@ client = pymongo.MongoClient(mongo_client_string)
 db = client["inQueue"]
 businesses_collection = db["businesses"]
 bookings_collection = db["bookings"]
+PDFs_collection = db["bookings_PDFs"]
 # Start app
 app = Flask(__name__)
 
@@ -75,8 +79,32 @@ def business_page(business_name, creation_date, creation_time):
 
 
 @app.route('/test/')
-def booktest():
+def book_test():
     return render_template('booked.html')
+
+
+@app.route('/files/tickets/<booking_id>.pdf')
+def send_booking_pdf(booking_id):
+
+    if os.name == "nt":
+        user_name = getpass.getuser()
+        file_name = "C:/Users/"+user_name+"/Desktop/inQueue_PDFs/"+booking_id+".pdf"
+    else:
+        file_name = "/home/inQueue_PDFs/"+booking_id+".pdf"
+
+    canvas = Canvas(file_name, pagesize=(612.0, 792.0))
+    canvas.drawString(72, 72, "Hello, World")
+    canvas.save()
+    file = open(file_name, "rb")
+    query_result = PDFs_collection.find_one({"_id": booking_id})
+    if query_result is None:
+        document = {"_id": booking_id, "pdf": file.read()}
+        PDFs_collection.insert_one(document)
+        query_result = PDFs_collection.find_one({"_id": booking_id})
+    file.close()
+    os.remove(file_name)
+    return send_file(BytesIO(query_result["pdf"]), mimetype="application/pdf")
+
 
 @app.route('/booking_confirmation/<booking_id>')
 def bookings_confirmation_page(booking_id):
