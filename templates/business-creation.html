@@ -53,12 +53,12 @@ Aggiungi la tua attività su InQueue
 
               <label for="city">Città</label>
               <div class="mb-3 autocomplete">
-                  <input type="text" class="form-control" placeholder="Napoli" name="city" id="city" required autocomplete="no" disabled>
+                  <input type="text" class="form-control" placeholder="Napoli" name="city" id="city" required autocomplete="no">
                 </div>  
             <div id="businessPositionMap"></div>
             <script type="text/javascript">
                 /* LEAFLET */
-                let businessPositionMap = L.map('businessPositionMap').setView([40.85652, 14.28377], 5);
+                let businessPositionMap = L.map('businessPositionMap').setView([47.5, 14], 5);
                 businessPositionMap.zoomControl.remove()
                 L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
                   attribution: 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a>',
@@ -257,5 +257,9 @@ if(!navigator.userAgent.toLowerCase().match(/mobile/i)) {
 
 autocomplete(document.getElementById('city'), countries)
 </script>
-
+<style>
+    #businessPositionMap{
+        height: 30rem;
+    }
+</style>
 {% endblock %}

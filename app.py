@@ -14,7 +14,6 @@ from datetime import date, datetime
 from io import BytesIO
 from reportlab.pdfgen.canvas import Canvas
 import os
-import getpass
 
 from passwords import DB_USER, DB_PASSWORD
 
@@ -85,13 +84,8 @@ def book_test():
 
 @app.route('/files/tickets/<booking_id>.pdf')
 def send_booking_pdf(booking_id):
-
-    if os.name == "nt":
-        user_name = getpass.getuser()
-        file_name = "C:/Users/"+user_name+"/Desktop/inQueue_PDFs/"+booking_id+".pdf"
-    else:
-        file_name = "/home/inQueue_PDFs/"+booking_id+".pdf"
-
+    curr_path = os.path.dirname(__file__)
+    file_name = curr_path + "\\temp\\"+booking_id+".pdf"
     canvas = Canvas(file_name, pagesize=(612.0, 792.0))
     canvas.drawString(72, 72, "Hello, World")
     canvas.save()
@@ -169,6 +163,11 @@ def send_business_image(business_name, creation_date, creation_time):
 
 
 if __name__ == "__main__":
+    try:
+        curr_path = os.path.dirname(__file__)
+        os.mkdir(curr_path+"\\temp")
+    except FileExistsError:
+        pass
     # Server starting
     local_only = True  # True = Accessible only in local loop; False = Accessible also from out of intranet
     if local_only:
