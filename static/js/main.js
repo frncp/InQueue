@@ -42,7 +42,7 @@ function getLatLonAndUpdateCityName(position) {
 }
 
 function updateCityNameByLatLon() {
-    cityName = getCityName(getNominatimData())
+    cityName = getCityName(getNominatimData(lat, lon))
     changeCityName(cityName)
     document.cookie = "city=" + cityName; 
 }
@@ -73,7 +73,7 @@ function getLatLon(position) {
     lon = position.coords.longitude
 }
 
-function getNominatimData() {
+function getNominatimData(lat, lon) {
     let NominatimAPI = "https://nominatim.openstreetmap.org/reverse?lat=" + lat + "&lon=" + lon + "&format=jsonv2&accept-language=it&zoom=18"
 
     let request = new XMLHttpRequest()
@@ -92,8 +92,8 @@ function getNominatimData() {
 
 
 function searchNominatimData(query) {
-    let NominatimAPI = "https://nominatim.openstreetmap.org/search?" + query +"&format=jsonv2&accept-language=it&zoom=18"
-
+    let NominatimAPI = "https://nominatim.openstreetmap.org/search?q=" + query.toString() +"&format=jsonv2&accept-language=it&addressdetails=1"
+    console.log(NominatimAPI)
     let request = new XMLHttpRequest()
     request.open('GET', NominatimAPI, false)//false is for synchronous request
 

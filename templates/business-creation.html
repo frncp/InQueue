@@ -40,21 +40,34 @@ Aggiungi la tua attività su InQueue
             <h3>Inserisci l'indirizzo della tua attività</h3>
             <p class="text-muted">Clicca sulla mappa per aggiungere la posizione in cui si trova la tua attività</p>
 
-            <label for="address">Indirizzo</label>
-            <div class="input-group mb-3">
+            
+            
 
-                <button class="btn btn-outline-secondary" type="button" onclick="businessGPS()" id="GPSButton">Localizzami</button>
-                <input type="text" class="form-control" name="address" id="address" placeholder="Via Nuova Poggioreale" required autocomplete="no">
-                <button class="btn btn-outline-secondary" type="button" onclick="console.log(getCityRoad(searchNominatimData(document.getElementById('address').value)))">Cerca</button>
-              </div>
+                
             
               <input type="text" class="form-control" name="lat" id="lat" readonly hidden required>
               <input type="text" class="form-control" name="lon" id="lon" readonly hidden required>
+            <div class="row">
 
-              <label for="city">Città</label>
-              <div class="mb-3 autocomplete">
+             <div class="col">
+                <label for="address">Indirizzo</label>
+                <div class="input-group mb-3">
+              <button class="btn btn-outline-secondary" type="button" onclick="businessGPS()" id="GPSButton">Localizzami</button>
+                <input type="text" class="form-control" name="address" id="address" placeholder="Via Nuova Poggioreale" required autocomplete="no">
+                </div>
+              </div>
+            
+
+            <div class="col">
+              <label for="city">Città</label>              
+               <div class="input-group mb-3 autocomplete">
                   <input type="text" class="form-control" placeholder="Napoli" name="city" id="city" required autocomplete="no">
+                  <button class="btn btn-outline-secondary" type="button" onclick="getAddress((document.getElementById('address').value + ' ' + document.getElementById('city').value))">Cerca</button>
                 </div>  
+             </div>
+        </div>
+
+
             <div id="businessPositionMap"></div>
             <script type="text/javascript">
                 /* LEAFLET */
@@ -224,9 +237,9 @@ let marker = new L.marker([], {icon: markerIcon, draggable: true})
 marker.on('dragend', function() {updateData(marker._latlng.lat, marker._latlng.lng)})
 
 function updateData(new_lat, new_lon){
-  lat = new_lat;
-  lon = new_lon;
-  let data = getNominatimData()
+  let lat = new_lat;
+  let lon = new_lon;
+  let data = getNominatimData(lat, lon)
   let d
   if(d = getCityName(data))
     document.getElementById('city').value = d
@@ -234,11 +247,24 @@ function updateData(new_lat, new_lon){
   document.getElementById('lon').value = data.lon
   if(d = getCityRoad(data))
     document.getElementById('address').value = d
-  addMarker()
+  addMarker(lat, lon)
 }
 
 
-function addMarker(){
+function getAddress(string) {
+    data = searchNominatimData(string)
+    console.log(data[0])
+    getCityRoad(data[0])
+    document.getElementById('address').value = getCityRoad(data[0])
+    document.getElementById('city').value = getCityName(data[0])
+    let lat = data[0].lat
+    let lon = data[0].lon
+    document.getElementById('lat').value = lat
+    document.getElementById('lon').value = lon
+    addMarker(lat, lon)
+}
+
+function addMarker(lat, lon){
     if (typeof marker != "undefined")
            businessPositionMap.removeLayer(marker)
     marker.setLatLng([lat, lon])
