@@ -32,6 +32,11 @@ PDFs_collection = db["bookings_PDFs"]
 app = Flask(__name__)
 
 
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'), 404
+
+
 @app.route('/select', methods=["POST", "GET"])
 def homepage_new():
     if request.method == "GET":
@@ -105,17 +110,23 @@ def send_booking_pdf(booking_id):
 
 @app.route('/booking_confirmation/<booking_id>')
 def bookings_confirmation_page(booking_id):
-    query_result = bookings_collection.find_one({"_id": ObjectId(booking_id)})
-    service = query_result["service"]
-    business_name = query_result["business_name"]
-    business_creation_date = query_result["business_creation_date"]
-    business_creation_time = query_result["business_creation_time"]
-    operator = query_result["operator"]
-    day = query_result["day"]
-    time = query_result["time"]
-    # Use parameters found from query
-    return render_template("booked.html", service=service, business_name=business_name, operator=operator,
-                           day=day, time=time)
+    try:
+        query_result = bookings_collection.find_one({"_id": ObjectId(booking_id)})
+    except bson.errors.InvalidId:
+        return redirect('/404/')
+    if query_result is not None:
+        service = query_result["service"]
+        business_name = query_result["business_name"]
+        business_creation_date = query_result["business_creation_date"]
+        business_creation_time = query_result["business_creation_time"]
+        operator = query_result["operator"]
+        day = query_result["day"]
+        time = query_result["time"]
+        # Use parameters found from query
+        return render_template("booked.html", service=service, business_name=business_name, operator=operator,
+                               day=day, time=time)
+    else:
+        return redirect('/404/')
     # TODO: Add parameters to function
 
 
