@@ -4,7 +4,7 @@ import json
 from http import cookies
 
 import pymongo
-from pymongo import MongoClient
+from pymongo import MongoClient, errors
 import base64
 import bson
 from bson.binary import Binary
@@ -12,6 +12,8 @@ from bson.objectid import ObjectId
 
 from datetime import date, datetime
 from io import BytesIO
+from reportlab.pdfgen.canvas import Canvas
+import os
 
 from passwords import DB_USER, DB_PASSWORD
 
@@ -25,8 +27,14 @@ client = pymongo.MongoClient(mongo_client_string)
 db = client["inQueue"]
 businesses_collection = db["businesses"]
 bookings_collection = db["bookings"]
+PDFs_collection = db["bookings_PDFs"]
 # Start app
 app = Flask(__name__)
+
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'), 404
 
 
 @app.route('/select', methods=["POST", "GET"])
@@ -75,25 +83,50 @@ def business_page(business_name, creation_date, creation_time):
 
 
 @app.route('/test/')
-def booktest():
+def book_test():
     return render_template('booked.html')
+
+
+@app.route('/files/tickets/<booking_id>.pdf')
+def send_booking_pdf(booking_id):
+    # File path
+    curr_path = os.path.dirname(__file__)
+    file_name = curr_path + "\\temp\\"+booking_id+".pdf"
+    # PDF creation
+    canvas = Canvas(file_name, pagesize=(612.0, 792.0))
+    canvas.drawString(72, 72, "Hello, World")
+    canvas.save()
+
+    file = open(file_name, "rb")
+    query_result = PDFs_collection.find_one({"_id": booking_id})
+    if query_result is None:
+        document = {"_id": booking_id, "pdf": file.read()}
+        PDFs_collection.insert_one(document)
+        query_result = PDFs_collection.find_one({"_id": booking_id})
+    file.close()
+    os.remove(file_name)
+    return send_file(BytesIO(query_result["pdf"]), mimetype="application/pdf")
+
 
 @app.route('/booking_confirmation/<booking_id>')
 def bookings_confirmation_page(booking_id):
-    query_result = bookings_collection.find_one({"_id": ObjectId(booking_id)})
-    service = query_result["service"]
-    business_name = query_result["business_name"]
-    business_creation_date = query_result["business_creation_date"]
-    business_creation_time = query_result["business_creation_time"]
-    operator = query_result["operator"]
-    day = query_result["day"]
-    time = query_result["time"]
-    name = query_result["name"]
-    surname = query_result["surname"]
-    email = query_result["email"]
-    cellphone = query_result["cellphone"]
-    # Use parameters found from query
-    return render_template("booked.html")
+    try:
+        query_result = bookings_collection.find_one({"_id": ObjectId(booking_id)})
+    except bson.errors.InvalidId:
+        return redirect('/404/')
+    if query_result is not None:
+        service = query_result["service"]
+        business_name = query_result["business_name"]
+        business_creation_date = query_result["business_creation_date"]
+        business_creation_time = query_result["business_creation_time"]
+        operator = query_result["operator"]
+        day = query_result["day"]
+        time = query_result["time"]
+        # Use parameters found from query
+        return render_template("booked.html", service=service, business_name=business_name, operator=operator,
+                               day=day, time=time)
+    else:
+        return redirect('/404/')
     # TODO: Add parameters to function
 
 
@@ -141,6 +174,11 @@ def send_business_image(business_name, creation_date, creation_time):
 
 
 if __name__ == "__main__":
+    try:
+        curr_path = os.path.dirname(__file__)
+        os.mkdir(curr_path+"\\temp")
+    except FileExistsError:
+        pass
     # Server starting
     local_only = True  # True = Accessible only in local loop; False = Accessible also from out of intranet
     if local_only:
