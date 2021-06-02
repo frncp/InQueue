@@ -17,8 +17,7 @@ import os
 
 from passwords import DB_USER, DB_PASSWORD
 
-#import ssl
-#context.load_cert_chain('certificate.crt', 'private.key')
+# import ssl
 
 # DB Connection
 mongo_client_string = "mongodb+srv://" + DB_USER + ":" + DB_PASSWORD + "@cluster0.dfin1.mongodb.net/inQueue?retryWrites=true&w=majority"
@@ -29,7 +28,7 @@ bookings_collection = db["bookings"]
 PDFs_collection = db["bookings_PDFs"]
 # Start app
 app = Flask(__name__)
-app.config['SERVER_NAME'] = 'inqueue.it'
+# app.config['SERVER_NAME'] = 'inqueue.it'
 
 @app.errorhandler(404)
 def page_not_found(e):
@@ -179,14 +178,15 @@ if __name__ == "__main__":
         pass
     https_available = False
     try:
+        # SSL cert approach commented out to test the other one
         # context = ssl.SSLContext()
         # context.load_cert_chain(curr_path + '/cert.pem', curr_path + '/privkey.pem')
         context = (curr_path + '/cert.pem', curr_path + '/privkey.pem')
-        https_available = True # False = create https page
+        https_available = False # True = create https page
     except FileNotFoundError:
         print("HTTPs certification files not found")
     # Server starting
-    local_only = False  # False = Accessible also from out of intranet
+    local_only = True  # False = Accessible also from out of intranet
     if local_only:
         if https_available:
             app.run(debug=True, ssl_context=context)
@@ -195,6 +195,6 @@ if __name__ == "__main__":
     else:
         # Port forwarding needed on router
         if https_available:
-            app.run(host='0.0.0.0', port=80, debug=True, ssl_context=context)
+            app.run(host='0.0.0.0', port=8150, debug=True, ssl_context=context)
         else:
-            app.run(host='0.0.0.0', port=80, debug=False)
+            app.run(host='0.0.0.0', port=8150, debug=False)
