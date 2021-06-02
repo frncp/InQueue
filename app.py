@@ -89,22 +89,21 @@ def book_test():
 
 @app.route('/files/tickets/<booking_id>.pdf')
 def send_booking_pdf(booking_id):
-    # File path
-    curr_path = os.path.dirname(__file__)
-    file_name = curr_path + "\\temp\\"+booking_id+".pdf"
-    # PDF creation
-    canvas = Canvas(file_name, pagesize=(612.0, 792.0))
-    canvas.drawString(72, 72, "Hello, World")
-    canvas.save()
-
-    file = open(file_name, "rb")
     query_result = PDFs_collection.find_one({"_id": booking_id})
     if query_result is None:
+        file_name = curr_path + "\\temp\\" + booking_id + ".pdf"
+        # PDF creation
+        canvas = Canvas(file_name, pagesize=(612.0, 792.0))
+        canvas.drawString(72, 72, "Hello, World")
+        canvas.save()
+        file = open(file_name, "rb")
+        # DB insert and retrieval
         document = {"_id": booking_id, "pdf": file.read()}
         PDFs_collection.insert_one(document)
         query_result = PDFs_collection.find_one({"_id": booking_id})
-    file.close()
-    os.remove(file_name)
+        # temp file deletion
+        file.close()
+        os.remove(file_name)
     return send_file(BytesIO(query_result["pdf"]), mimetype="application/pdf")
 
 
