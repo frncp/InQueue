@@ -29,7 +29,7 @@ bookings_collection = db["bookings"]
 PDFs_collection = db["bookings_PDFs"]
 # Start app
 app = Flask(__name__)
-
+app.config['SERVER_NAME'] = 'inqueue.it'
 
 @app.errorhandler(404)
 def page_not_found(e):
@@ -186,7 +186,7 @@ if __name__ == "__main__":
     except FileNotFoundError:
         print("HTTPs certification files not found")
     # Server starting
-    local_only = True  # False = Accessible also from out of intranet
+    local_only = False  # False = Accessible also from out of intranet
     if local_only:
         if https_available:
             app.run(debug=True, ssl_context=context)
@@ -195,6 +195,6 @@ if __name__ == "__main__":
     else:
         # Port forwarding needed on router
         if https_available:
-            app.run(host='0.0.0.0', port='8150', debug=True, ssl_context=context)
+            app.run(host='0.0.0.0', port=80, debug=True, ssl_context=context)
         else:
-            app.run(host='0.0.0.0', port=8150, debug=False)
+            app.run(host='0.0.0.0', port=80, debug=False)
