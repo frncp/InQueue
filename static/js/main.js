@@ -20,9 +20,6 @@ window.onload = () => {
     }
 }
 
-// TODO: Add cookie for last position
-
-
 function localityModifier() {
     getPosition(getLatLonAndUpdateCityName, redirectToSelect, redirectToSelect)
 }

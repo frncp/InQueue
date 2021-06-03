@@ -163,6 +163,8 @@ Aggiungi la tua attività su InQueue
         document.getElementById('nextForm2Button').classList.remove('d-none')
         document.getElementById('form3').classList.add('d-none')
         document.getElementById('nextForm3Button').classList.remove('d-none')
+        document.getElementById('form4').classList.add('d-none')
+        document.getElementById('nextForm4Button').classList.remove('d-none')
     }
 
     function validateFirstForm() {
@@ -293,7 +295,7 @@ if(!navigator.userAgent.toLowerCase().match(/mobile/i)) {
     (document.getElementById('GPSButton')).classList.add('d-none')
 }
 
-function addForm(idForm, num) {
+function addForm(idForm, counter) {
     let input = document.createElement('input')
     let currInp = document.getElementById(idForm)
     let newInp = currInp.parentNode.insertBefore(input, currInp)
@@ -301,6 +303,7 @@ function addForm(idForm, num) {
     newInp.classList.add('form-control')
     newInp.classList.add('mt-2')
     num = num + 1
+    numElement.value = String(num)
     newInp.id = idForm + '_' + num
 }
 

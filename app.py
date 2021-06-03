@@ -37,7 +37,6 @@ login_manager = flask_login.LoginManager()
 login_manager.init_app(app)
 users = {'mattiarip@gmail.com': {'password': 'ciao'},
          'frncp@gmail.com': {'password': 'pollasto'}}
-print(users['frncp@gmail.com'])
 # app.config['SERVER_NAME'] = 'inqueue.it'
 
 
@@ -196,7 +195,6 @@ def bookings_confirmation_page(booking_id):
 
 @app.route("/partner", methods=["POST", "GET"])
 def partners_page():
-    print(flask_login.current_user.id)
     if request.method == "POST":
         img = request.files['img'].read()
         fname = request.form["fname"]
@@ -207,16 +205,26 @@ def partners_page():
         open_time = request.form["open-time"]
         close_time = request.form["close-time"]
         service = request.form["service"]
-        operator = request.form["operator"]
         city = request.form["city"]
         address = request.form["address"]
         lat = request.form["lat"]
         lon = request.form["lon"]
+        num_of_services = int(request.form["num_of_services"])
+        services = [str(request.form["service"])]
+        service_n = 2
+        while service_n <= num_of_services:
+            service = request.form["service_"+str(service_n)]
+            if len(service) > 0:
+                services.append(service)
+            service_n += 1
+
         today = str(date.today()).replace("/", "-", 3)
         now = datetime.now().strftime('%H:%M:%S')
+
+        # TODO: document with all services, create account with credentials
         document = {"img": img, "fname": fname, "lname": lname, "email": email, "cellphone": cellphone,
                     "business_name": business_name, "open_time": open_time, "close_time": close_time,
-                    "service": service, "operator": operator, "creation_date": today, "creation_time": now,
+                    "service": service, "creation_date": today, "creation_time": now,
                     "city": city, "address": address, "lat": lat, "lon": lon}
         b_sign_up_result = businesses_collection.insert_one(document)
         return redirect("/newBusiness_confirmation/"+str(b_sign_up_result.inserted_id))
@@ -265,4 +273,4 @@ if __name__ == "__main__":
         if https_available:
             app.run(host='0.0.0.0', port=8150, debug=True, ssl_context=context)
         else:
-            app.run(host='0.0.0.0', port=8150, debug=False)
+            app.run(host='0.0.0.0', port=8150, debug=True)
