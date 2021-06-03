@@ -120,12 +120,9 @@ Aggiungi la tua attività su InQueue
             <div class="row">
                 <div class="col-sm" id="services-container">
                     <label for="service">Servizio</label>
-                    <input type="text" class="form-control" id="service" name="service">
-                    <div onclick="addForm('service')">ss</div>
-                </div>
-                <div class="col-sm">
-                    <label for="operator">Operatore</label>
-                    <input type="text" class="form-control" id="operator" name="operator">
+                    <input type="text" class="form-control" id="service" name="service" autocomplete="no" required>
+                    <button type="button" class="btn btn-primary mt-3" onclick="addForm('service', 'num_of_services')">Aggiungi</button>
+                    <input hidden class="d-none" name="num_of_services" id="num_of_services" type="text" value="1"></input>
                 </div>
             </div>
             <button class="btn btn-inqueue-purple w-100 mt-3 d-none" id="nextForm3Button" type="button" onclick="showNextForm('form3', this, validateSecondForm)">AVANTI</button>
@@ -152,8 +149,14 @@ Aggiungi la tua attività su InQueue
                     <input required type="tel" class="form-control" autocomplete="cellphone" id="cellphone" name="cellphone" placeholder="Telefono" pattern="^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$" title="Inserisci un numero di telefono valido">
                 </div>
             </div>
-            <input class="btn btn-danger w-100 mt-4" type="submit" onclick="addValidateCSS(); checkValidity()">
+             <button class="btn btn-inqueue-purple w-100 mt-3 d-none" id="nextForm4Button" type="button" onclick="showNextForm('form4', this, validateThirdForm)">AVANTI</button>
         </section>
+         <section id="form4">
+             <h3>Seleziona una password per il tuo account</h3>
+             <label for="password">Password</label>
+             <input type="password" name="password" id="password" autocomplete="new-password" class="form-control" required/>
+             <input class="btn btn-danger w-100 mt-4" type="submit" onclick="addValidateCSS(); checkValidity()">
+         </section>
     </form>
 </div>
 
@@ -187,6 +190,11 @@ Aggiungi la tua attività su InQueue
         closeTime.setCustomValidity("Invalid field.")
         addValidateCSS()
         return false
+
+    }
+
+    function validateThirdForm() {
+        return true
 
     }
 
@@ -267,7 +275,8 @@ function updateData(new_lat, new_lon){
 
 function getAddress(string) {
     data = searchNominatimData(string)
-    console.log(data[0])
+    if (!data) // search returned no results or blank query
+        return
     getCityRoad(data[0])
     document.getElementById('address').value = getCityRoad(data[0])
     document.getElementById('city').value = getCityName(data[0])
@@ -295,16 +304,21 @@ if(!navigator.userAgent.toLowerCase().match(/mobile/i)) {
     (document.getElementById('GPSButton')).classList.add('d-none')
 }
 
+
 function addForm(idForm, counter) {
     let input = document.createElement('input')
-    let currInp = document.getElementById(idForm)
-    let newInp = currInp.parentNode.insertBefore(input, currInp)
-    console.log(currInp.classList)
+    let numElement = document.getElementById(counter)
+    let num = Number(numElement.value)
+    let currInp = document.getElementById(idForm+'_'+num)
+    if (num == 1)
+        currInp = document.getElementById(idForm)
+    let newInp = currInp.parentNode.insertBefore(input, currInp.nextSibling)
     newInp.classList.add('form-control')
     newInp.classList.add('mt-2')
     num = num + 1
     numElement.value = String(num)
     newInp.id = idForm + '_' + num
+    newInp.name = idForm + '_' + num
 }
 
 
