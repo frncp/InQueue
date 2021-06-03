@@ -20,9 +20,6 @@ window.onload = () => {
     }
 }
 
-// TODO: Add cookie for last position
-
-
 function localityModifier() {
     getPosition(getLatLonAndUpdateCityName, redirectToSelect, redirectToSelect)
 }
@@ -92,6 +89,8 @@ function getNominatimData(lat, lon) {
 
 
 function searchNominatimData(query) {
+    if (query.length == 0)
+        return
     let NominatimAPI = "https://nominatim.openstreetmap.org/search?q=" + query.toString() +"&format=jsonv2&accept-language=it&addressdetails=1"
     console.log(NominatimAPI)
     let request = new XMLHttpRequest()

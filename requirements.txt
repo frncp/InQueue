@@ -3,3 +3,4 @@ requests==2.25.1
 pymongo==3.11.4
 dnspython==2.1.0
 reportlab==3.5.67
+Flask-Login=0.5.0
