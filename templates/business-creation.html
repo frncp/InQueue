@@ -118,9 +118,10 @@ Aggiungi la tua attività su InQueue
             </div>
 
             <div class="row">
-                <div class="col-sm">
+                <div class="col-sm" id="services-container">
                     <label for="service">Servizio</label>
                     <input type="text" class="form-control" id="service" name="service">
+                    <div onclick="addForm('service')">ss</div>
                 </div>
                 <div class="col-sm">
                     <label for="operator">Operatore</label>
@@ -291,6 +292,19 @@ function positionClick(e) {
 if(!navigator.userAgent.toLowerCase().match(/mobile/i)) {
     (document.getElementById('GPSButton')).classList.add('d-none')
 }
+
+function addForm(idForm, num) {
+    let input = document.createElement('input')
+    let currInp = document.getElementById(idForm)
+    let newInp = currInp.parentNode.insertBefore(input, currInp)
+    console.log(currInp.classList)
+    newInp.classList.add('form-control')
+    newInp.classList.add('mt-2')
+    num = num + 1
+    newInp.id = idForm + '_' + num
+}
+
+
 
 autocomplete(document.getElementById('city'), countries)
 </script>
