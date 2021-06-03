@@ -19,6 +19,9 @@ from passwords import DB_USER, DB_PASSWORD
 
 # import ssl
 
+import flask_login
+
+
 # DB Connection
 mongo_client_string = "mongodb+srv://" + DB_USER + ":" + DB_PASSWORD + "@cluster0.dfin1.mongodb.net/inQueue?retryWrites=true&w=majority"
 client = pymongo.MongoClient(mongo_client_string)
@@ -28,7 +31,71 @@ bookings_collection = db["bookings"]
 PDFs_collection = db["bookings_PDFs"]
 # Start app
 app = Flask(__name__)
+app.secret_key = 'super secret string'
+# Start login manager
+login_manager = flask_login.LoginManager()
+login_manager.init_app(app)
+users = {'mattiarip@gmail.com': {'password': 'ciao'},
+         'frncp@gmail.com': {'password': 'pollasto'}}
+print(users['frncp@gmail.com'])
 # app.config['SERVER_NAME'] = 'inqueue.it'
+
+
+class User(flask_login.UserMixin):
+    pass
+
+
+@login_manager.user_loader
+def user_loader(email):
+    if email not in users:
+        return
+    user = User()
+    user.id = email
+    return user
+
+
+@login_manager.request_loader
+def request_loader(request):
+    email = request.form.get('email')
+    if email not in users:
+        return
+    user = User()
+    user.id = email
+    user.is_authenticated = (request.form['password'] == users[email]['password'])
+    return user
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'GET':
+        return render_template('login.html')
+
+    email = request.form['email']
+    if request.form['password'] == users[email]['password']:
+        user = User()
+        user.id = email
+        flask_login.login_user(user)
+        return redirect(url_for('protected'))
+
+    return 'Bad login'
+
+
+@app.route('/protected')
+@flask_login.login_required
+def protected():
+    return 'Logged in as: ' + flask_login.current_user.id
+
+
+@app.route('/logout')
+def logout():
+    flask_login.logout_user()
+    return 'Logged out'
+
+
+@login_manager.unauthorized_handler
+def unauthorized_handler():
+    return 'Unauthorized'
+
 
 @app.errorhandler(404)
 def page_not_found(e):
@@ -129,6 +196,7 @@ def bookings_confirmation_page(booking_id):
 
 @app.route("/partner", methods=["POST", "GET"])
 def partners_page():
+    print(flask_login.current_user.id)
     if request.method == "POST":
         img = request.files['img'].read()
         fname = request.form["fname"]
@@ -186,7 +254,7 @@ if __name__ == "__main__":
     except FileNotFoundError:
         print("HTTPs certification files not found")
     # Server starting
-    local_only = True  # False = Accessible also from out of intranet
+    local_only = False  # False = Accessible also from out of intranet
     if local_only:
         if https_available:
             app.run(debug=True, ssl_context=context)
