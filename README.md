@@ -1,4 +1,4 @@
-<img src="logo.png" style="display: block;margin: auto; max-width: 400px" alt="">
+<img src="logo.png" style="display: block;margin: auto; max-width: 400px; max-height: 200px" alt="">
 
 # InQueue
 ![](https://img.shields.io/badge/license-Apache%202-blue)
