@@ -1,4 +1,5 @@
 from flask import Flask, render_template, url_for, request, redirect, send_from_directory, make_response, send_file
+import flask_login
 import requests
 import json
 from http import cookies
@@ -17,10 +18,10 @@ import os
 
 from passwords import DB_USER, DB_PASSWORD
 
+import string
+import random
+
 # import ssl
-
-import flask_login
-
 
 # DB Connection
 mongo_client_string = "mongodb+srv://" + DB_USER + ":" + DB_PASSWORD + "@cluster0.dfin1.mongodb.net/inQueue?retryWrites=true&w=majority"
@@ -29,15 +30,18 @@ db = client["inQueue"]
 businesses_collection = db["businesses"]
 bookings_collection = db["bookings"]
 PDFs_collection = db["bookings_PDFs"]
+accounts_collection = db["accounts"]
 # Start app
 app = Flask(__name__)
 app.secret_key = 'super secret string'
 # Start login manager
 login_manager = flask_login.LoginManager()
 login_manager.init_app(app)
-users = {'mattiarip@gmail.com': {'password': 'ciao'},
-         'frncp@gmail.com': {'password': 'pollasto'}}
 # app.config['SERVER_NAME'] = 'inqueue.it'
+
+
+def id_generator(size=8, chars=string.digits + string.ascii_letters):
+    return ''.join(random.choice(chars) for _ in range(size))
 
 
 class User(flask_login.UserMixin):
@@ -46,7 +50,8 @@ class User(flask_login.UserMixin):
 
 @login_manager.user_loader
 def user_loader(email):
-    if email not in users:
+    query_result = accounts_collection.find_one({"email": email})
+    if query_result is None:
         return
     user = User()
     user.id = email
@@ -56,11 +61,12 @@ def user_loader(email):
 @login_manager.request_loader
 def request_loader(request):
     email = request.form.get('email')
-    if email not in users:
+    query_result = accounts_collection.find_one({"email": email})
+    if query_result is None:
         return
     user = User()
     user.id = email
-    user.is_authenticated = (request.form['password'] == users[email]['password'])
+    user.is_authenticated = (request.form['password'] == query_result['password'])
     return user
 
 
@@ -70,7 +76,7 @@ def login():
         return render_template('login.html')
 
     email = request.form['email']
-    if request.form['password'] == users[email]['password']:
+    if request.form['password'] == (accounts_collection.find_one({"email": email}))['password']:
         user = User()
         user.id = email
         flask_login.login_user(user)
@@ -166,7 +172,7 @@ def send_booking_pdf(booking_id):
         document = {"_id": booking_id, "pdf": file.read()}
         PDFs_collection.insert_one(document)
         query_result = PDFs_collection.find_one({"_id": booking_id})
-        # temp file deletion
+        # Temp file deletion
         file.close()
         os.remove(file_name)
     return send_file(BytesIO(query_result["pdf"]), mimetype="application/pdf")
@@ -181,8 +187,6 @@ def bookings_confirmation_page(booking_id):
     if query_result is not None:
         service = query_result["service"]
         business_name = query_result["business_name"]
-        business_creation_date = query_result["business_creation_date"]
-        business_creation_time = query_result["business_creation_time"]
         operator = query_result["operator"]
         day = query_result["day"]
         time = query_result["time"]
@@ -197,19 +201,30 @@ def bookings_confirmation_page(booking_id):
 @app.route("/partner", methods=["POST", "GET"])
 def partners_page():
     if request.method == "POST":
-        img = request.files['img'].read()
+        # Account
         fname = request.form["fname"]
         lname = request.form["lname"]
         email = request.form["email"]
+        password = request.form["password"]
         cellphone = request.form["cellphone"]
+        # Business
+        img = request.files['img'].read()
         business_name = request.form["bname"]
         open_time = request.form["open-time"]
         close_time = request.form["close-time"]
-        service = request.form["service"]
+        # Business position
         city = request.form["city"]
         address = request.form["address"]
         lat = request.form["lat"]
         lon = request.form["lon"]
+        # Check if account is already existing
+        account_found = accounts_collection.find_one({"email": email})
+        if account_found is not None:
+            return redirect("/email_already_signed_up")  # TODO
+        # Decorate business_name with random string to force uniqueness
+        business_name = business_name + "$" + id_generator()
+        business_name.replace(" ", "_")
+        # Business services
         num_of_services = int(request.form["num_of_services"])
         services = [str(request.form["service"])]
         service_n = 2
@@ -219,34 +234,34 @@ def partners_page():
                 services.append(service)
             service_n += 1
 
-        today = str(date.today()).replace("/", "-", 3)
-        now = datetime.now().strftime('%H:%M:%S')
-
-        # TODO: create account with credentials
-        document = {"img": img, "fname": fname, "lname": lname, "email": email, "cellphone": cellphone,
-                    "business_name": business_name, "open_time": open_time, "close_time": close_time,
-                    "service": [service[0]], "creation_date": today, "creation_time": now,
-                    "city": city, "address": address, "lat": lat, "lon": lon}
+        # Time of creation to insert in DB, maybe not needed anymore
+        # today = str(date.today()).replace("/", "-", 3)
+        # now = datetime.now().strftime('%H:%M:%S')
+        account_document = {"business_name": business_name, "fname": fname, "lname": lname, "email": email,
+                            "cellphone": cellphone, "password": password}
+        accounts_collection.insert_one(account_document)
+        document = {"img": img, "business_name": business_name, "open_time": open_time, "close_time": close_time,
+                    "service": [services[0]], "city": city, "address": address, "lat": lat, "lon": lon}
         b_sign_up_result = businesses_collection.insert_one(document)
         for serv_n in range(1, len(services)):
             serv = services[serv_n]
             businesses_collection.update_one({'_id': b_sign_up_result.inserted_id}, {'$push': {'service': serv}},
                                              upsert=False)
-        return redirect("/newBusiness_confirmation/"+str(b_sign_up_result.inserted_id))
+        return redirect("/newBusiness_confirmation/"+business_name)
     else:
         return render_template("business-creation.html")
 
 
-@app.route('/newBusiness_confirmation/<b_sign_up_result>', methods=["GET"])
-def partner_confirmation_page(b_sign_up_result):
-    business_document = businesses_collection.find_one({"_id": ObjectId(b_sign_up_result)})
+# TODO
+@app.route('/newBusiness_confirmation/<business_name>', methods=["GET"])
+def partner_confirmation_page(business_name):
+    business_document = businesses_collection.find_one({"business_name": business_name})
     return render_template("signed-up.html")
 
 
-@app.route('/photos/<business_name>_<creation_date>_<creation_time>.jpg', methods=["GET"])
-def send_business_image(business_name, creation_date, creation_time):
-    document = businesses_collection.find_one({"business_name": business_name, "creation_date": creation_date,
-                                               "creation_time": creation_time})
+@app.route('/photos/<business_name>.jpg', methods=["GET"])
+def send_business_image(business_name):
+    document = businesses_collection.find_one({"business_name": business_name})
     photo = BytesIO(document["img"])
     return send_file(photo, mimetype="image/gif")
 
