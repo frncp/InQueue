@@ -21,7 +21,7 @@ EFFETTO CARD HOVER
 
 <div class="city_container">
     <h1>Prenota attività a <span id="selectedCity" class="inqueue-orange" onclick="localityModifier()">{{ city }} <img
-            class="dropdown_icon" src="../static/images/dropdown.png" width="20px"> </span></h1>
+            class="dropdown_icon" src="{{ url_for('static', filename='images/dropdown.png') }}" width="20px"> </span></h1>
 </div>
 
 <style>
