@@ -221,12 +221,16 @@ def partners_page():
         today = str(date.today()).replace("/", "-", 3)
         now = datetime.now().strftime('%H:%M:%S')
 
-        # TODO: document with all services, create account with credentials
+        # TODO: create account with credentials
         document = {"img": img, "fname": fname, "lname": lname, "email": email, "cellphone": cellphone,
                     "business_name": business_name, "open_time": open_time, "close_time": close_time,
-                    "service": service, "creation_date": today, "creation_time": now,
+                    "service": [service[0]], "creation_date": today, "creation_time": now,
                     "city": city, "address": address, "lat": lat, "lon": lon}
         b_sign_up_result = businesses_collection.insert_one(document)
+        for serv_n in range(1, len(services)):
+            serv = services[serv_n]
+            businesses_collection.update_one({'_id': b_sign_up_result.inserted_id}, {'$push': {'service': serv}},
+                                             upsert=False)
         return redirect("/newBusiness_confirmation/"+str(b_sign_up_result.inserted_id))
     else:
         return render_template("business-creation.html")
