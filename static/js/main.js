@@ -45,7 +45,7 @@ function updateCityNameByLatLon() {
 }
 
 function GPSInput(){
-    getPosition(getLatLonAndAddToInput, function () {return true})
+    getPosition(getLatLonAndAddToInput)
 }
 
 function getLatLonAndAddToInput(position) {
@@ -61,6 +61,7 @@ function getPosition(doOnSuccess, doOnFailure, doifNotSupported) {
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(doOnSuccess, doOnFailure)
     } else {
+        if (doOnFailure)
         doifNotSupported()
     }
 }
