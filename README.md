@@ -1,3 +1,5 @@
+<img src="logo.svg" style="margin: auto; max-width: 400px" alt="">
+
 # InQueue
 ![](https://img.shields.io/badge/license-Apache%202-blue)
 
