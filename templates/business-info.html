@@ -1,7 +1,9 @@
 {% extends 'base.html' %}
 
+{% set formatted_name = business_name[:-9] %}
+
 {% block title %}
-Prenota da {{ business_name }} - Prenota con InQueue
+    Prenota da {{ formatted_name }} - Prenota con InQueue
 {% endblock %}
 
 {% block main %}
@@ -13,7 +15,7 @@ Prenota da {{ business_name }} - Prenota con InQueue
       </div>
 
       <div class="col-md-6 px-3">
-        <h1 class="">{{ business_name }}</h1>
+        <h1 class="">{{ formatted_name }}</h1>
         ⭐⭐⭐⭐⭐ <span class="text-secondary">37</span>
         <div id="businessPositionMap"></div>
 
@@ -94,16 +96,9 @@ Prenota da {{ business_name }} - Prenota con InQueue
           <div class="col-sm">
           <label for="service">Servizio</label>
             <select class="form-select form-select-md mb-3" id="service" name="service">
-              <option value="s1">Taglio</option>
-              <option value="s2">Barba</option>
-              <option value="s2">Taglio+Barba</option>
-            </select>
-          </div>
-          <div class="col-sm">
-          <label for="operator">Operatore</label>
-            <select  class="form-select form-select-md mb-3" id="operator" name="operator">
-              <option value="op1">Giggino</option>
-              <option value="op2">Rafael</option>
+              {% for service in query_result["service"] %}
+              <option value="{{ service }}">{{ service }}</option>
+              {% endfor %}
             </select>
           </div>
         </div>

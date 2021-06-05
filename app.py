@@ -132,11 +132,11 @@ def homepage():
         return redirect("/"+str(city_from_cookie))
 
 @app.route('/<city>')
-def cityhome(city):
+def city_home(city):
     return render_template('index.html', city=city)
 
-@app.route('/business/<business_name>_<creation_date>_<creation_time>', methods=["POST", "GET"])
-def business_page(business_name, creation_date, creation_time):
+@app.route('/business/<business_name>', methods=["POST", "GET"])
+def business_page(business_name):
     if request.method == "POST":
         name = request.form["fname"]
         surname = request.form["lname"]
@@ -145,15 +145,16 @@ def business_page(business_name, creation_date, creation_time):
         day = request.form["date"]
         time = request.form["slot2"]
         service = request.form["service"]
-        operator = request.form["operator"]
-        document = {"business_name": business_name, "business_creation_date": creation_date,
-                    "business_creation_time": creation_time, "name": name, "surname": surname, "email": email,
-                    "cellphone": cellphone, "day": day, "time": time, "service": service, "operator": operator}
+        today = str(date.today()).replace("/", "-", 3)
+        now = datetime.now().strftime('%H:%M:%S')
+        document = {"business_name": business_name, "name": name, "surname": surname, "email": email,
+                    "cellphone": cellphone, "day": day, "time": time, "service": service, "booking_date": today,
+                    "booking_time": now}
         booking_result = bookings_collection.insert_one(document)
         return redirect("/booking_confirmation/"+str(booking_result.inserted_id))
     else:
-        return render_template("business-info.html", business_name=business_name, creation_date=creation_date,
-                               creation_time=creation_time)
+        query_result = businesses_collection.find_one({"business_name": business_name})
+        return render_template("business-info.html", query_result=query_result, business_name=business_name)
 
 
 
@@ -189,11 +190,10 @@ def bookings_confirmation_page(booking_id):
     if query_result is not None:
         service = query_result["service"]
         business_name = query_result["business_name"]
-        operator = query_result["operator"]
         day = query_result["day"]
         time = query_result["time"]
         # Use parameters found from query
-        return render_template("booked.html", service=service, business_name=business_name, operator=operator,
+        return render_template("booked.html", service=service, business_name=business_name,
                                day=day, time=time)
     else:
         return redirect('/404/')
@@ -225,7 +225,9 @@ def partners_page():
             return redirect("/email_already_signed_up")  # TODO
         # Decorate business_name with random string to force uniqueness
         business_name = business_name + "$" + id_generator()
-        business_name.replace(" ", "_")
+        print(business_name)
+        business_name.replace(" ", "_") # Doesn't work
+        print(business_name)
         # Business services
         num_of_services = int(request.form["num_of_services"])
         services = [str(request.form["service"])]
@@ -236,14 +238,15 @@ def partners_page():
                 services.append(service)
             service_n += 1
 
-        # Time of creation to insert in DB, maybe not needed anymore
-        # today = str(date.today()).replace("/", "-", 3)
-        # now = datetime.now().strftime('%H:%M:%S')
+        # Time of creation to insert in DB
+        today = str(date.today()).replace("/", "-", 3)
+        now = datetime.now().strftime('%H:%M:%S')
         account_document = {"business_name": business_name, "fname": fname, "lname": lname, "email": email,
                             "cellphone": cellphone, "password": password}
         accounts_collection.insert_one(account_document)
         document = {"img": img, "business_name": business_name, "open_time": open_time, "close_time": close_time,
-                    "service": [services[0]], "city": city, "address": address, "lat": lat, "lon": lon}
+                    "service": [services[0]], "city": city, "address": address, "lat": lat, "lon": lon,
+                    "creation_date": today, "creation_time": now}
         b_sign_up_result = businesses_collection.insert_one(document)
         for serv_n in range(1, len(services)):
             serv = services[serv_n]
