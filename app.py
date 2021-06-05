@@ -69,7 +69,9 @@ def request_loader(request):
         return
     user = User()
     user.id = email
+    print(user.is_authenticated) # Check values when it appears, mattia's
     user.is_authenticated = (request.form['password'] == query_result['password'])
+    print(user.is_authenticated)
     return user
 
 
