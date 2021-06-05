@@ -170,3 +170,11 @@ function addValidateCSS(id) {
 function removeValidateCSS() {
     document.getElementById('form').classList.remove('was-validated')
 }
+
+
+/* thanks https://jeffreymorgan.io/articles/how-to-center-a-leaflet-map-on-a-marker/ */
+function centerLeafletMapOnMarker(map, marker) {
+    let latLngs = [ marker.getLatLng() ];
+    let markerBounds = L.latLngBounds(latLngs);
+    map.fitBounds(markerBounds);
+  }

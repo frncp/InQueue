@@ -257,15 +257,6 @@ function getLatLonAndAddToBusiness(position) {
 }
 
 
-
-
-/* thanks https://jeffreymorgan.io/articles/how-to-center-a-leaflet-map-on-a-marker/ */
-function centerLeafletMapOnMarker(map, marker) {
-  let latLngs = [ marker.getLatLng() ];
-  let markerBounds = L.latLngBounds(latLngs);
-  map.fitBounds(markerBounds);
-}
-
 function disableByType(element) {
     if (element.value == 'field')
         disable(document.getElementById('operator'))

@@ -8,40 +8,50 @@
 
 {% block main %}
 
-  <div class="d-md-flex justify-content-center align-items-start mt-5">
+<style>
+  #businessPositionMap {
+    height: 150px;
+    width: 500px
+  }
+</style>
 
-    <div class="flex-row rounded" style="height: 300px; width: 300px">
+  <div class="d-flex justify-content-around align-items-center mt-5 flex-wrap">
+
+    <div class="flex-column rounded" style="max-height: 500px;">
           <img src="/photos/{{ business_name }}.jpg" style="width:100%">
       </div>
 
-      <div class="col-md-6 px-3">
+      <div class="flex-md-column px-5">
         <h1 class="">{{ formatted_name }}</h1>
         ⭐⭐⭐⭐⭐ <span class="text-secondary">37</span>
-        <div id="businessPositionMap"></div>
-
+          <div id="businessPositionMap"></div>
+    
         <script type="text/javascript">
           /* LEAFLET */
-          let businessPositionMap = L.map('businessPositionMap').setView([40.85652, 14.28377], 13);
+          let businessPositionMap = L.map('businessPositionMap').setView([0, 0], 1);
           businessPositionMap.zoomControl.remove()
           L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a>',
           }).addTo(businessPositionMap);
-
+    
           let marker = L.icon({
             iconUrl: '../static/images/leafletimages/marker-icon.png',
             shadowUrl: '../static/images/leafletimages/marker-shadow.png',
-
+    
             iconSize: [25, 41],
             iconAnchor: [12, 41],
             popupAnchor: [1, -34],
             shadowSize: [41, 41]
           });
-
-          L.marker([40.85652, 14.28377], {icon: marker}).addTo(businessPositionMap);
+    
+          let mark = L.marker([{{ query_result.lat }}, {{query_result.lon}}], {icon: marker}).addTo(businessPositionMap);
+          centerLeafletMapOnMarker(businessPositionMap, mark)
         </script>
 
-
+        <p class="muted">{{ query_result.address }}, {{query_result.city }}</p>
     </div>
+
+    
 
   </div>
 
