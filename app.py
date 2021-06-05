@@ -23,9 +23,11 @@ import random
 
 # import ssl
 
+import certifi
+
 # DB Connection
 mongo_client_string = "mongodb+srv://" + DB_USER + ":" + DB_PASSWORD + "@cluster0.dfin1.mongodb.net/inQueue?retryWrites=true&w=majority"
-client = pymongo.MongoClient(mongo_client_string)
+client = pymongo.MongoClient(mongo_client_string, tlsCAFile=certifi.where())
 db = client["inQueue"]
 businesses_collection = db["businesses"]
 bookings_collection = db["bookings"]
