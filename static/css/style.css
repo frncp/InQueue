@@ -1,11 +1,23 @@
 /* MAIN */
 
+/* CIRCLES */
 .homepage-circle-container {
-    width: 100px;
-    height: 100px;
+    width: 115px;
+    height: 115px;
     display: inline-block;
+    border-radius: 50%;
+    margin: 13px;
+    font-size: 14px;
+    font-weight: 300;
+    text-align: center;
+    cursor: pointer;
+    background-color: #ffb071ff;
     position: relative;
     transition: transform .2s;
+}
+
+.homepage-circle-container p {
+    color: white;
 }
 
 .homepage-circle-container:hover {
@@ -16,23 +28,88 @@
     background-color: #ff8670ff;
 }
 
-
-.category-btn {
-    width: 115px;
-    height: 115px;
-    border-radius: 50%;
-    margin: 13px;
-    font-size: 14px;
-    font-weight: 300;
-    text-align: center;
-    cursor: pointer;
-    background-color: #ffb071ff;
-}
-
 .circle-img {
     width: 60%;
     height: auto;
 }
+
+@media (max-width:768px) {
+    .homepage-circle-container {
+        width: 80px;
+        height: 80px;
+        font-size: 11px;
+        text-align: center;
+    }
+
+    .circle-img {
+        width: 40%;
+        height: auto;
+    }
+
+    .homepage-circle-container p {
+        text-align: center;
+    }
+}
+
+/* END CIRCLES */
+
+/* CARDS */
+
+.card-title {
+    color: white;
+    border-radius: 10px;
+    text-shadow: 1px 0 0 #000, -1px 0 0 #000, 0 1px 0 #000, 0 -1px 0 #000, 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;
+}
+
+.card-subtitle {
+    color: white;
+    border-radius: 10px;
+    text-shadow: 1px 0 0 #000, -1px 0 0 #000, 0 1px 0 #000, 0 -1px 0 #000, 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;
+}
+
+.info-row-3 {
+    font-size: 12px;
+    color: white;
+    border-radius: 10px;
+    text-shadow: 1px 0 0 #000, -1px 0 0 #000, 0 1px 0 #000, 0 -1px 0 #000, 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;
+}
+
+
+@media (max-width:768px) {
+
+.card-title {
+    font-size: 12px;
+}
+
+.card-subtitle {
+    font-size: 8px;
+}
+
+.info-row-3 {
+    font-size: 6px;
+}
+
+}
+
+.card {
+    transition: transform .2s;
+}
+
+.card:hover {
+    transform: scale(1.1);
+}
+
+.button-container {
+    text-align: center;
+    padding-top: 20px;
+}
+
+.button-container .btn {
+    text-align: center;
+    display: inline-block;
+}
+
+/* END CARDS */
 
 @media (min-width: 576px) and (max-width:768px) {
     .sm {color:red;font-weight:bold;}
@@ -45,21 +122,6 @@ h2 {
 .city_container {
     text-align: center;
     padding-top: 20px;
-}
-
-#see_other_button {;
-    padding-top: 20px;
-}
-
-@media screen and (max-width: 750px) {
-    .homepage-circle-container {
-        width: 70px;
-        height: 70px;
-    }
-
-    .circle-img {
-        left: 25%;
-    }
 }
 
 #selectedCity {

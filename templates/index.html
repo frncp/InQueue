@@ -28,31 +28,31 @@ EFFETTO CARD HOVER
 </style>
 
 <div class="row d-flex justify-content-center">
-    <div class="homepage-circle-container homepage-circle-container d-flex flex-column justify-content-center align-items-center category-btn">
+    <div class="homepage-circle-container homepage-circle-container d-flex flex-column justify-content-center align-items-center">
         <img class="circle-img" src="../static/images/column.png" alt="visite" width="65px">
         <p>Visite guidate</p>
     </div>
-    <div class="homepage-circle-container d-flex flex-column justify-content-center align-items-center category-btn">
+    <div class="homepage-circle-container d-flex flex-column justify-content-center align-items-center">
         <img class="circle-img" src="../static/images/soccer-field.png" alt="campi" width="65px">
         <p>Campi sportivi</p>
     </div>
-    <div class="homepage-circle-container d-flex flex-column justify-content-center align-items-center category-btn">
+    <div class="homepage-circle-container d-flex flex-column justify-content-center align-items-center">
         <img class="circle-img" src="../static/images/muscle.png" alt="palestre" width="65px">
         <p>Palestre</p>
     </div>
-    <div class="homepage-circle-container d-flex flex-column justify-content-center align-items-center category-btn">
+    <div class="homepage-circle-container d-flex flex-column justify-content-center align-items-center">
         <img class="circle-img" src="../static/images/nail-polish.png" alt="centri_estetici" width="65px">
         <p>Centri estetici</p>
     </div>
-    <div class="homepage-circle-container d-flex flex-column justify-content-center align-items-center category-btn">
+    <div class="homepage-circle-container d-flex flex-column justify-content-center align-items-center">
         <img class="circle-img" src="../static/images/mechanic.png" alt="meccanici" width="65px">
         <p>Meccanici</p>
     </div>
-    <div class="homepage-circle-container d-flex flex-column justify-content-center align-items-center category-btn">
+    <div class="homepage-circle-container d-flex flex-column justify-content-center align-items-center">
         <img class="circle-img" src="../static/images/barber.png" alt="parrucchieri" width="65px">
         <p>Parrucchieri e barbieri</p>
     </div>
-    <div class="homepage-circle-container d-flex flex-column justify-content-center align-items-center category-btn">
+    <div class="homepage-circle-container d-flex flex-column justify-content-center align-items-center">
         <img class="circle-img" src="../static/images/lawyer.png" alt="liberi_professionisti" width="65px">
         <p>Liberi professionisti</p>
     </div>
@@ -63,22 +63,24 @@ EFFETTO CARD HOVER
 <h2 class="mt-5 mb-4">Attività vicino a te</h2>
 
 <section class="container_deck">
-    <div class="row row-cols-2 row-cols-sm-2">
-        {% for i in range(8) %}
-        <div class="col mb-2">
+    <div class="row row-cols-2 row-cols-sm-3">
+        {% for i in range(6) %}
+        <div class="col mb-4">
             <div class="card">
                 <img src="../static/images/barbers_images/b1.jpg" class="card-img-top" alt="...">
-                <div class="card-body">
-                    <h5 class="card-title">Barberia del corso</h5>
-                    <p class="text-muted">Corso Vittorio Emanuele, 40</p>
-                    <div class="container">
-                        <div class="row align-items-start">
-                            <div style="color: #1a1e21;" class="col text-start">
-                                ⭐⭐⭐⭐⭐<span class="text-secondary">(37)</span>
-                            </div>
-                            <div class="col text-end">
-                                200m
-                            </div>
+                <div class="card-body card-img-overlay d-flex flex-column">
+                    <div class="row">
+                        <h5 class="card-title">Barberia del corso</h5>
+                    </div>
+                    <div class="row">
+                        <p class="card-subtitle">Corso Vittorio Emanuele, 40</p>
+                    </div>
+                    <div class="row info-row-3 mt-auto">
+                        <div class="col-6 text-start">
+                            4.7 ⭐ (999+)
+                        </div>
+                        <div class="col-6 text-end">
+                            200m
                         </div>
                     </div>
                 </div>
@@ -92,22 +94,24 @@ EFFETTO CARD HOVER
 <h2 class="mt-5 mb-4">Attività amate dagli utenti</h2>
 
 <section class="container_deck">
-    <div class="row row-cols-2 row-cols-sm-2">
-        {% for i in range(8) %}
-        <div class="col mb-2">
+    <div class="row row-cols-2 row-cols-sm-3">
+        {% for i in range(6) %}
+        <div class="col mb-4">
             <div class="card">
                 <img src="../static/images/barbers_images/b1.jpg" class="card-img-top" alt="...">
-                <div class="card-body">
-                    <h5 class="card-title">Barberia del corso</h5>
-                    <p class="text-muted">Corso Vittorio Emanuele, 40</p>
-                    <div class="container">
-                        <div class="row align-items-start">
-                            <div style="color: #1a1e21;" class="col text-start">
-                                ⭐⭐⭐⭐⭐<span class="text-secondary">(37)</span>
-                            </div>
-                            <div class="col text-end">
-                                200m
-                            </div>
+                <div class="card-body card-img-overlay d-flex flex-column">
+                    <div class="row row-cols-sm-auto">
+                        <h5 class="card-title">Barberia del corso</h5>
+                    </div>
+                    <div class="row row-cols-sm-auto">
+                        <p class="card-subtitle">Corso Vittorio Emanuele, 40</p>
+                    </div>
+                    <div class="row info-row-3 mt-auto">
+                        <div class="col-6 text-start">
+                            4.7 ⭐ (999+)
+                        </div>
+                        <div class="col-6 text-end">
+                            200m
                         </div>
                     </div>
                 </div>
@@ -115,9 +119,12 @@ EFFETTO CARD HOVER
         </div>
         {% endfor %}
     </div>
-
-    <a href="list.html" class="text-decoration-none text-center">
-        <button class="btn btn-inqueue-purple w-75 mt-3" id="see_other_button" type="button">Vedi Altro</button>
-    </a>
 </section>
+
+<div class="button-container">
+    <a href="list.html">
+        <button class="btn btn-inqueue-purple w-75" type="button">Vedi Altro</button>
+    </a>
+</div>
+
 {% endblock %}
