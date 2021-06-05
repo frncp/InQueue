@@ -265,7 +265,8 @@ def partners_page():
 @app.route('/newBusiness_confirmation/<business_name>', methods=["GET"])
 def partner_confirmation_page(business_name):
     business_document = businesses_collection.find_one({"business_name": business_name})
-    return render_template("signed-up.html")
+    account_document = accounts_collection.find_one({"business_name": business_name})
+    return render_template("signed-up.html", business_document=business_document, account_document=account_document)
 
 
 @app.route('/photos/<business_name>.jpg', methods=["GET"])
