@@ -17,7 +17,7 @@
 }
 
 .homepage-circle-container p {
-    color: white;
+    font-weight: bold;
 }
 
 .homepage-circle-container:hover {
