@@ -121,8 +121,13 @@ def homepage_new():
         return render_template("home.html", city_from_cookie=city_from_cookie)
     else:
         city = request.form["city"]
+        lat = request.form["lat"]
+        print("latitudine settata", lat)
+        lon = request.form["lon"]
         resp = make_response(redirect('/'+city))
         resp.set_cookie("city", value=city, max_age=60 * 60 * 24)
+        resp.set_cookie("lat", value=lat, max_age=60 * 60)
+        resp.set_cookie("lon", value=lon, max_age=60 * 60)
         return resp
 
 
@@ -137,8 +142,15 @@ def homepage():
 
 @app.route('/<city>')
 def city_home(city):
+    lat_from_cookie = request.cookies.get("lat")
+    lon_from_cookie = request.cookies.get("lon")
+    print(lat_from_cookie)
+    print(lon_from_cookie)
     businesses_in_city = businesses_collection.find({"city": city})
-    return render_template('index.html', businesses_in_city=businesses_in_city, city=city)
+    resp = make_response(render_template('index.html', businesses_in_city=businesses_in_city, city=city))
+    resp.set_cookie("lat", value=lat_from_cookie, max_age=0)
+    resp.set_cookie("lon", value=lon_from_cookie, max_age=0)
+    return resp
 
 
 @app.route('/business/<business_name>', methods=["POST", "GET"])
@@ -294,7 +306,7 @@ if __name__ == "__main__":
     except FileNotFoundError:
         print("HTTPs certification files not found")
     # Server starting
-    local_only = False  # False = Accessible also from out of intranet
+    local_only = True  # False = Accessible also from out of intranet
     if local_only:
         if https_available:
             app.run(debug=True, ssl_context=context)
