@@ -306,19 +306,19 @@ if __name__ == "__main__":
         # context = ssl.SSLContext()
         # context.load_cert_chain(curr_path + '/cert.pem', curr_path + '/privkey.pem')
         context = (curr_path + '/cert.pem', curr_path + '/privkey.pem')
-        https_available = False # True = create https page
+        https_available = True # True = create https page
     except FileNotFoundError:
         print("HTTPs certification files not found")
     # Server starting
     local_only = False  # False = Accessible also from out of intranet
     if local_only:
         if https_available:
-            app.run(debug=True, ssl_context=context)
+            app.run(debug=True, port=443, ssl_context=context)
         else:
-            app.run(debug=True)
+            app.run(debug=True, port=80)
     else:
         # Port forwarding needed on router
         if https_available:
-            app.run(host='0.0.0.0', port=8150, debug=True, ssl_context=context)
+            app.run(host='0.0.0.0', port=443, debug=True, ssl_context=context)
         else:
-            app.run(host='0.0.0.0', port=8150, debug=True)
+            app.run(host='0.0.0.0', port=80, debug=True)
