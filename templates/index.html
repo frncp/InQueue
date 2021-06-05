@@ -13,10 +13,6 @@ a
 
 {% block main %}
 
-<!-- DA FARE
-aggiungere <a href> alle card (?)
--->
-
 <div class="city_container">
     <h1>Prenota attività a <span id="selectedCity" class="inqueue-orange" onclick="localityModifier()">{{ city }} <img
             class="dropdown_icon" src="{{ url_for('static', filename='images/dropdown.png') }}" width="20px"> </span></h1>
@@ -62,16 +58,17 @@ aggiungere <a href> alle card (?)
 
 <section class="container_deck">
     <div class="row row-cols-2 row-cols-sm-3">
-        {% for i in range(6) %}
+        {% for element in businesses_in_city %}
         <div class="col mb-4">
             <div class="card">
-                <img src="../static/images/barbers_images/b1.jpg" class="card-img-top" alt="...">
+                <img src="/photos/{{element["business_name"]}}.jpg" class="card-img-top" alt="...">
+                <a href="/business/{{ element["business_name"] }}">
                 <div class="card-body card-img-overlay d-flex flex-column">
                     <div class="row">
-                        <h5 class="card-title">Barberia del corso</h5>
+                        <h5 class="card-title">{{ (element["business_name"])[:-9] }}</h5>
                     </div>
                     <div class="row">
-                        <p class="card-subtitle">Corso Vittorio Emanuele, 40</p>
+                        <p class="card-subtitle">{{ element["address"] }}</p>
                     </div>
                     <div class="row info-row-3 mt-auto">
                         <div class="col-6 text-start">
@@ -82,6 +79,7 @@ aggiungere <a href> alle card (?)
                         </div>
                     </div>
                 </div>
+                </a>
             </div>
         </div>
         {% endfor %}

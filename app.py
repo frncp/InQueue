@@ -33,6 +33,7 @@ businesses_collection = db["businesses"]
 bookings_collection = db["bookings"]
 PDFs_collection = db["bookings_PDFs"]
 accounts_collection = db["accounts"]
+businesses_photo_collection = db["businesses_photo"]
 # Start app
 app = Flask(__name__)
 app.secret_key = 'super secret string'
@@ -131,9 +132,12 @@ def homepage():
     else:
         return redirect("/"+str(city_from_cookie))
 
+
 @app.route('/<city>')
 def city_home(city):
-    return render_template('index.html', city=city)
+    businesses_in_city = businesses_collection.find({"city": city})
+    return render_template('index.html', businesses_in_city=businesses_in_city, city=city)
+
 
 @app.route('/business/<business_name>', methods=["POST", "GET"])
 def business_page(business_name):
@@ -165,8 +169,9 @@ def send_booking_pdf(booking_id):
     if query_result is None:
         file_name = curr_path + "\\temp\\" + booking_id + ".pdf"
         # PDF creation
-        logo = "logo.png"
+        logo = open("logo.png", "rb")
         canvas = Canvas(file_name, pagesize=(612.0, 792.0))
+        canvas.drawString(100, 700, "Let's write something into this")
         service = pdf_data["service"]
         business_name = pdf_data["business_name"]        
         canvas.save()
@@ -193,8 +198,7 @@ def bookings_confirmation_page(booking_id):
         day = query_result["day"]
         time = query_result["time"]
         # Use parameters found from query
-        return render_template("booked.html", service=service, business_name=business_name,
-                               day=day, time=time)
+        return render_template("booked.html", service=service, business_name=business_name, day=day, time=time)
     else:
         return redirect('/404/')
     # TODO: Add parameters to function
@@ -225,9 +229,7 @@ def partners_page():
             return redirect("/email_already_signed_up")  # TODO
         # Decorate business_name with random string to force uniqueness
         business_name = business_name + "$" + id_generator()
-        print(business_name)
-        business_name.replace(" ", "_") # Doesn't work
-        print(business_name)
+        business_name.replace(" ", "_") # Set business name to this, if needed in future
         # Business services
         num_of_services = int(request.form["num_of_services"])
         services = [str(request.form["service"])]
@@ -244,10 +246,12 @@ def partners_page():
         account_document = {"business_name": business_name, "fname": fname, "lname": lname, "email": email,
                             "cellphone": cellphone, "password": password}
         accounts_collection.insert_one(account_document)
-        document = {"img": img, "business_name": business_name, "open_time": open_time, "close_time": close_time,
+        document = {"business_name": business_name, "open_time": open_time, "close_time": close_time,
                     "service": [services[0]], "city": city, "address": address, "lat": lat, "lon": lon,
                     "creation_date": today, "creation_time": now}
         b_sign_up_result = businesses_collection.insert_one(document)
+        photo_document = {"_id": b_sign_up_result.inserted_id, "business_name": business_name, "img": img}
+        businesses_photo_collection.insert_one(photo_document)
         for serv_n in range(1, len(services)):
             serv = services[serv_n]
             businesses_collection.update_one({'_id': b_sign_up_result.inserted_id}, {'$push': {'service': serv}},
@@ -266,7 +270,7 @@ def partner_confirmation_page(business_name):
 
 @app.route('/photos/<business_name>.jpg', methods=["GET"])
 def send_business_image(business_name):
-    document = businesses_collection.find_one({"business_name": business_name})
+    document = businesses_photo_collection.find_one({"business_name": business_name})
     photo = BytesIO(document["img"])
     return send_file(photo, mimetype="image/gif")
 
