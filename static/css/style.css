@@ -7,17 +7,18 @@
     display: inline-block;
     border-radius: 50%;
     margin: 13px;
-    font-size: 14px;
+    font-size: 12px;
     font-weight: 300;
     text-align: center;
     cursor: pointer;
     background-color: #ffb071ff;
     position: relative;
-    transition: transform .2s;
 }
 
 .homepage-circle-container p {
+    color: #ff8670ff;
     font-weight: bold;
+    text-shadow: 1px 0 0 #000, -1px 0 0 #000, 0 1px 0 #000, 0 -1px 0 #000, 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;
 }
 
 .homepage-circle-container:hover {
@@ -26,6 +27,10 @@
 
 .homepage-circle-container:nth-child(even) {
     background-color: #ff8670ff;
+}
+
+.homepage-circle-container:nth-child(even) p {
+    color: #ffb071ff;
 }
 
 .circle-img {
