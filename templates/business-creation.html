@@ -82,7 +82,7 @@ Aggiungi la tua attività su InQueue
             <div id="businessPositionMap"></div>
             <script type="text/javascript">
                 /* LEAFLET */
-                let businessPositionMap = L.map('businessPositionMap').setView([47.5, 14], 5);
+                let businessPositionMap = L.map('businessPositionMap').setView([42.088, 12.564], 6);
                 businessPositionMap.zoomControl.remove()
                 L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
                   attribution: 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a>',
@@ -154,7 +154,16 @@ Aggiungi la tua attività su InQueue
          <section id="form4">
              <h3>Seleziona una password per il tuo account</h3>
              <label for="password">Password</label>
-             <input type="password" name="password" id="password" autocomplete="new-password" class="form-control" required/>
+             <div class="input-group mb-3">
+                <input type="password" name="password" id="password" autocomplete="new-password" class="form-control" onchange="validatePassword()" required/>
+                <div class="input-group-append">
+                    <div class="input-group-text">
+                  <input type="checkbox" aria-label="Mostra password" id="show-password" onclick="showPassword()"><label class="mr-2" for="show-password">Mostra password</label>
+                  </div>
+                </div>
+              </div>             
+             <label for="password-confirm">Conferma password</label>
+             <input type="password" name="password-confirm" id="password-confirm" class="form-control" onkeyup="validatePassword()" required/>
              <input class="btn btn-danger w-100 mt-4" type="submit" onclick="addValidateCSS(); checkValidity()">
          </section>
     </form>
@@ -188,7 +197,7 @@ Aggiungi la tua attività su InQueue
 
         openTime.setCustomValidity("Invalid field.")
         closeTime.setCustomValidity("Invalid field.")
-        addValidateCSS()
+        addValidateCSS('form2')
         return false
 
     }
@@ -196,6 +205,28 @@ Aggiungi la tua attività su InQueue
     function validateThirdForm() {
         return true
 
+    }
+
+    function validatePassword() {
+        let password = document.getElementById('password')
+        let passwordConfirm = document.getElementById('password-confirm')
+
+        addValidateCSS('form4')
+
+        if(password.value != passwordConfirm.value) {
+             passwordConfirm.setCustomValidity("Passwords not matching")
+         } else {
+            passwordConfirm.setCustomValidity('')
+         }
+    }
+
+    function showPassword(){
+        let passwordField = document.getElementById('password')
+
+        if (passwordField.type === "password")
+            passwordField.type = "text"
+        else
+            passwordField.type = "password"
     }
 
     function checkValidity() {

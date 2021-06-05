@@ -156,8 +156,15 @@ function showNextForm(toID, buttonID, checkFunction)  {
     }
 }
 
-function addValidateCSS() {
-    document.getElementById('form').classList.add('was-validated')
+function addValidateCSS(id) {
+    let element
+
+    if (id)
+        element = document.getElementById(id)  
+    else
+        element = document.getElementById('form')  
+
+    element.classList.add('was-validated')
 }
 
 function removeValidateCSS() {
