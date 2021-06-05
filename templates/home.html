@@ -23,6 +23,9 @@
                        value="{{ city_from_cookie }}" autofocus>
             </div>
             <input type="submit" class="btn btn-lg btn-inqueue-purple w-25" value="Trova attività!">
+            <!-- ONLY FOR GPS -->
+            <input type="hidden" id="lat" name="lat"/>
+            <input type="hidden" id="lon" name="lon"/>
         </div>
     </form>
 </div>
@@ -30,5 +33,20 @@
 <script>
     GPSInput()
     autocomplete(document.getElementById('city'), countries)
+
+    function GPSInput(){
+        getPosition(getLatLonAndAddToInput)
+    }
+
+    function getLatLonAndAddToInput(position) {
+        let oldPos = lat+lon
+        getLatLon(position)
+        if (oldPos != lat+lon) {
+            cityName = getCityName()
+            document.getElementById('city').value = cityName
+            document.getElementById('lat').value = lat
+            document.getElementById('lon').value = lon
+        }
+    }
 </script>
 {% endblock %}

@@ -44,19 +44,6 @@ function updateCityNameByLatLon() {
     document.cookie = "city=" + cityName; 
 }
 
-function GPSInput(){
-    getPosition(getLatLonAndAddToInput)
-}
-
-function getLatLonAndAddToInput(position) {
-    let oldPos = lat+lon
-    getLatLon(position)
-    if (oldPos != lat+lon) {
-        cityName = getCityName()
-        document.getElementById('city').value = cityName
-    }
-}
-
 function getPosition(doOnSuccess, doOnFailure, doifNotSupported) {
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(doOnSuccess, doOnFailure)
