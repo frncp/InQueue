@@ -118,7 +118,7 @@ def homepage_new():
         return render_template("home.html", city_from_cookie=city_from_cookie)
     else:
         city = request.form["city"]
-        resp = make_response(render_template('index.html', city=city))
+        resp = make_response(redirect('/'+city))
         resp.set_cookie("city", value=city, max_age=60 * 60 * 24)
         return resp
 
@@ -127,11 +127,13 @@ def homepage_new():
 def homepage():
     city_from_cookie = request.cookies.get("city")
     if not city_from_cookie:
-        rendered_template = render_template('index.html', city="clicca")
-        return make_response(rendered_template)
+        return redirect("/select")
     else:
-        return render_template('index.html', city=city_from_cookie)
+        return redirect("/"+str(city_from_cookie))
 
+@app.route('/<city>')
+def cityhome(city):
+    return render_template('index.html', city=city)
 
 @app.route('/business/<business_name>_<creation_date>_<creation_time>', methods=["POST", "GET"])
 def business_page(business_name, creation_date, creation_time):
@@ -154,19 +156,18 @@ def business_page(business_name, creation_date, creation_time):
                                creation_time=creation_time)
 
 
-@app.route('/test/')
-def book_test():
-    return render_template('booked.html')
-
 
 @app.route('/files/tickets/<booking_id>.pdf')
 def send_booking_pdf(booking_id):
     query_result = PDFs_collection.find_one({"_id": booking_id})
+    pdf_data = bookings_collection.find_one({"_id": ObjectId(booking_id)})
     if query_result is None:
         file_name = curr_path + "\\temp\\" + booking_id + ".pdf"
         # PDF creation
+        logo = "logo.png"
         canvas = Canvas(file_name, pagesize=(612.0, 792.0))
-        canvas.drawString(72, 72, "Hello, World")
+        service = pdf_data["service"]
+        business_name = pdf_data["business_name"]        
         canvas.save()
         file = open(file_name, "rb")
         # DB insert and retrieval
