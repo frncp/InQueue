@@ -158,7 +158,7 @@ def business_page(business_name):
         return redirect("/booking_confirmation/"+str(booking_result.inserted_id))
     else:
         query_result = businesses_collection.find_one({"business_name": business_name})
-        return render_template("business-info.html", query_result=query_result, business_name=business_name)
+        return render_template("business-info.html", query_result=query_result)
 
 
 

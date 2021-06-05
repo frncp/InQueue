@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% set formatted_name = business_name[:-9] %}
+{% set formatted_name = query_result["business_name"][:-9] %}
 
 {% block title %}
     Prenota da {{ formatted_name }} - Prenota con InQueue
@@ -11,7 +11,7 @@
   <div class="d-md-flex justify-content-center align-items-start mt-5">
 
     <div class="flex-row rounded" style="height: 300px; width: 300px">
-          <img src="/photos/{{ business_name }}.jpg" style="width:100%">
+          <img src="/photos/{{ query_result["business_name"] }}.jpg" style="width:100%">
       </div>
 
       <div class="col-md-6 px-3">
@@ -21,7 +21,7 @@
 
         <script type="text/javascript">
           /* LEAFLET */
-          let businessPositionMap = L.map('businessPositionMap').setView([40.85652, 14.28377], 13);
+          let businessPositionMap = L.map('businessPositionMap').setView( [{{ query_result["lat"] | float }}, {{ query_result["lon"] | float }}], 13);
           businessPositionMap.zoomControl.remove()
           L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a>',
@@ -37,7 +37,7 @@
             shadowSize: [41, 41]
           });
 
-          L.marker([40.85652, 14.28377], {icon: marker}).addTo(businessPositionMap);
+          L.marker([{{ query_result["lat"] | float }}, {{ query_result["lon"] | float }}], {icon: marker}).addTo(businessPositionMap);
         </script>
 
 
