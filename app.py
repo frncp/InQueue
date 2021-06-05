@@ -40,7 +40,7 @@ app.secret_key = 'super secret string'
 # Start login manager
 login_manager = flask_login.LoginManager()
 login_manager.init_app(app)
-# app.config['SERVER_NAME'] = 'inqueue.it'
+app.config['SERVER_NAME'] = 'inqueue.it'
 
 
 def id_generator(size=8, chars=string.digits + string.ascii_letters):
@@ -148,8 +148,12 @@ def city_home(city):
     print(lon_from_cookie)
     businesses_in_city = businesses_collection.find({"city": city})
     resp = make_response(render_template('index.html', businesses_in_city=businesses_in_city, city=city))
-    resp.set_cookie("lat", value=lat_from_cookie, max_age=0)
-    resp.set_cookie("lon", value=lon_from_cookie, max_age=0)
+    try:
+        resp.set_cookie("lat", value=lat_from_cookie, max_age=0)
+        resp.set_cookie("lon", value=lon_from_cookie, max_age=0)
+    except TypeError:
+        print("Cookie not set")
+        # TODO: assume coords of a city based on the center of it
     return resp
 
 
@@ -306,7 +310,7 @@ if __name__ == "__main__":
     except FileNotFoundError:
         print("HTTPs certification files not found")
     # Server starting
-    local_only = True  # False = Accessible also from out of intranet
+    local_only = False  # False = Accessible also from out of intranet
     if local_only:
         if https_available:
             app.run(debug=True, ssl_context=context)
