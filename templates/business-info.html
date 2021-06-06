@@ -91,12 +91,10 @@
           </div>
           <div class="col-sm">
             <label for="slot2">Alle</label>
-            <select class="form-select form-select-md mb-3" id="slot2" name="slot2">
-              <option value="sl1">12:15</option>
-              <option value="sl2">13:00</option>
-              <option value="sl3">14:45</option>
-              <option value="sl4">16:15</option>
-              <option value="sl5">17:45</option>
+            <select class="form-select form-select-md mb-3" id="time" name="time">
+                {% for time_slot in slots %}
+                    <option value="{{ time_slot }}">{{ time_slot }}</option>
+                {% endfor %}
             </select>
           </div>
         </div><br>

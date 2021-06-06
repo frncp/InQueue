@@ -11,7 +11,8 @@ import bson
 from bson.binary import Binary
 from bson.objectid import ObjectId
 
-from datetime import date, datetime
+from time import strftime
+from datetime import date, datetime, timedelta
 from io import BytesIO
 from reportlab.pdfgen.canvas import Canvas
 import os
@@ -27,8 +28,8 @@ import certifi
 
 
 # SERVER SETTINGS
-SERVER_NO_FORWARD = True # True = Flask default configuration, run it locally (for testing, debug)
-SERVER_LOCAL_ONLY = True  # False = Accessible also from out of intranet
+SERVER_NO_FORWARD = False # True = Flask default configuration, run it locally (for testing, debug)
+SERVER_LOCAL_ONLY = False  # False = Accessible also from out of intranet
 SERVER_DOMAIN_NAME = 'inqueue.it' # Your domain name here
 
 
@@ -190,7 +191,7 @@ def business_page(business_name):
         email = request.form["email"]
         cellphone = request.form["cellphone"]
         day = request.form["date"]
-        time = request.form["slot2"]
+        time = request.form["time"]
         service = request.form["service"]
         today = str(date.today()).replace("/", "-", 3)
         now = datetime.now().strftime('%H:%M:%S')
@@ -201,8 +202,26 @@ def business_page(business_name):
         return redirect("/booking_confirmation/"+str(booking_result.inserted_id))
     else:
         query_result = businesses_collection.find_one({"business_name": business_name})
-        return render_template("business-info.html", query_result=query_result)
+        time = datetime.strptime(query_result["open_time"], '%H:%M')
+        slots = []
+        delta = timedelta(
+            minutes=int(query_result["time_slot"])
+        )
+        close_time = datetime.strptime(query_result["close_time"], '%H:%M')
+        if time > close_time:
+            close_time = close_time.replace(day=2)
+        while time < close_time:
+            slots.append(time)
+            time = time + delta
+        # Format time slots for nicer view on site
+        formatted_time_slots = []
+        for time_slot in slots:
+            formatted_time_slots.append(time_slot.strftime('%H:%M'))
 
+        today = str(date.today()).replace("/", "-", 3)
+        three_months = str((datetime.today() + timedelta(days=90)).strftime("%Y/%m/%d")).replace("/", "-", 3)
+        return render_template("business-info.html", query_result=query_result, slots=formatted_time_slots, today=today,
+                               three_months=three_months)
 
 
 @app.route('/files/tickets/<booking_id>.pdf')
@@ -261,6 +280,7 @@ def partners_page():
         business_name = request.form["bname"]
         open_time = request.form["open-time"]
         close_time = request.form["close-time"]
+        time_slot = request.form["time_slot"]
         # Business position
         city = request.form["city"]
         address = request.form["address"]
@@ -290,7 +310,7 @@ def partners_page():
                             "cellphone": cellphone, "password": password}
         accounts_collection.insert_one(account_document)
         document = {"business_name": business_name, "open_time": open_time, "close_time": close_time,
-                    "service": [services[0]], "city": city, "address": address, "lat": lat, "lon": lon,
+                    "time_slot": time_slot, "service": [services[0]], "city": city, "address": address, "lat": lat, "lon": lon,
                     "creation_date": today, "creation_time": now}
         b_sign_up_result = businesses_collection.insert_one(document)
         photo_document = {"_id": b_sign_up_result.inserted_id, "business_name": business_name, "img": img}
