@@ -11,7 +11,7 @@ import bson
 from bson.binary import Binary
 from bson.objectid import ObjectId
 
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from io import BytesIO
 from reportlab.pdfgen.canvas import Canvas
 import os
@@ -65,7 +65,6 @@ app.secret_key = 'super secret string'
 # Start login manager
 login_manager = flask_login.LoginManager()
 login_manager.init_app(app)
-
 
 
 def id_generator(size=8, chars=string.digits + string.ascii_letters):
@@ -190,7 +189,7 @@ def business_page(business_id):
         email = request.form["email"]
         cellphone = request.form["cellphone"]
         day = request.form["date"]
-        time = request.form["slot2"]
+        time = request.form["time"]
         service = request.form["service"]
         today = str(date.today()).replace("/", "-", 3)
         now = datetime.now().strftime('%H:%M:%S')
@@ -201,8 +200,39 @@ def business_page(business_id):
         return redirect("/booking_confirmation/"+str(booking_result.inserted_id))
     else:
         query_result = businesses_collection.find_one({"_id": ObjectId(business_id)})
-        return render_template("business-info.html", query_result=query_result)
+        delta = timedelta(
+            minutes=int(query_result["slot"])
+        )
 
+        # Morning slots
+        time = datetime.strptime(query_result["open_time1"], '%H:%M')
+        slots = []
+        close_time = datetime.strptime(query_result["close_time1"], '%H:%M')
+        if time > close_time:
+            close_time = close_time.replace(day=2)
+        while time < close_time:
+            slots.append(time)
+            time = time + delta
+        formatted_time_slots = []
+        for time_slot in slots:
+            formatted_time_slots.append(time_slot.strftime('%H:%M'))
+
+        # Evening slots
+        time = datetime.strptime(query_result["open_time2"], '%H:%M')
+        slots_2 = []
+        close_time_2 = datetime.strptime(query_result["close_time2"], '%H:%M')
+        if time > close_time_2:
+            close_time_2 = close_time_2.replace(day=2)
+        while time < close_time_2:
+            slots_2.append(time)
+            time = time + delta
+        for time_slot in slots_2:
+            formatted_time_slots.append(time_slot.strftime('%H:%M'))
+
+        today = str(date.today()).replace("/", "-", 3)
+        three_months = str((datetime.today() + timedelta(days=90)).strftime("%Y/%m/%d")).replace("/", "-", 3)
+        return render_template("business-info.html", query_result=query_result, slots=formatted_time_slots, today=today,
+                               three_months=three_months)
 
 
 @app.route('/files/tickets/<booking_id>.pdf')
@@ -261,8 +291,11 @@ def partners_page():
         # Business
         img = request.files['img'].read()
         business_name = request.form["bname"]
-        open_time = request.form["open-time"]
-        close_time = request.form["close-time"]
+        open_time1 = request.form["open-time1"]
+        close_time1 = request.form["close-time1"]
+        open_time2 = request.form["open-time2"]
+        close_time2 = request.form["close-time2"]
+        slot = request.form["slot"]
         # Business position
         city = request.form["city"]
         address = request.form["address"]
@@ -288,7 +321,11 @@ def partners_page():
         # Time of creation to insert in DB
         today = str(date.today()).replace("/", "-", 3)
         now = datetime.now().strftime('%H:%M:%S')
-        document = {"business_name": business_name, "open_time": open_time, "close_time": close_time,
+        account_document = {"business_name": business_name, "fname": fname, "lname": lname, "email": email,
+                            "cellphone": cellphone, "password": password}
+        accounts_collection.insert_one(account_document)
+        document = {"business_name": business_name, "open_time1": open_time1, "close_time1": close_time1,
+                    "open_time2": open_time2, "close_time2": close_time2, "slot": slot,
                     "service": [services[0]], "city": city, "address": address, "lat": lat, "lon": lon,
                     "creation_date": today, "creation_time": now}
         b_sign_up_result = businesses_collection.insert_one(document)
