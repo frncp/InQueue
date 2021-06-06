@@ -259,8 +259,11 @@ def partners_page():
         # Business
         img = request.files['img'].read()
         business_name = request.form["bname"]
-        open_time = request.form["open-time"]
-        close_time = request.form["close-time"]
+        open_time1 = request.form["open-time1"]
+        close_time1 = request.form["close-time1"]
+        open_time2 = request.form["open-time2"]
+        close_time2 = request.form["close-time2"]
+        slot = request.form["slot"]
         # Business position
         city = request.form["city"]
         address = request.form["address"]
@@ -289,8 +292,9 @@ def partners_page():
         account_document = {"business_name": business_name, "fname": fname, "lname": lname, "email": email,
                             "cellphone": cellphone, "password": password}
         accounts_collection.insert_one(account_document)
-        document = {"business_name": business_name, "open_time": open_time, "close_time": close_time,
-                    "service": [services[0]], "city": city, "address": address, "lat": lat, "lon": lon,
+        document = {"business_name": business_name, "open_time1": open_time1, "close_time1": close_time1,
+                    "open_time2": open_time2, "close_time2": close_time2, "service": [services[0]],
+                    "city": city, "address": address, "lat": lat, "lon": lon,
                     "creation_date": today, "creation_time": now}
         b_sign_up_result = businesses_collection.insert_one(document)
         photo_document = {"_id": b_sign_up_result.inserted_id, "business_name": business_name, "img": img}
