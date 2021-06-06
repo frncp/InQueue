@@ -61,11 +61,11 @@ a
         {% for element in businesses_in_city %}
         <div class="col mb-4">
             <div class="card">
-                <img src="/photos/{{element["business_name"]}}.jpg" class="card-img-top" alt="...">
-                <a href="/business/{{ element["business_name"] }}">
+                <img src="/photos/{{element["_id"]}}.jpg" class="card-img-top" alt="...">
+                <a href="/business/{{ element["_id"] }}">
                 <div class="card-body card-img-overlay d-flex flex-column">
                     <div class="row">
-                        <h5 class="card-title">{{ (element["business_name"])[:-9] }}</h5>
+                        <h5 class="card-title">{{ element["business_name"] }}</h5>
                     </div>
                     <div class="row">
                         <p class="card-subtitle">{{ element["address"] }}</p>

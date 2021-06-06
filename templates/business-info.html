@@ -1,9 +1,7 @@
 {% extends 'base.html' %}
 
-{% set formatted_name = query_result["business_name"][:-9] %}
-
 {% block title %}
-    Prenota da {{ formatted_name }} - Prenota con InQueue
+    Prenota da {{ query_result.business_name }} - Prenota con InQueue
 {% endblock %}
 
 {% block main %}
@@ -17,11 +15,11 @@
 
   <div class="d-flex justify-content-around align-items-center mt-5 flex-wrap">
     <div class="flex-column rounded" style="max-height: 500px;">
-          <img src="/photos/{{ query_result["business_name"] }}.jpg" style="width:100%">
+          <img src="/photos/{{ query_result["_id"] }}.jpg" style="width:100%">
       </div>
 
       <div class="flex-md-column px-5">
-        <h1 class="">{{ formatted_name }}</h1>
+        <h1 class="">{{ query_result.business_name }}</h1>
         ⭐⭐⭐⭐⭐ <span class="text-secondary">37</span>
           <div id="businessPositionMap"></div>
     

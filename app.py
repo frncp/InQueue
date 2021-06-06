@@ -182,8 +182,8 @@ def city_home(city):
     return resp
 
 
-@app.route('/business/<business_name>', methods=["POST", "GET"])
-def business_page(business_name):
+@app.route('/business/<business_id>', methods=["POST", "GET"])
+def business_page(business_id):
     if request.method == "POST":
         name = request.form["fname"]
         surname = request.form["lname"]
@@ -194,13 +194,13 @@ def business_page(business_name):
         service = request.form["service"]
         today = str(date.today()).replace("/", "-", 3)
         now = datetime.now().strftime('%H:%M:%S')
-        document = {"business_name": business_name, "name": name, "surname": surname, "email": email,
+        document = {"business_id": business_id, "name": name, "surname": surname, "email": email,
                     "cellphone": cellphone, "day": day, "time": time, "service": service, "booking_date": today,
                     "booking_time": now}
         booking_result = bookings_collection.insert_one(document)
         return redirect("/booking_confirmation/"+str(booking_result.inserted_id))
     else:
-        query_result = businesses_collection.find_one({"business_name": business_name})
+        query_result = businesses_collection.find_one({"_id": ObjectId(business_id)})
         return render_template("business-info.html", query_result=query_result)
 
 
@@ -236,8 +236,10 @@ def bookings_confirmation_page(booking_id):
     except bson.errors.InvalidId:
         return redirect('/404/')
     if query_result is not None:
+        business_id = query_result["business_id"]
+        business_info = businesses_collection.find_one({"_id": ObjectId(business_id)})
         service = query_result["service"]
-        business_name = query_result["business_name"]
+        business_name = business_info["business_name"]
         day = query_result["day"]
         time = query_result["time"]
         # Use parameters found from query
@@ -271,8 +273,8 @@ def partners_page():
         if account_found is not None:
             return redirect("/email_already_signed_up")  # TODO
         # Decorate business_name with random string to force uniqueness
-        business_name = business_name + "$" + id_generator()
-        business_name.replace(" ", "_") # Set business name to this, if needed in future
+        business_id = business_name.lower() + "$" + id_generator()
+        business_id.replace(" ", "_") # Set business name to this, if needed in future
         # Business services
         num_of_services = int(request.form["num_of_services"])
         services = [str(request.form["service"])]
@@ -286,35 +288,35 @@ def partners_page():
         # Time of creation to insert in DB
         today = str(date.today()).replace("/", "-", 3)
         now = datetime.now().strftime('%H:%M:%S')
-        account_document = {"business_name": business_name, "fname": fname, "lname": lname, "email": email,
-                            "cellphone": cellphone, "password": password}
-        accounts_collection.insert_one(account_document)
         document = {"business_name": business_name, "open_time": open_time, "close_time": close_time,
                     "service": [services[0]], "city": city, "address": address, "lat": lat, "lon": lon,
                     "creation_date": today, "creation_time": now}
         b_sign_up_result = businesses_collection.insert_one(document)
+        account_document = {"business_id": b_sign_up_result.inserted_id, "fname": fname, "lname": lname, "email": email,
+                            "cellphone": cellphone, "password": password}
+        accounts_collection.insert_one(account_document)
         photo_document = {"_id": b_sign_up_result.inserted_id, "business_name": business_name, "img": img}
         businesses_photo_collection.insert_one(photo_document)
         for serv_n in range(1, len(services)):
             serv = services[serv_n]
             businesses_collection.update_one({'_id': b_sign_up_result.inserted_id}, {'$push': {'service': serv}},
                                              upsert=False)
-        return redirect("/newBusiness_confirmation/"+business_name)
+        return redirect("/newBusiness_confirmation/"+str(b_sign_up_result.inserted_id))
     else:
         return render_template("business-creation.html")
 
 
 # TODO
-@app.route('/newBusiness_confirmation/<business_name>', methods=["GET"])
-def partner_confirmation_page(business_name):
-    business_document = businesses_collection.find_one({"business_name": business_name})
-    account_document = accounts_collection.find_one({"business_name": business_name})
+@app.route('/newBusiness_confirmation/<business_id>', methods=["GET"])
+def partner_confirmation_page(business_id):
+    business_document = businesses_collection.find_one({"_id": ObjectId(business_id)})
+    account_document = accounts_collection.find_one({"business_id": business_id})
     return render_template("signed-up.html", business_document=business_document, account_document=account_document)
 
 
-@app.route('/photos/<business_name>.jpg', methods=["GET"])
-def send_business_image(business_name):
-    document = businesses_photo_collection.find_one({"business_name": business_name})
+@app.route('/photos/<business_id>.jpg', methods=["GET"])
+def send_business_image(business_id):
+    document = businesses_photo_collection.find_one({"_id": ObjectId(business_id)})
     photo = BytesIO(document["img"])
     return send_file(photo, mimetype="image/gif")
 
