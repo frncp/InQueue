@@ -25,10 +25,35 @@ import random
 
 import certifi
 
+
+# SERVER SETTINGS
+SERVER_NO_FORWARD = True # True = Flask default configuration, run it locally (for testing, debug)
+SERVER_LOCAL_ONLY = True  # False = Accessible also from out of intranet
+SERVER_DOMAIN_NAME = 'inqueue.it' # Your domain name here
+
+
+# DATABASE SETTINGS
+'''
+[!] IMPORTANT:
+        We use MongoDB Atlas for managing our database.
+        To use your own, create a file in the root of this folder named 'passwords.py' and add the following text:
+        # --------
+
+          DB_USER = # your DB USER
+          DB_PASSWORD = # your DB PASSWORD  
+
+            # (this file is gitignored, so you can keep it safely on you machine)
+
+        # -------
+
+'''
+DB_CLIENT_NAME = "inQueue" # Add your MongoDB client name here
+
+
 # DB Connection
-mongo_client_string = "mongodb+srv://" + DB_USER + ":" + DB_PASSWORD + "@cluster0.dfin1.mongodb.net/inQueue?retryWrites=true&w=majority"
+mongo_client_string = "mongodb+srv://" + DB_USER + ":" + DB_PASSWORD + "@cluster0.dfin1.mongodb.net/"+ DB_CLIENT_NAME + "?retryWrites=true&w=majority"
 client = pymongo.MongoClient(mongo_client_string, tlsCAFile=certifi.where())
-db = client["inQueue"]
+db = client[DB_CLIENT_NAME]
 businesses_collection = db["businesses"]
 bookings_collection = db["bookings"]
 PDFs_collection = db["bookings_PDFs"]
@@ -40,7 +65,7 @@ app.secret_key = 'super secret string'
 # Start login manager
 login_manager = flask_login.LoginManager()
 login_manager.init_app(app)
-app.config['SERVER_NAME'] = 'inqueue.it'
+
 
 
 def id_generator(size=8, chars=string.digits + string.ascii_letters):
@@ -297,7 +322,7 @@ def send_business_image(business_name):
 if __name__ == "__main__":
     curr_path = os.path.dirname(__file__)
     try:
-        os.mkdir(curr_path+"\\temp")
+        os.mkdir(curr_path+"/temp")
     except FileExistsError:
         pass
     https_available = False
@@ -310,14 +335,17 @@ if __name__ == "__main__":
     except FileNotFoundError:
         print("HTTPs certification files not found")
     # Server starting
-    local_only = False  # False = Accessible also from out of intranet
-    if local_only:
+
+    if SERVER_NO_FORWARD and SERVER_LOCAL_ONLY:
+        app.run(debug=True)
+    elif SERVER_LOCAL_ONLY and (not SERVER_NO_FORWARD):
         if https_available:
             app.run(debug=True, port=443, ssl_context=context)
         else:
             app.run(debug=True, port=80)
     else:
         # Port forwarding needed on router
+        app.config['SERVER_NAME'] = SERVER_DOMAIN_NAME
         if https_available:
             app.run(host='0.0.0.0', port=443, debug=True, ssl_context=context)
         else:
