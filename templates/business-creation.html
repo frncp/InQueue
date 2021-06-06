@@ -140,6 +140,10 @@ Aggiungi la tua attività su InQueue
                     <button type="button" class="btn btn-primary mt-3" onclick="addForm('service', 'num_of_services')">Aggiungi</button>
                     <input hidden class="d-none" name="num_of_services" id="num_of_services" type="text" value="1"></input>
                 </div>
+                <div class="col-sm">
+                    <label for="service">Intervallo in minuti per ogni prenotazione</label>
+                    <input type="number" class="form-control" id="slot" name="slot" min="15" max="180" steps="15" required>
+                </div>
             </div>
             <button class="btn btn-inqueue-purple w-100 mt-3 d-none" id="nextForm3Button" type="button" onclick="showNextForm('form3', this, validateSecondForm)">AVANTI</button>
         </section>
@@ -174,7 +178,7 @@ Aggiungi la tua attività su InQueue
                 <input type="password" name="password" id="password" autocomplete="new-password" class="form-control" onchange="validatePassword()" required/>
                 <div class="input-group-append">
                     <div class="input-group-text">
-                  <input type="checkbox" aria-label="Mostra password" id="show-password" onclick="showPassword()"><label class="mr-2" for="show-password">Mostra password</label>
+                  <input type="checkbox" aria-label="Mostra password" id="show-password" onclick="showPassword()" tabindex="-1"><label class="mr-2" for="show-password">Mostra password</label>
                   </div>
                 </div>
               </div>             
@@ -201,6 +205,7 @@ Aggiungi la tua attività su InQueue
     }
 
     function validateSecondForm() {
+        return true
         let openTime = document.getElementById('open-time')
         let closeTime = document.getElementById('close-time')
 
