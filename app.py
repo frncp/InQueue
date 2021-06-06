@@ -27,8 +27,8 @@ import certifi
 
 
 # SERVER SETTINGS
-SERVER_NO_FORWARD = True # True = Flask default configuration, run it locally (for testing, debug)
-SERVER_LOCAL_ONLY = True  # False = Accessible also from out of intranet
+SERVER_NO_FORWARD = False # True = Flask default configuration, run it locally (for testing, debug)
+SERVER_LOCAL_ONLY = False  # False = Accessible also from out of intranet
 SERVER_DOMAIN_NAME = 'inqueue.it' # Your domain name here
 
 
@@ -65,7 +65,6 @@ app.secret_key = 'super secret string'
 # Start login manager
 login_manager = flask_login.LoginManager()
 login_manager.init_app(app)
-
 
 
 def id_generator(size=8, chars=string.digits + string.ascii_letters):
@@ -201,20 +200,33 @@ def business_page(business_name):
         return redirect("/booking_confirmation/"+str(booking_result.inserted_id))
     else:
         query_result = businesses_collection.find_one({"business_name": business_name})
-        time = datetime.strptime(query_result["open_time"], '%H:%M')
-        slots = []
         delta = timedelta(
-            minutes=int(query_result["time_slot"])
+            minutes=int(query_result["slot"])
         )
-        close_time = datetime.strptime(query_result["close_time"], '%H:%M')
+
+        # Morning slots
+        time = datetime.strptime(query_result["open_time1"], '%H:%M')
+        slots = []
+        close_time = datetime.strptime(query_result["close_time1"], '%H:%M')
         if time > close_time:
             close_time = close_time.replace(day=2)
         while time < close_time:
             slots.append(time)
             time = time + delta
-        # Format time slots for nicer view on site
         formatted_time_slots = []
         for time_slot in slots:
+            formatted_time_slots.append(time_slot.strftime('%H:%M'))
+
+        # Evening slots
+        time = datetime.strptime(query_result["open_time2"], '%H:%M')
+        slots_2 = []
+        close_time_2 = datetime.strptime(query_result["close_time2"], '%H:%M')
+        if time > close_time_2:
+            close_time_2 = close_time_2.replace(day=2)
+        while time < close_time_2:
+            slots_2.append(time)
+            time = time + delta
+        for time_slot in slots_2:
             formatted_time_slots.append(time_slot.strftime('%H:%M'))
 
         today = str(date.today()).replace("/", "-", 3)

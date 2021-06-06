@@ -87,10 +87,10 @@
         <div class="row mt-5">
           <div class="col-md">
           <label for="date">Giorno</label>
-            <input required class="form-select form-select-md mb-3" type="date" autocomplete="date" id="date" name="date" min="2021-05-20" max="2021-05-30">
+            <input required class="form-select form-select-md mb-3" type="date" autocomplete="date" id="date" name="date" min="{{ today }}" max="{{ three_months }}">
           </div>
           <div class="col-sm">
-            <label for="slot2">Alle</label>
+            <label for="time">Alle</label>
             <select class="form-select form-select-md mb-3" id="time" name="time">
                 {% for time_slot in slots %}
                     <option value="{{ time_slot }}">{{ time_slot }}</option>
