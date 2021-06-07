@@ -141,31 +141,47 @@
 
             select = document.getElementById('time')
             date = document.getElementById('date').value
+            data = getTimesJSON(date, gotResponse)
 
-            data = getTimesJSON(date)
-
-            select.innerHTML = ""
-            data.forEach(
-                function(obj) {
-                    option = document.createElement('option')
-                    option.text = obj.toString()
-                    option.value = obj
-                    select.add(option)});
+            function gotResponse(response) {
+                data = JSON.parse(response.responseText)
+                select.innerHTML = ""
+                data.forEach(
+                     function(obj) {
+                     option = document.createElement('option')
+                     option.text = obj.toString()
+                     option.value = obj
+                      select.add(option)});
+            }
         }
 
-        function getTimesJSON(date) {
+        // AJAX to get time slots depending on the date selected
+        function getTimesJSON(date, callback) {
             let business = '{{ query_result["business_name"] }}'
-            let string_api = "/getdates&" + business + "&" + date.toString()
-            let request = new XMLHttpRequest()
-            request.open('GET', string_api, false)//false is for synchronous request
+            let string_api = "/getslots?b_name=" + business + "&date=" + date.toString()
+            let request = new XMLHttpRequest()            
 
             request.onerror = function () {
                 console.log("Server connection error")
             };
 
-            request.send(null)
+            
+            request.onload = function (e) {
+                 if (request.readyState === 4) {
+             if (request.status === 200) {
+                callback(request)
+             } 
+             else {
+                console.error(request.statusText);
+                }
+            }
+        }
 
-            return data = JSON.parse(request.responseText)
+            
+
+            request.open('GET', string_api, true)
+
+            request.send(null)
         }
 
 
