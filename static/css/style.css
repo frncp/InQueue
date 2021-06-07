@@ -99,6 +99,8 @@
 
 .card {
     transition: transform .2s;
+    height: 16.875rem;
+    width: auto;
 }
 
 .card:hover {
