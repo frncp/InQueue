@@ -1,4 +1,5 @@
-from flask import Flask, render_template, url_for, request, redirect, send_from_directory, make_response, send_file
+from flask import Flask, render_template, url_for, request, redirect, send_from_directory, make_response, send_file, jsonify
+from flask_mail import Mail, Message
 import flask_login
 import requests
 import json
@@ -65,6 +66,25 @@ app.secret_key = 'super secret string'
 # Start login manager
 login_manager = flask_login.LoginManager()
 login_manager.init_app(app)
+# Mailing settings
+# app.config['MAIL_SERVER'] = 'smtp.mailtrap.io'
+# app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_SERVER'] = 'authsmtp.securemail.pro'
+# app.config['MAIL_PORT'] = 2525
+# app.config['MAIL_PORT'] = 587
+app.config['MAIL_PORT'] = 465
+# app.config['MAIL_USERNAME'] = '54bb2a794dc163'
+# app.config['MAIL_USERNAME'] = 'antoniototimorelli@gmail.com'
+app.config['MAIL_USERNAME'] = 'no-reply@inqueue.it'
+# app.config['MAIL_PASSWORD'] = '84f0fbad4c7117'
+# app.config['MAIL_PASSWORD'] = 'zzecqsiwqmklrtus'
+app.config['MAIL_PASSWORD'] = 'gj5-tj!UFXDC6J_'
+
+
+app.config['MAIL_USE_TLS'] = False
+app.config['MAIL_USE_SSL'] = True
+mail = Mail()
+mail.init_app(app)
 
 
 def id_generator(size=8, chars=string.digits + string.ascii_letters):
@@ -136,6 +156,21 @@ def page_not_found(e):
     return render_template('404.html'), 404
 
 
+@app.route('/getdates&<b_name>&<date>', methods=['GET'])
+def get_dates(b_name, date):
+    query_result = businesses_collection.find_one({"business_name": b_name}, {"slots": 1})
+    query_result2 = bookings_collection.find({"business_name": b_name, "day": date})
+    available_hours = []
+    for element in query_result["slots"]:
+        found = False
+        for element_2 in query_result2:
+            if element == element_2["time"]:
+                found = True
+        if not found:
+            available_hours.append(element)
+    return jsonify(available_hours)
+
+
 @app.route('/select', methods=["POST", "GET"])
 def homepage_new():
     if request.method == "GET":
@@ -197,42 +232,17 @@ def business_page(business_name):
                     "cellphone": cellphone, "day": day, "time": time, "service": service, "booking_date": today,
                     "booking_time": now}
         booking_result = bookings_collection.insert_one(document)
+        msg = Message("Hello",
+                      sender=("inQueue", "no-reply@inqueue.it"),
+                      recipients=[email])
+        msg.body = "Funzia?"
+        mail.send(msg)
         return redirect("/booking_confirmation/"+str(booking_result.inserted_id))
     else:
         query_result = businesses_collection.find_one({"business_name": business_name})
-        delta = timedelta(
-            minutes=int(query_result["slot"])
-        )
-
-        # Morning slots
-        time = datetime.strptime(query_result["open_time1"], '%H:%M')
-        slots = []
-        close_time = datetime.strptime(query_result["close_time1"], '%H:%M')
-        if time > close_time:
-            close_time = close_time.replace(day=2)
-        while time < close_time:
-            slots.append(time)
-            time = time + delta
-        formatted_time_slots = []
-        for time_slot in slots:
-            formatted_time_slots.append(time_slot.strftime('%H:%M'))
-
-        # Evening slots
-        time = datetime.strptime(query_result["open_time2"], '%H:%M')
-        slots_2 = []
-        close_time_2 = datetime.strptime(query_result["close_time2"], '%H:%M')
-        if time > close_time_2:
-            close_time_2 = close_time_2.replace(day=2)
-        while time < close_time_2:
-            slots_2.append(time)
-            time = time + delta
-        for time_slot in slots_2:
-            formatted_time_slots.append(time_slot.strftime('%H:%M'))
-
         today = str(date.today()).replace("/", "-", 3)
         three_months = str((datetime.today() + timedelta(days=90)).strftime("%Y/%m/%d")).replace("/", "-", 3)
-        return render_template("business-info.html", query_result=query_result, slots=formatted_time_slots, today=today,
-                               three_months=three_months)
+        return render_template("business-info.html", query_result=query_result, today=today, three_months=three_months)
 
 
 @app.route('/files/tickets/<booking_id>.pdf')
@@ -316,6 +326,34 @@ def partners_page():
                 services.append(service)
             service_n += 1
 
+        # Time slots
+        delta = timedelta(
+            minutes=int(slot)
+        )
+        # Morning slots
+        time = datetime.strptime(open_time1, '%H:%M')
+        slots = []
+        close_time = datetime.strptime(close_time1, '%H:%M')
+        if time > close_time:
+            close_time = close_time.replace(day=2)
+        while time < close_time:
+            slots.append(time)
+            time = time + delta
+        formatted_time_slots = []
+        for time_slot in slots:
+            formatted_time_slots.append(time_slot.strftime('%H:%M'))
+        # Evening slots
+        time = datetime.strptime(open_time2, '%H:%M')
+        slots_2 = []
+        close_time_2 = datetime.strptime(close_time2, '%H:%M')
+        if time > close_time_2:
+            close_time_2 = close_time_2.replace(day=2)
+        while time < close_time_2:
+            slots_2.append(time)
+            time = time + delta
+        for time_slot in slots_2:
+            formatted_time_slots.append(time_slot.strftime('%H:%M'))
+
         # Time of creation to insert in DB
         today = str(date.today()).replace("/", "-", 3)
         now = datetime.now().strftime('%H:%M:%S')
@@ -323,16 +361,24 @@ def partners_page():
                             "cellphone": cellphone, "password": password}
         accounts_collection.insert_one(account_document)
         document = {"business_name": business_name, "open_time1": open_time1, "close_time1": close_time1,
-                    "open_time2": open_time2, "close_time2": close_time2, "slot": slot,
-                    "service": [services[0]], "city": city, "address": address, "lat": lat, "lon": lon,
-                    "creation_date": today, "creation_time": now}
+                    "open_time2": open_time2, "close_time2": close_time2, "city": city, "address": address, "lat": lat,
+                    "lon": lon, "creation_date": today, "creation_time": now}
         b_sign_up_result = businesses_collection.insert_one(document)
         photo_document = {"_id": b_sign_up_result.inserted_id, "business_name": business_name, "img": img}
         businesses_photo_collection.insert_one(photo_document)
 
-        businesses_collection.update({'_id': b_sign_up_result.inserted_id},{'$push':{"service":{'$each':services}}})
+        businesses_collection.update_one({'_id': b_sign_up_result.inserted_id},
+                                         {'$push': {"service": {'$each': services}}})
+        businesses_collection.update_one({'_id': b_sign_up_result.inserted_id},
+                                         {'$push': {"slots": {'$each': formatted_time_slots}}})
+
         return redirect("/newBusiness_confirmation/"+business_name)
     else:
+        msg = Message("Hello",
+                      sender=("inQueue", "no-reply@inqueue.it"),
+                      recipients=["mattiarip@gmail.com"])
+        msg.body = "Funzia?"
+        mail.send(msg)
         return render_template("business-creation.html")
 
 
@@ -351,6 +397,11 @@ def send_business_image(business_name):
     return send_file(photo, mimetype="image/gif")
 
 
+@app.route('/list', methods=["GET"])
+def list():
+    return render_template("list.html")
+
+
 if __name__ == "__main__":
     curr_path = os.path.dirname(__file__)
     try:
@@ -367,7 +418,6 @@ if __name__ == "__main__":
     except FileNotFoundError:
         print("HTTPs certification files not found")
     # Server starting
-
     if SERVER_NO_FORWARD and SERVER_LOCAL_ONLY:
         app.run(debug=True)
     elif SERVER_LOCAL_ONLY and (not SERVER_NO_FORWARD):

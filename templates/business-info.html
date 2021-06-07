@@ -46,91 +46,128 @@
           centerLeafletMapOnMarker(businessPositionMap, mark)
         </script>
 
-        <p class="muted">{{ query_result.address }}, {{query_result.city }}</p>
-    </div>
-
-    
-
-  </div>
-
-
-  <!-- Booking -->
-  <h2 class="mt-5 mb-4">Prenota il tuo servizio</h2>
-  <div class="container" >
-    <form action="#" method="POST" id="form">
-    <section id="form1">
-    <div class="row">
-    <div class="col mt-3">
-       <label for="fname">Nome</label>
-       <input required type="text" autocomplete="given-name" class="form-control" id="fname" name="fname" placeholder="Nome">
-    </div>
-    <div class="col-md mt-3">
-        <label for="lname">Cognome</label>
-          <input required type="text" autocomplete="family-name" class="form-control" id="lname" name ="lname" placeholder="Cognome">
-    </div>
-    </div>
-    <div class="row">
-    <div class="col-md mt-3">
-        <label for="email">Email</label>
-        <input required type="email" autocomplete="email" class="form-control" id="email" name="email" placeholder="Email">
-    </div>
-    <div class="col mt-3">
-        <label for="cellphone">Telefono</label>
-        <input type="tel" class="form-control" id="cellphone" name="cellphone" placeholder="Telefono" pattern="^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$" title="Inserisci un numero di telefono valido">
-    </div>    
-    </div>
-    
-      <button class="btn btn-inqueue-purple w-100 mt-3 d-none" id="nextForm2Button" type="button" onclick="showNextForm('form2', this, validateFirstForm)"> AVANTI</button>
-      </section>
-      
-      <section id="form2">
-        <div class="row mt-5">
-          <div class="col-md">
-          <label for="date">Giorno</label>
-            <input required class="form-select form-select-md mb-3" type="date" autocomplete="date" id="date" name="date" min="{{ today }}" max="{{ three_months }}">
-          </div>
-          <div class="col-sm">
-            <label for="time">Alle</label>
-            <select class="form-select form-select-md mb-3" id="time" name="time">
-                {% for time_slot in slots %}
-                    <option value="{{ time_slot }}">{{ time_slot }}</option>
-                {% endfor %}
-            </select>
-          </div>
-        </div><br>
-        <div class="row">
-          <div class="col-sm">
-          <label for="service">Servizio</label>
-            <select class="form-select form-select-md mb-3" id="service" name="service">
-              {% for service in query_result["service"] %}
-              <option value="{{ service }}">{{ service }}</option>
-              {% endfor %}
-            </select>
-          </div>
+            <p class="muted">{{ query_result.address }}, {{ query_result.city }}</p>
         </div>
-        <input class="btn btn-danger w-100" type="submit" onclick="addValidateCSS()">
-        </section>
-      </form>
-  </div>
-  
-  <script type="text/javascript">
-    window.onload = function () {
-      document.getElementById('form2').classList.add('d-none')
-      document.getElementById('nextForm2Button').classList.remove('d-none')
-    }   
-    
-    function validateFirstForm() {
-        let name = document.getElementById('fname')
-        let surname = document.getElementById('lname')
-        let email = document.getElementById('email')
-        let phone = document.getElementById('cellphone')
-    
-        if (name.checkValidity() && surname.checkValidity() && email.checkValidity() && phone.checkValidity())
-            return true
-            
-        addValidateCSS()
-        return false
-    
-    }
-  </script>
+    </div>
+
+    <!-- Booking -->
+    <h2 class="mt-5 mb-4">Prenota il tuo servizio</h2>
+    <div class="container">
+        <form action="#" method="POST" id="form">
+            <section id="form1">
+                <div class="row">
+                    <div class="col mt-3">
+                        <label for="fname">Nome</label>
+                        <input required type="text" autocomplete="given-name" class="form-control" id="fname"
+                               name="fname" placeholder="Nome">
+                    </div>
+                    <div class="col-md mt-3">
+                        <label for="lname">Cognome</label>
+                        <input required type="text" autocomplete="family-name" class="form-control" id="lname"
+                               name="lname" placeholder="Cognome">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md mt-3">
+                        <label for="email">Email</label>
+                        <input required type="email" autocomplete="email" class="form-control" id="email" name="email"
+                               placeholder="Email">
+                    </div>
+                    <div class="col mt-3">
+                        <label for="cellphone">Telefono</label>
+                        <input type="tel" class="form-control" id="cellphone" name="cellphone" placeholder="Telefono"
+                               pattern="^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$"
+                               title="Inserisci un numero di telefono valido">
+                    </div>
+                </div>
+
+                <button class="btn btn-inqueue-purple w-100 mt-3 d-none" id="nextForm2Button" type="button"
+                        onclick="showNextForm('form2', this, validateFirstForm)"> AVANTI
+                </button>
+            </section>
+
+            <section id="form2">
+                <div class="row mt-5">
+                    <div class="col-md">
+                        <label for="date">Giorno</label>
+                        <input required class="form-select form-select-md mb-3" type="date" autocomplete="date"
+                               id="date" name="date" min="{{ today }}" max="{{ three_months }}"
+                               onChange="getTimes()">
+                    </div>
+                    <div class="col-sm">
+                        <label for="time">Alle</label>
+                        <select class="form-select form-select-md mb-3" id="time" name="time">
+                            <option value=""></option>
+                        </select>
+                    </div>
+                </div>
+                <br>
+                <div class="row">
+                    <div class="col-sm">
+                        <label for="service">Servizio</label>
+                        <select class="form-select form-select-md mb-3" id="service" name="service">
+                            {% for service in query_result["service"] %}
+                                <option value="{{ service }}">{{ service }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <input class="btn btn-danger w-100" type="submit" onclick="addValidateCSS()">
+            </section>
+        </form>
+    </div>
+
+    <script type="text/javascript">
+        window.onload = function () {
+            document.getElementById('form2').classList.add('d-none')
+            document.getElementById('nextForm2Button').classList.remove('d-none')
+        }
+
+        function validateFirstForm() {
+            let name = document.getElementById('fname')
+            let surname = document.getElementById('lname')
+            let email = document.getElementById('email')
+            let phone = document.getElementById('cellphone')
+
+            if (name.checkValidity() && surname.checkValidity() && email.checkValidity() && phone.checkValidity())
+                return true
+
+            addValidateCSS()
+            return false
+
+        }
+
+        function getTimes() {
+
+            select = document.getElementById('time')
+            date = document.getElementById('date').value
+
+            data = getTimesJSON(date)
+
+            select.innerHTML = ""
+            data.forEach(
+                function(obj) {
+                    option = document.createElement('option')
+                    option.text = obj.toString()
+                    option.value = obj
+                    select.add(option)});
+        }
+
+        function getTimesJSON(date) {
+            let business = '{{ query_result["business_name"] }}'
+            let string_api = "/getdates&" + business + "&" + date.toString()
+            let request = new XMLHttpRequest()
+            request.open('GET', string_api, false)//false is for synchronous request
+
+            request.onerror = function () {
+                console.log("Server connection error")
+            };
+
+            request.send(null)
+
+            return data = JSON.parse(request.responseText)
+        }
+
+
+    </script>
 {% endblock %}
