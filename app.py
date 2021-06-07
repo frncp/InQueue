@@ -329,10 +329,8 @@ def partners_page():
         b_sign_up_result = businesses_collection.insert_one(document)
         photo_document = {"_id": b_sign_up_result.inserted_id, "business_name": business_name, "img": img}
         businesses_photo_collection.insert_one(photo_document)
-        for serv_n in range(1, len(services)):
-            serv = services[serv_n]
-            businesses_collection.update_one({'_id': b_sign_up_result.inserted_id}, {'$push': {'service': serv}},
-                                             upsert=False)
+
+        businesses_collection.update({'_id': b_sign_up_result.inserted_id},{'$push':{"service":{'$each':services}}})
         return redirect("/newBusiness_confirmation/"+business_name)
     else:
         return render_template("business-creation.html")

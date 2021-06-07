@@ -13,6 +13,7 @@
     cursor: pointer;
     background-color: #ffb071ff;
     position: relative;
+    transition: transform .2s;
 }
 
 .homepage-circle-container p {
