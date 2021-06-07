@@ -41,7 +41,8 @@ function getLatLonAndUpdateCityName(position) {
 function updateCityNameByLatLon() {
     cityName = getCityName(getNominatimData(lat, lon))
     changeCityName(cityName)
-    document.cookie = "city=" + cityName; 
+    document.cookie = "city=" + cityName +"; path=/"
+    window.location.href = "/"
 }
 
 function getPosition(doOnSuccess, doOnFailure, doifNotSupported) {

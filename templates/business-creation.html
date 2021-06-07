@@ -184,7 +184,7 @@ Aggiungi la tua attività su InQueue
               </div>             
              <label for="password-confirm">Conferma password</label>
              <input type="password" name="password-confirm" id="password-confirm" class="form-control" onkeyup="validatePassword()" required/>
-             <input class="btn btn-danger w-100 mt-4" type="submit" onclick="addValidateCSS(); checkValidity()">
+             <input class="btn btn-danger w-100 mt-4" type="submit" onclick="addValidateCSS(); validateAll()">
          </section>
     </form>
 </div>
@@ -200,27 +200,54 @@ Aggiungi la tua attività su InQueue
     }
 
     function validateFirstForm() {
-        return true
+        let bname = (document.getElementById('bname').checkValidity())
+        let addr = ((document.getElementById('address').value).length > 0)
+        let city = ((document.getElementById('city').value).length > 0)
+        let inlat = document.getElementById('lat').value
+        let inlon = document.getElementById('lon').value
 
+
+        if (bname && addr && city){
+            if((inlat > -90 && inlat < 90) && (inlon > -180 && inlon < 180))
+                return true
+        }
+        addValidateCSS('form1')
+        return false
     }
 
     function validateSecondForm() {
         return true
-        let openTime = document.getElementById('open-time')
-        let closeTime = document.getElementById('close-time')
 
-        if (openTime.value !== closeTime.value) {
-            openTime.setCustomValidity("")
-            closeTime.setCustomValidity("")
-            return true
+       let morningOpenTime = document.getElementById('open-time1')
+        let morningCloseTime = document.getElementById('close-time1')
+        let eveningOpenTime = document.getElementById('open-time2')
+        let eveningCloseTime = document.getElementById('close-time2')
+
+        if (morningCloseTime.value < morningOpenTime.value) {
+            morningOpenTime.setCustomValidity("Invalid field.")
+            morningCloseTime.setCustomValidity("Invalid field.")
+            return false
+        }
+
+        if (eveningCloseTime.value < eveningOpenTime.value) {
+            eveningOpenTime.setCustomValidity("Invalid field.")
+            eveningCloseTime.setCustomValidity("Invalid field.")
+            return false
         }
 
 
-        openTime.setCustomValidity("Invalid field.")
-        closeTime.setCustomValidity("Invalid field.")
-        addValidateCSS('form2')
-        return false
+        if (morningCloseTime > eveningOpenTime) {
+            eveningOpenTime.setCustomValidity("Invalid field.")
+            morningCloseTime.setCustomValidity("Invalid field.")
+            return false
+        }
 
+
+
+        openTime.setCustomValidity("")
+        closeTime.setCustomValidity("")
+        addValidateCSS('form2')
+        return true
     }
 
     function validateThirdForm() {
@@ -250,7 +277,7 @@ Aggiungi la tua attività su InQueue
             passwordField.type = "password"
     }
 
-    function checkValidity() {
+    function validateAll() {
         if (validateFirstForm() && validateSecondForm())
             return true
         return false
