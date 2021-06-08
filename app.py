@@ -299,6 +299,7 @@ def partners_page():
         # Business
         img = request.files['img'].read()
         business_name = request.form["bname"]
+        business_type = request.args["type"]
         open_time1 = request.form["open-time1"]
         close_time1 = request.form["close-time1"]
         open_time2 = request.form["open-time2"]
@@ -360,7 +361,7 @@ def partners_page():
         account_document = {"business_name": business_name, "fname": fname, "lname": lname, "email": email,
                             "cellphone": cellphone, "password": password}
         accounts_collection.insert_one(account_document)
-        document = {"business_name": business_name, "open_time1": open_time1, "close_time1": close_time1,
+        document = {"business_name": business_name, "business_type": business_type, "open_time1": open_time1, "close_time1": close_time1,
                     "open_time2": open_time2, "close_time2": close_time2, "city": city, "address": address, "lat": lat,
                     "lon": lon, "creation_date": today, "creation_time": now}
         b_sign_up_result = businesses_collection.insert_one(document)
@@ -374,13 +375,12 @@ def partners_page():
 
         return redirect("/newBusiness_confirmation/"+business_name)
     else:
-        msg = Message("Hello",
-                      sender=("inQueue", "no-reply@inqueue.it"),
-                      recipients=["mattiarip@gmail.com"])
-        msg.body = "Funzia?"
-        mail.send(msg)
+        #msg = Message("Hello",
+        #              sender=("inQueue", "no-reply@inqueue.it"),
+        #              recipients=["mattiarip@gmail.com"])
+        #msg.body = "Funzia?"
+        #mail.send(msg)
         return render_template("business-creation.html")
-
 
 # TODO
 @app.route('/newBusiness_confirmation/<business_name>', methods=["GET"])
@@ -397,9 +397,19 @@ def send_business_image(business_name):
     return send_file(photo, mimetype="image/gif")
 
 
-@app.route('/list', methods=["GET"])
-def list():
-    return render_template("list.html")
+@app.route('/list/<city>', methods=["GET"])
+def list(city):
+    lat_from_cookie = request.cookies.get("lat")
+    lon_from_cookie = request.cookies.get("lon")
+    businesses_in_city = businesses_collection.find({"city": city})
+    resp = make_response(render_template('list.html', businesses_in_city=businesses_in_city, city=city))
+    try:
+        resp.set_cookie("lat", value=lat_from_cookie, max_age=0)
+        resp.set_cookie("lon", value=lon_from_cookie, max_age=0)
+    except TypeError:
+        print("Cookie not set")
+        # TODO: assume coords of a city based on the center of it
+    return resp
 
 
 if __name__ == "__main__":

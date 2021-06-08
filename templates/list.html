@@ -1,74 +1,88 @@
 {% extends 'base.html' %}
 
 {% block title %}
-    Prenota
-    {% if variable is defined %}
-        {{ activity }}
-    {% else %}
-        attività
-    {% endif %}
-    a
-    {{ city }}
+Prenota
+{% if variable is defined %}
+{{ activity }}
+{% else %}
+attività
+{% endif %}
+a
+{{ city }}
 {% endblock %}
 
 {% block main %}
 
-    <div class="city_container">
-        <h1>Prenota attività a <a href="/select" id="selectedCity" class="inqueue-orange text-decoration-none"
-                                  onclick="localityModifier()">{{ city }} <img
-                class="dropdown_icon" src="{{ url_for('static', filename='images/dropdown.png') }}" width="20px"> </a>
-        </h1>
-    </div>
+<!-- Togliere onclick="localityModifier()"??? -->
+<div class="city_container">
+    <h1>Prenota attività a <a href="/select" id="selectedCity" class="inqueue-orange text-decoration-none" onclick="localityModifier()">{{ city }} <img
+            class="dropdown_icon" src="{{ url_for('static', filename='images/dropdown.png') }}" width="20px"> </a></h1>
+</div>
 
-    <script>
-        function filter(type) {
+<script>
+    function filter(type) {
 
-        }
-    </script>
+    }
+</script>
 
-    <h2 class="mt-5 mb-4">Ordina per:</h2>
-    <div class="row">
-        <button class="col filter" onclick="filter('p')">
-            Popolarità
-        </button>
-        <button class="col filter" onclick="filter('n')">
-            Novità
-        </button>
-        <button class="col filter" onclick="filter('no')">
-            Nome
-        </button>
-
-        <input type="text" id="search" placeholder="Cerca">
-    </div>
-
-    <section class="container_deck">
-        <div class="row row-cols-1 row-cols-sm-1 row-cols-md-2 row-cols-xl-3 row-cols-xxl-4">
-            {% for element in businesses_in_city %}
-            <div class="col mb-4">
-                <div class="card">
-                    <img src="/photos/{{ element["business_name" ]}}.jpg" class="card-img-top" style="width: 100%; height: 100%; object-fit: cover" alt="">
-                    <a href="/business/{{ element["business_name"] }}">
-                    <div class="card-body card-img-overlay d-flex flex-column">
-                        <div class="row">
-                            <h5 class="card-title">{{ (element["business_name"])[:-9] }}</h5>
+<h2 class="mt-5 mb-4">Ordina per:</h2>
+<div class="row">
+    <button class="col filter btn btn-inqueue-purple" onclick="filter('p')">
+        Popolarità
+    </button>
+    <button class="col filter btn btn-inqueue-purple" onclick="filter('n')">
+        Novità
+    </button>
+    <button class="col filter btn btn-inqueue-purple" onclick="filter('no')">
+        Nome
+    </button>
+</div>
+<div class="row">
+    <select class="form-select form-select-md" id="type" name="type">
+        <option value="all">Tutto</option>
+        <option value="barber_hairdresser">Parrucchieri e barbieri</option>
+        <option value="beautician">Centri estetici</option>
+        <option value="field">Campi sportivi</option>
+        <option value="museum">Visite guidate</option>
+        <option value="freelance">Liberi professionisti</option>
+        <option value="car-repair">Meccanici</option>
+        <option value="gym">Palestre</option>
+    </select>
+    <input type="text" id="search" placeholder="Cerca">
+</div>
+<hr>
+<section class="container_deck">
+    <div class="row row-cols-1 row-cols-sm-1 row-cols-md-2 row-cols-xl-3 row-cols-xxl-4">
+        {% for element in businesses_in_city %}
+        <div class="col mb-4">
+            <div class="card">
+                <img src="/photos/{{ element[' business_name' ]}}.jpg" class="card-img-top" style="width: 100%; height:
+                100%; object-fit: cover" alt="">
+                <a href="/business/{{ element[' business_name'] }}">
+                <div class="card-body card-img-overlay d-flex flex-column">
+                    <div class="row">
+                        <h5 class="card-title">{{ (element["business_name"])[:-9] }}</h5>
+                    </div>
+                    <div class="row">
+                        <p class="card-subtitle">{{ element["address"] }}</p>
+                    </div>
+                    <div class="row">
+                        <p class="card-subtitle small">{{ element["business_type"] }}</p>
+                    </div>
+                    <div class="row info-row-3 mt-auto">
+                        <div class="col-6 text-start">
+                            4.7 ⭐ (999+)
                         </div>
-                        <div class="row">
-                            <p class="card-subtitle">{{ element["address"] }}</p>
-                        </div>
-                        <div class="row info-row-3 mt-auto">
-                            <div class="col-6 text-start">
-                                4.7 ⭐ (999+)
-                            </div>
-                            <div class="col-6 text-end">
-                                200m
-                            </div>
+                        <div class="col-6 text-end">
+                            200m
                         </div>
                     </div>
-                    </a>
                 </div>
+                </a>
             </div>
-            {% endfor %}
         </div>
-    </section>
+        {% endfor %}
+    </div>
+</section>
 
 {% endblock %}
