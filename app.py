@@ -29,8 +29,8 @@ import certifi
 
 
 # SERVER SETTINGS
-SERVER_NO_FORWARD = False # True = Flask default configuration, run it locally (for testing, debug)
-SERVER_LOCAL_ONLY = False  # False = Accessible also from out of intranet
+SERVER_NO_FORWARD = True # True = Flask default configuration, run it locally (for testing, debug)
+SERVER_LOCAL_ONLY = True  # False = Accessible also from out of intranet
 SERVER_DOMAIN_NAME = 'inqueue.it' # Your domain name here
 
 
@@ -165,8 +165,12 @@ def page_not_found(e):
     return render_template('404.html'), 404
 
 
-@app.route('/getdates&<b_name>&<date>', methods=['GET'])
-def get_dates(b_name, date):
+
+# API TO GET HOUR SLOTS
+@app.route('/getslots', methods=['GET'])
+def getslots():
+    b_name = request.args.get('b_name')
+    date = request.args.get('date')
     query_result = businesses_collection.find_one({"business_name": b_name}, {"slots": 1})
     query_result2 = bookings_collection.find({"business_name": b_name, "day": date})
     available_hours = []
