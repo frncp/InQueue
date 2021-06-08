@@ -82,25 +82,23 @@
 
 
 @media (max-width:768px) {
+    .card-title {
+        font-size: 12px;
+    }
 
-.card-title {
-    font-size: 12px;
-}
+    .card-subtitle {
+        font-size: 8px;
+    }
 
-.card-subtitle {
-    font-size: 8px;
-}
-
-.info-row-3 {
-    font-size: 6px;
-}
-
+    .info-row-3 {
+        font-size: 6px;
+    }
 }
 
 .card {
-    transition: transform .2s;
     height: 16.875rem;
     width: auto;
+    transition: transform .2s;
 }
 
 .card:hover {

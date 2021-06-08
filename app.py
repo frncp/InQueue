@@ -1,6 +1,7 @@
 from flask import Flask, render_template, url_for, request, redirect, send_from_directory, make_response, send_file, jsonify
 from flask_mail import Mail, Message
 import flask_login
+import werkzeug.exceptions
 import requests
 import json
 from http import cookies
@@ -17,8 +18,8 @@ from io import BytesIO
 from reportlab.pdfgen.canvas import Canvas
 import os
 
-from passwords import DB_USER, DB_PASSWORD
-from cities import COUNTRIES
+from passwords import DB_USER, DB_PASSWORD, DB_CLIENT_NAME
+from cities import CITIES
 
 import string
 import random
@@ -29,8 +30,8 @@ import certifi
 
 
 # SERVER SETTINGS
-SERVER_NO_FORWARD = True # True = Flask default configuration, run it locally (for testing, debug)
-SERVER_LOCAL_ONLY = True  # False = Accessible also from out of intranet
+SERVER_NO_FORWARD = False # True = Flask default configuration, run it locally (for testing, debug)
+SERVER_LOCAL_ONLY = False  # True = Run it locally
 SERVER_DOMAIN_NAME = 'inqueue.it' # Your domain name here
 
 
@@ -49,8 +50,6 @@ SERVER_DOMAIN_NAME = 'inqueue.it' # Your domain name here
         # -------
 
 '''
-DB_CLIENT_NAME = "inQueue" # Add your MongoDB client name here
-
 
 # DB Connection
 mongo_client_string = "mongodb+srv://" + DB_USER + ":" + DB_PASSWORD + "@cluster0.dfin1.mongodb.net/"+ DB_CLIENT_NAME + "?retryWrites=true&w=majority"
@@ -66,33 +65,29 @@ app = Flask(__name__)
 app.secret_key = 'super secret string'
 # Start login manager
 login_manager = flask_login.LoginManager()
+# login_manager.session_protection = 'strong'
+# login_manager.login_view = 'login'
 login_manager.init_app(app)
 # Mailing settings
-# app.config['MAIL_SERVER'] = 'smtp.mailtrap.io'
-# app.config['MAIL_SERVER'] = 'smtp.gmail.com'
-app.config['MAIL_SERVER'] = 'authsmtp.securemail.pro'
-# app.config['MAIL_PORT'] = 2525
-# app.config['MAIL_PORT'] = 587
-app.config['MAIL_PORT'] = 465
-# app.config['MAIL_USERNAME'] = '54bb2a794dc163'
-# app.config['MAIL_USERNAME'] = 'antoniototimorelli@gmail.com'
-app.config['MAIL_USERNAME'] = 'no-reply@inqueue.it'
-# app.config['MAIL_PASSWORD'] = '84f0fbad4c7117'
-# app.config['MAIL_PASSWORD'] = 'zzecqsiwqmklrtus'
-app.config['MAIL_PASSWORD'] = 'gj5-tj!UFXDC6J_'
-app.config['MAIL_USE_TLS'] = False
-app.config['MAIL_USE_SSL'] = True
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USERNAME'] = 'antoniototimorelli@gmail.com'
+app.config['MAIL_PASSWORD'] = 'zzecqsiwqmklrtus'
+app.config['MAIL_DEFAULT_SENDER'] = ('inQueue', 'antoniotitomorelli@gmail.com')
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USE_SSL'] = False
 mail = Mail()
 mail.init_app(app)
 
 business_types_dict_italian = {
     "barber": "Barbiere",
-    "beautician": "Estetista",
     "hairdresser": "Parrucchiere",
+    "beautician": "Estetista",
     "field": "Campo sportivo",
     "museum": "Museo",
     "attraction": "Luogo d'interesse",
-    "freelance": "Libero professionista"
+    "freelance": "Libero professionista",
+    "gym": "Palestra"
 }
 
 
@@ -116,15 +111,17 @@ def user_loader(email):
 
 @login_manager.request_loader
 def request_loader(request):
+    try:
+        password_from_request = request.form['password']
+    except werkzeug.exceptions.BadRequestKeyError as e:
+        return
     email = request.form.get('email')
     query_result = accounts_collection.find_one({"email": email})
     if query_result is None:
         return
     user = User()
     user.id = email
-    print(user.is_authenticated) # Check values when it appears, mattia's
-    user.is_authenticated = (request.form['password'] == query_result['password'])
-    print(user.is_authenticated)
+    user.is_authenticated = (password_from_request == query_result['password'])
     return user
 
 
@@ -132,15 +129,20 @@ def request_loader(request):
 def login():
     if request.method == 'GET':
         return render_template('login.html')
-
     email = request.form['email']
     if request.form['password'] == (accounts_collection.find_one({"email": email}))['password']:
         user = User()
         user.id = email
         flask_login.login_user(user)
         return redirect(url_for('protected'))
-
     return 'Bad login'
+
+
+@app.route('/protected/<business_name>', methods=['GET', 'POST'])
+def modify_business(business_name):
+    if request.method == 'GET':
+        query_result = businesses_collection.find_one({"business_name": business_name})
+        return render_template('business-change-info.html', query_result=query_result)
 
 
 @app.route('/protected')
@@ -165,10 +167,9 @@ def page_not_found(e):
     return render_template('404.html'), 404
 
 
-
 # API TO GET HOUR SLOTS
 @app.route('/getslots', methods=['GET'])
-def getslots():
+def get_slots():
     b_name = request.args.get('b_name')
     date = request.args.get('date')
     query_result = businesses_collection.find_one({"business_name": b_name}, {"slots": 1})
@@ -182,6 +183,12 @@ def getslots():
         if not found:
             available_hours.append(element)
     return jsonify(available_hours)
+
+
+# API TO GET HOUR SLOTS
+@app.route('/getcities', methods=['GET'])
+def get_cities():
+    return jsonify(CITIES)
 
 
 @app.route('/select', methods=["POST", "GET"])
@@ -218,8 +225,11 @@ def city_home(city):
     lon_from_cookie = request.cookies.get("lon")
     print(lat_from_cookie)
     print(lon_from_cookie)
+    if city not in CITIES:
+        return redirect('/select')
     businesses_in_city = businesses_collection.find({"city": city})
-    resp = make_response(render_template('index.html', businesses_in_city=businesses_in_city, city=city, business_types_dict_italian=business_types_dict_italian))
+    resp = make_response(render_template('index.html', businesses_in_city=businesses_in_city, city=city,
+                                         business_types_dict_italian=business_types_dict_italian))
     try:
         resp.set_cookie("lat", value=lat_from_cookie, max_age=0)
         resp.set_cookie("lon", value=lon_from_cookie, max_age=0)
@@ -232,8 +242,8 @@ def city_home(city):
 @app.route('/business/<business_name>', methods=["POST", "GET"])
 def business_page(business_name):
     if request.method == "POST":
-        name = request.form["fname"]
-        surname = request.form["lname"]
+        fname = request.form["fname"]
+        lname = request.form["lname"]
         email = request.form["email"]
         cellphone = request.form["cellphone"]
         day = request.form["date"]
@@ -241,14 +251,13 @@ def business_page(business_name):
         service = request.form["service"]
         today = str(date.today()).replace("/", "-", 3)
         now = datetime.now().strftime('%H:%M:%S')
-        document = {"business_name": business_name, "name": name, "surname": surname, "email": email,
+        document = {"business_name": business_name, "name": fname, "surname": lname, "email": email,
                     "cellphone": cellphone, "day": day, "time": time, "service": service, "booking_date": today,
-                    "booking_time": now}
+                    "booking_time": now, "rated": False}
         booking_result = bookings_collection.insert_one(document)
-        msg = Message("Hello",
-                      sender=("inQueue", "no-reply@inqueue.it"),
+        msg = Message(subject="Come valuti "+business_name[:-9]+"?",
+                      html=render_template('email-inlined.html', user_name=fname),
                       recipients=[email])
-        msg.body = "Funzia?"
         mail.send(msg)
         return redirect("/booking_confirmation/"+str(booking_result.inserted_id))
     else:
@@ -375,7 +384,7 @@ def partners_page():
         accounts_collection.insert_one(account_document)
         document = {"business_name": business_name, "business_type": business_type, "open_time1": open_time1, "close_time1": close_time1,
                     "open_time2": open_time2, "close_time2": close_time2, "city": city, "address": address, "lat": lat,
-                    "lon": lon, "creation_date": today, "creation_time": now}
+                    "lon": lon, "creation_date": today, "creation_time": now, "rating": float(0.0), "ratings": 0}
         b_sign_up_result = businesses_collection.insert_one(document)
         photo_document = {"_id": b_sign_up_result.inserted_id, "business_name": business_name, "img": img}
         businesses_photo_collection.insert_one(photo_document)
@@ -388,7 +397,7 @@ def partners_page():
         return redirect("/newBusiness_confirmation/"+business_name)
     else:
         #msg = Message("Hello",
-        #              sender=("inQueue", "no-reply@inqueue.it"),
+        #              sender=("inQueue", "antoniototimorelli@gmail.com"),
         #              recipients=["mattiarip@gmail.com"])
         #msg.body = "Funzia?"
         #mail.send(msg)

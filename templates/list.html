@@ -1,88 +1,289 @@
 {% extends 'base.html' %}
 
 {% block title %}
-Prenota
-{% if variable is defined %}
-{{ activity }}
-{% else %}
-attività
-{% endif %}
-a
-{{ city }}
+    Prenota
+    {% if variable is defined %}
+        {{ activity }}
+    {% else %}
+        attività
+    {% endif %}
+    a
+    {{ city }}
 {% endblock %}
 
 {% block main %}
+    <!-- Togliere onclick="localityModifier()"??? -->
+    <div class="city_container">
+        <h1>Prenota attività a <a href="/select" id="selectedCity" class="inqueue-orange text-decoration-none"
+                                  onclick="localityModifier()">{{ city }} <img
+                class="dropdown_icon" src="{{ url_for('static', filename='images/dropdown.png') }}" width="20px"> </a>
+        </h1>
+    </div>
 
-<!-- Togliere onclick="localityModifier()"??? -->
-<div class="city_container">
-    <h1>Prenota attività a <a href="/select" id="selectedCity" class="inqueue-orange text-decoration-none" onclick="localityModifier()">{{ city }} <img
-            class="dropdown_icon" src="{{ url_for('static', filename='images/dropdown.png') }}" width="20px"> </a></h1>
-</div>
 
-<script>
-    function filter(type) {
 
-    }
-</script>
+    <h2 class="mt-5 mb-4">Ordina per:</h2>
+    <div class="row">
+        <button class="col filter btn btn-inqueue-purple" onclick="filter('p')">
+            Popolarità
+        </button>
+        <button class="col filter btn btn-inqueue-purple" onclick="filter('n')">
+            Novità
+        </button>
+        <button class="col filter btn btn-inqueue-purple" onclick="filter('no')">
+            Nome
+        </button>
+    </div>
+    <div class="row">
+        <select class="form-select form-select-md" id="type" name="type" onchange="filter2()">
+            <option value="all">Tutto</option>
+            <option value="barber_hairdresser">Parrucchieri e barbieri</option>
+            <option value="beautician">Centri estetici</option>
+            <option value="field">Campi sportivi</option>
+            <option value="places">Attrazioni</option>
+            <option value="freelance">Liberi professionisti</option>
+            <option value="car-repair">Meccanici</option>
+            <option value="gym">Palestre</option>
+        </select>
+        <input type="text" id="search" placeholder="Cerca" onkeyup="search()">
+    </div>
+    <hr>
+    <section class="container_deck">
+        <div class="row row-cols-1 row-cols-sm-1 row-cols-md-2 row-cols-xl-3 row-cols-xxl-4" id="deck">
+            {% for element in businesses_in_city %}
+                <div class="col mb-4">
+                    <div class="card">
 
-<h2 class="mt-5 mb-4">Ordina per:</h2>
-<div class="row">
-    <button class="col filter btn btn-inqueue-purple" onclick="filter('p')">
-        Popolarità
-    </button>
-    <button class="col filter btn btn-inqueue-purple" onclick="filter('n')">
-        Novità
-    </button>
-    <button class="col filter btn btn-inqueue-purple" onclick="filter('no')">
-        Nome
-    </button>
-</div>
-<div class="row">
-    <select class="form-select form-select-md" id="type" name="type">
-        <option value="all">Tutto</option>
-        <option value="barber_hairdresser">Parrucchieri e barbieri</option>
-        <option value="beautician">Centri estetici</option>
-        <option value="field">Campi sportivi</option>
-        <option value="museum">Visite guidate</option>
-        <option value="freelance">Liberi professionisti</option>
-        <option value="car-repair">Meccanici</option>
-        <option value="gym">Palestre</option>
-    </select>
-    <input type="text" id="search" placeholder="Cerca">
-</div>
-<hr>
-<section class="container_deck">
-    <div class="row row-cols-1 row-cols-sm-1 row-cols-md-2 row-cols-xl-3 row-cols-xxl-4">
-        {% for element in businesses_in_city %}
-        <div class="col mb-4">
-            <div class="card">
-                <img src="/photos/{{ element["business_name"] }}.jpg" class="card-img-top" style="width: 100%; height:
+                        <!-- Escamotage -->
+                        <div style="display: none;" id="rating">{{ element["rating"] }}</div>
+                        <div style="display: none;" id="ratings">{{ element["ratings"] }}</div>
+                        <div style="display: none;" id="b_type">{{ element["business_type"] }}</div>
+                        <!-- Escamotage end -->
+
+                        <img src="/photos/{{ element["business_name"] }}.jpg" class="card-img-top" style="width: 100%; height:
                 100%; object-fit: cover" alt="">
-                <a href="/business/{{ element["business_name"] }}">
-                <div class="card-body card-img-overlay d-flex flex-column">
-                    <div class="row">
-                        <h5 class="card-title">{{ (element["business_name"])[:-9] }}</h5>
-                    </div>
-                    <div class="row">
-                        <p class="card-subtitle">{{ element["address"] }}</p>
-                    </div>
-                    <div class="row">
-                        <p class="card-subtitle small">{{ business_types_dict_italian[element["business_type"]] }}</p>
-                    </div>
-                    <div class="row info-row-3 mt-auto">
-                        <div class="col-6 text-start">
-                            4.7 ⭐ (999+)
-                        </div>
-                        <div class="col-6 text-end">
-                            200m
-                        </div>
+                        <a href="/business/{{ element["business_name"] }}">
+                            <div class="card-body card-img-overlay d-flex flex-column">
+                                <div class="row">
+                                    <h5 class="card-title" id="title">{{ (element["business_name"])[:-9] }}</h5>
+                                </div>
+                                <div class="row">
+                                    <p class="card-subtitle">{{ element["address"] }}</p>
+                                </div>
+                                <div class="row">
+                                    <p class="card-subtitle small">{{ business_types_dict_italian[element["business_type"]] }}</p>
+                                </div>
+                                <div class="row info-row-3 mt-auto row-cols-1">
+                                    <div class="col-6 text-start">
+                                        {{ element["rating"] }} ⭐ {{ element["ratings"] }}
+                                    </div>
+                                    <div class="col-6 text-end">
+                                        200m
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
                     </div>
                 </div>
-                </a>
-            </div>
+            {% endfor %}
         </div>
-        {% endfor %}
-    </div>
-</section>
+    </section>
+
+
+        <script>
+        let cardContainer;
+        let businesses_creation_order; // TODO: const?
+        let businesses_creation_order_reversed; // TODO: const?
+        setType();
+
+        window.onload = () => {
+            cardContainer = document.getElementById("deck");
+            businesses_creation_order = Array.from(cardContainer.getElementsByClassName("card"));
+            businesses_creation_order_reversed = businesses_creation_order.slice().reverse();
+        }
+
+        function setType() {
+            let url = new URL(window.location.href);
+            let type = url.searchParams.get("type");
+            let select = document.getElementById("type");
+            select.value = type;
+            filter2();
+        }
+
+        function compareRating(a, b) {
+            let at = parseFloat(document.getElementById('rating').innerText);
+            let bt = parseFloat(document.getElementById('rating').innerText);
+            if (at > bt) {
+                return -1;
+            }
+            if (at < bt) {
+                return 1;
+            }
+            return 0;
+        }
+
+        function compareTitle(a, b) {
+            let at = a.getElementsByTagName("h5")[0].innerText.toUpperCase();
+            let bt = b.getElementsByTagName("h5")[0].innerText.toUpperCase();
+
+            if (at < bt) {
+                return -1;
+            }
+            if (at > bt) {
+                return 1;
+            }
+            return 0;
+        }
+
+        function filter(type) {
+            let i, cardsArray;
+            cardContainer.innerHTML = "";
+            if (type == 'p') {
+                cardsArray = businesses_creation_order.slice();
+                cardsArray.sort(compareRating);
+            } else if (type == 'n') {
+                cardsArray = businesses_creation_order_reversed.slice();
+            } else if (type == 'no') {
+                cardsArray = businesses_creation_order.slice();
+                cardsArray.sort(compareTitle);
+            }
+
+            for (i = 0; i < cardsArray.length; i++) {
+                let div = document.createElement('div');
+                div.classList.add("col");
+                div.classList.add("mb-4");
+                cardContainer.appendChild(div);
+                div.appendChild(cardsArray[i]);
+            }
+            filter2();
+        }
+
+        function search() {
+            let input, filter, cards, cardContainer, title, i, outer;
+            input = document.getElementById("search");
+            filter = input.value.toUpperCase();
+            cardContainer = document.getElementById("deck");
+            cards = cardContainer.getElementsByClassName("card");
+            for (i = 0; i < cards.length; i++) {
+                outer = cards[i].parentNode;
+                title = cards[i].querySelector(".card-title");
+                if (title.innerText.toUpperCase().indexOf(filter) > -1) {
+                    outer.style.display = "";
+                } else {
+                    outer.style.display = "none";
+                }
+            }
+        }
+
+        function filter2() {
+            let value = document.getElementById("type").value;
+            let btype, cards, cardContainer, i, outer;
+
+            cardContainer = document.getElementById("deck");
+            cards = cardContainer.getElementsByClassName("card");
+
+            if (value == "barber_hairdresser") {
+                for (i = 0; i < cards.length; i++) {
+                    outer = cards[i].parentNode;
+                    btype = cards[i].querySelector("#b_type").innerText;
+
+                    if(btype == "barber" || btype == "hairdresser") {
+                        outer.style.display = "";
+                    }
+                    else {
+                        outer.style.display = "none";
+                    }
+                }
+            }
+            else if (value == "beautician") {
+                for (i = 0; i < cards.length; i++) {
+                    outer = cards[i].parentNode;
+                    btype = cards[i].querySelector("#b_type").innerText;
+
+                    if(btype == "beautician") {
+                        outer.style.display = "";
+                    }
+                    else {
+                        outer.style.display = "none";
+                    }
+                }
+            }
+            else if (value == "field")
+            {
+                for (i = 0; i < cards.length; i++) {
+                    outer = cards[i].parentNode;
+                    btype = cards[i].querySelector("#b_type").innerText;
+
+                    if(btype == "field") {
+                        outer.style.display = "";
+                    } else {
+                        outer.style.display = "none";
+                    }
+                }
+            }
+            else if (value == "places") {
+                for (i = 0; i < cards.length; i++) {
+                    outer = cards[i].parentNode;
+                    btype = cards[i].querySelector("#b_type").innerText;
+
+                    if(btype == "museum" || btype == "attraction") {
+                        outer.style.display = "";
+                    }
+                    else {
+                        outer.style.display = "none";
+                    }
+                }
+            }
+            else if (value == "car-repair") {
+                for (i = 0; i < cards.length; i++) {
+                    outer = cards[i].parentNode;
+                    btype = cards[i].querySelector("#b_type").innerText;
+
+                    if(btype == "car-repair") {
+                        outer.style.display = "";
+                    }
+                    else {
+                        outer.style.display = "none";
+                    }
+                }
+            }
+            else if (value == "gym") {
+                for (i = 0; i < cards.length; i++) {
+                    outer = cards[i].parentNode;
+                    btype = cards[i].querySelector("#b_type").innerText;
+
+                    if(btype == "gym") {
+                        outer.style.display = "";
+                    }
+                    else {
+                        outer.style.display = "none";
+                    }
+                }
+            }
+            else if (value == "freelance") {
+                for (i = 0; i < cards.length; i++) {
+                    outer = cards[i].parentNode;
+                    btype = cards[i].querySelector("#b_type").innerText;
+
+                    if(btype == "freelance") {
+                        outer.style.display = "";
+                    } else {
+                        outer.style.display = "none";
+                    }
+                }
+            }
+            else if (value == "all")
+            {
+                for (i = 0; i < cards.length; i++) {
+                    outer = cards[i].parentNode;
+                    btype = cards[i].querySelector("#b_type").innerText;
+
+                    outer.style.display = "";
+                }
+            }
+
+        }
+
+    </script>
 
 {% endblock %}
