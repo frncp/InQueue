@@ -14,8 +14,8 @@ a
 {% block main %}
 
 <div class="city_container">
-    <h1>Prenota attività a <a href="/select" id="selectedCity" class="inqueue-orange text-decoration-none" onclick="localityModifier()">{{ city }} <img
-            class="dropdown_icon" src="{{ url_for('static', filename='images/dropdown.png') }}" width="20px"> </a></h1>
+    <h1>Prenota attività a <a href="/select" id="selectedCity" class="inqueue-orange text-decoration-none">{{ city }} <img
+            class="dropdown_icon" src="{{ url_for('static', filename='images/dropdown.png') }}" width="20px"> </a><div onclick="localityModifier()">GPS</div></h1>
 </div>
 
 <div class="row d-flex justify-content-center">
