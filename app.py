@@ -18,6 +18,7 @@ from reportlab.pdfgen.canvas import Canvas
 import os
 
 from passwords import DB_USER, DB_PASSWORD
+from cities import COUNTRIES
 
 import string
 import random
