@@ -79,12 +79,20 @@ app.config['MAIL_USERNAME'] = 'no-reply@inqueue.it'
 # app.config['MAIL_PASSWORD'] = '84f0fbad4c7117'
 # app.config['MAIL_PASSWORD'] = 'zzecqsiwqmklrtus'
 app.config['MAIL_PASSWORD'] = 'gj5-tj!UFXDC6J_'
-
-
 app.config['MAIL_USE_TLS'] = False
 app.config['MAIL_USE_SSL'] = True
 mail = Mail()
 mail.init_app(app)
+
+business_types_dict_italian = {
+    "barber": "Barbiere",
+    "beautician": "Estetista",
+    "hairdresser": "Parrucchiere",
+    "field": "Campo sportivo",
+    "museum": "Museo",
+    "attraction": "Luogo d'interesse",
+    "freelance": "Libero professionista"
+}
 
 
 def id_generator(size=8, chars=string.digits + string.ascii_letters):
@@ -206,7 +214,7 @@ def city_home(city):
     print(lat_from_cookie)
     print(lon_from_cookie)
     businesses_in_city = businesses_collection.find({"city": city})
-    resp = make_response(render_template('index.html', businesses_in_city=businesses_in_city, city=city))
+    resp = make_response(render_template('index.html', businesses_in_city=businesses_in_city, city=city, business_types_dict_italian=business_types_dict_italian))
     try:
         resp.set_cookie("lat", value=lat_from_cookie, max_age=0)
         resp.set_cookie("lon", value=lon_from_cookie, max_age=0)
@@ -299,7 +307,7 @@ def partners_page():
         # Business
         img = request.files['img'].read()
         business_name = request.form["bname"]
-        business_type = request.args["type"]
+        business_type = request.form["type"]
         open_time1 = request.form["open-time1"]
         close_time1 = request.form["close-time1"]
         open_time2 = request.form["open-time2"]
@@ -316,7 +324,6 @@ def partners_page():
             return redirect("/email_already_signed_up")  # TODO
         # Decorate business_name with random string to force uniqueness
         business_name = business_name + "$" + id_generator()
-        business_name.replace(" ", "_") # Set business name to this, if needed in future
         # Business services
         num_of_services = int(request.form["num_of_services"])
         services = [str(request.form["service"])]
@@ -399,10 +406,11 @@ def send_business_image(business_name):
 
 @app.route('/list/<city>', methods=["GET"])
 def list(city):
+    # These cookies do not exists, since they are deleted after first usage in main page
     lat_from_cookie = request.cookies.get("lat")
     lon_from_cookie = request.cookies.get("lon")
     businesses_in_city = businesses_collection.find({"city": city})
-    resp = make_response(render_template('list.html', businesses_in_city=businesses_in_city, city=city))
+    resp = make_response(render_template('list.html', businesses_in_city=businesses_in_city, city=city, business_types_dict_italian=business_types_dict_italian))
     try:
         resp.set_cookie("lat", value=lat_from_cookie, max_age=0)
         resp.set_cookie("lon", value=lon_from_cookie, max_age=0)

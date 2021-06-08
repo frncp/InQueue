@@ -48,8 +48,6 @@ a
         <p>Liberi professionisti</p>
     </div>
 </div>
-</div>
-</div>
 
 <h2 class="mt-5 mb-4">Attività carine che ti fanno divertire</h2>
 
@@ -58,8 +56,8 @@ a
         {% for element in businesses_in_city %}
         <div class="col mb-4">
             <div class="card">
-                <img src="/photos/{{element['business_name']}}.jpg" class="card-img-top" style="width: 100%; height: 100%; object-fit: cover" alt="">
-                <a href="/business/{{ element['business_name'] }}">
+                <img src="/photos/{{element["business_name"]}}.jpg" class="card-img-top" style="width: 100%; height: 100%; object-fit: cover" alt="">
+                <a href="/business/{{ element["business_name"] }}">
                 <div class="card-body card-img-overlay d-flex flex-column">
                     <div class="row">
                         <h5 class="card-title">{{ (element["business_name"])[:-9] }}</h5>
@@ -68,7 +66,7 @@ a
                         <p class="card-subtitle">{{ element["address"] }}</p>
                     </div>
                     <div class="row">
-                        <p class="card-subtitle small">{{ element["business_type"] }}</p>
+                        <p class="card-subtitle small">{{ business_types_dict_italian[element["business_type"]] }}</p>
                     </div>
                     <div class="row info-row-3 mt-auto">
                         <div class="col-6 text-start">
