@@ -3,43 +3,45 @@
 
 <head>
     <meta charset="UTF-8">
-<title>{% block title %}{% endblock %}</title>
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='images/favicons/apple-touch-icon.png') }}">
-<link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='images/favicons/favicon-32x32.png') }}">
-<link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='images/favicons/favicon-16x16.png') }}">
-<link rel="mask-icon" href="{{ url_for('static', filename='images/favicons/safari-pinned-tab.svg') }}" color="#8d85ff">
-<meta name="apple-mobile-web-app-title" content="InQueue">
-<meta name="application-name" content="InQueue">
-<meta name="msapplication-TileColor" content="#8d85ff">
-<meta name="theme-color" content="#8d85ffff">
-<link rel="manifest" crossorigin="use-credentials" href="{{ url_for('static', filename='manifest.json') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.css') }}"/>
-<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"/>
-<link rel="stylesheet" href="{{ url_for('static', filename='css/leaflet.css') }}"/>
-<script src="{{ url_for('static', filename='js/leaflet.js') }}"></script>
-<script src="{{ url_for('static', filename='js/main.js') }}"></script>
-<script src="{{ url_for('static', filename='js/autocomplete.js') }}"></script>
-{% block head %}{% endblock %}
+    <title>{% block title %}{% endblock %}</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="apple-touch-icon" sizes="180x180"
+          href="{{ url_for('static', filename='images/favicons/apple-touch-icon.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32"
+          href="{{ url_for('static', filename='images/favicons/favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16"
+          href="{{ url_for('static', filename='images/favicons/favicon-16x16.png') }}">
+    <link rel="mask-icon" href="{{ url_for('static', filename='images/favicons/safari-pinned-tab.svg') }}"
+          color="#8d85ff">
+    <meta name="apple-mobile-web-app-title" content="InQueue">
+    <meta name="application-name" content="InQueue">
+    <meta name="msapplication-TileColor" content="#8d85ff">
+    <meta name="theme-color" content="#8d85ffff">
+    <link rel="manifest" crossorigin="use-credentials" href="{{ url_for('static', filename='manifest.json') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.css') }}"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/leaflet.css') }}"/>
+    <script src="{{ url_for('static', filename='js/leaflet.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/autocomplete.js') }}"></script>
+    {% block head %}{% endblock %}
 </head>
 
 
 <body>
-  
-    <nav class="container pt-3">
-        <div class="row">
-          <div class="col-9">
+
+<nav class="container pt-3">
+    <div class="row" id="header">
+        <div class="col-6">
             <a class="text-decoration-none" href="/"><span class="h4 inqueue-purple ">InQueue</span></a>
-          </div>
         </div>
-      </nav>
+    </div>
+</nav>
 
 <main class="container">
     {% block main %}{% endblock %}
 </main>
-
-
 
 
 <footer class="bg-inqueue-purple mt-5 text-white p-2 pb-3">
@@ -53,7 +55,8 @@
         </div>
 
         <div>
-            <a class="text-decoration-none text-white" href="/partner">Possiedi un'attività? Registrati al servizio</a><br>
+            <a class="text-decoration-none text-white" href="/partner">Possiedi un'attività? Registrati al
+                servizio</a><br>
             <a class="text-decoration-none text-white" href="/login">Sei già registrato? Accedi</a>
         </div>
     </div>

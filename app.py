@@ -175,15 +175,17 @@ def login():
     if request.method == 'GET':
         return render_template('login.html')
     email = request.form['email']
-    if request.form['password'] == (accounts_collection.find_one({"email": email}))['password']:
+    qr = accounts_collection.find_one({"email": email})
+    if request.form['password'] == qr['password']:
         user = User()
         user.id = email
         flask_login.login_user(user)
-        return redirect(url_for('protected'))
+        return redirect('/protected/'+qr['business_name']+'/settings')
+        #return redirect(url_for('protected'))
     return 'Bad login'
 
 
-@app.route('/protected/<business_name>', methods=['GET', 'POST'])
+@app.route('/protected/<business_name>/settings', methods=['GET', 'POST'])
 def modify_business(business_name):
     query_result_account = accounts_collection.find_one({"email": flask_login.current_user.id})
     if query_result_account["business_name"] != business_name:
@@ -207,6 +209,18 @@ def modify_business(business_name):
                                query_result=query_result, business_types_dict_italian=business_types_dict_italian,
                                t_delta=new_t_delta)
 
+@app.route('/protected/<business_name>/calendar', methods=['GET'])
+def calendar(business_name):
+    query_result_account = accounts_collection.find_one({"email": flask_login.current_user.id})
+
+    if query_result_account["business_name"] != business_name:
+        print("non loggato ma ha provato a modificare la pagina di qualcuno, redirect non scritto, fix this")
+        return redirect(render_template('not_logged_in.html'))  # TODO: Write new page or redirect to login
+
+    query_result = businesses_collection.find_one({"business_name": business_name})
+    query_result2 =  bookings_collection.find({"business_name": b_name})
+    return render_template('calendar.html', query_result=query_result, query_result_account=query_result_account,
+                            query_result2 = query_result2)
 
 @app.route('/logout')
 def logout():
@@ -214,9 +228,9 @@ def logout():
     return 'Logged out'
 
 
-@app.route('/calendar', methods=["GET"])
-def calendar():
-    return render_template("calendar.html")
+@app.route('/business-calendar', methods=["GET"])
+def calendar2():
+    return render_template("booking-calendar.html")
 
 
 @login_manager.unauthorized_handler

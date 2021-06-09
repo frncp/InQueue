@@ -6,10 +6,62 @@ Modifica i dati della tua attività
 
 {% block main %}
 
+<script>
+    function placeButtons() {
+        var button1 = document.createElement("button")
+        var button2 = document.createElement("button")
+
+        var img1 = document.createElement("img")
+        var img2 = document.createElement("img")
+
+        var inQueue = document.getElementById("header")
+
+        var div = document.createElement("div")
+
+        //var ref = document.createElement("a")
+
+        button1.classList.add("btn")
+        button1.classList.add("btn-inqueue-purple")
+        button1.classList.add("w-25")
+        button1.classList.add("section")
+        button1.style = "background-color: rgb(98, 92, 196); border-color: rgb(84, 78, 163);"
+
+        button2.classList.add("btn")
+        button2.classList.add("btn-inqueue-purple")
+        button2.classList.add("w-25")
+        button2.classList.add("section")
+
+        img1.src = "../static/images/settings.png"
+        img1.style = "width: 35%; height: auto;"
+
+        img2.src = "../static/images/calendar.png"
+        img2.style = "width: 35%; height: auto;"
+
+        button1.appendChild(img1)
+        button2.appendChild(img2)
+
+        //ref.href = "/protected/ + " {{ query_result["business_name"] }} + "/calendar"
+        //ref.style= "display: none;"
+        //ref.appendChild(button2)
+
+
+        div.classList.add("col-6")
+        div.appendChild(button1)
+        div.appendChild(button2)
+
+        inQueue.appendChild(div)
+    }
+
+    placeButtons();
+</script>
 
 <style>
     #businessPositionMap{
         height: 30rem;
+    }
+
+    .section {
+        float: right;
     }
 </style>
 
@@ -27,7 +79,7 @@ Modifica i dati della tua attività
             <div class="row">
                 <div class="col-md mt-3">
                     <label for="bname">Nome attività</label>
-                    <input required type="text" autocomplete="activity-name" class="form-control" id="bname" name="bname" value={{ query_result["business_name"] }}>
+                    <input required type="text" autocomplete="activity-name" class="form-control" id="bname" name="bname" value="{{ query_result["business_name"] }}">
                 </div>
                 <div class="col mt-3">
                     <label for="type">Tipologia</label>
