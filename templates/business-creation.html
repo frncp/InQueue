@@ -141,7 +141,7 @@ Aggiungi la tua attività su InQueue
                     <label for="service">Servizio</label>
                     <input type="text" class="form-control" id="service" name="service" autocomplete="no" required>
                     <button type="button" class="btn btn-primary mt-3" onclick="addForm('service', 'num_of_services')">Aggiungi</button>
-                    <input hidden class="d-none" name="num_of_services" id="num_of_services" type="text" value="1"></input>
+                    <input hidden class="d-none" name="num_of_services" id="num_of_services" type="text" value="1">
                 </div>
                 <div class="col-sm">
                     <label for="service">Intervallo in minuti per ogni prenotazione</label>
@@ -386,6 +386,17 @@ function addForm(idForm, counter) {
     if (num == 1)
         currInp = document.getElementById(idForm)
     let newInp = currInp.parentNode.insertBefore(input, currInp.nextSibling)
+    newInp.classList.add('form-control')
+    newInp.classList.add('mt-2')
+    num = num + 1
+    numElement.value = String(num)
+    newInp.id = idForm + '_' + num
+    newInp.name = idForm + '_' + num
+    newInp.type="text"
+    newInp.autocomplete="no"
+    newInp.required=true
+
+    let newInp2 = newInp.insertAdjacentElement(newInp, )
     newInp.classList.add('form-control')
     newInp.classList.add('mt-2')
     num = num + 1

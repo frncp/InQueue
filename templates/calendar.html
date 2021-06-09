@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Modifica i dati della tua attività
+{% endblock %}
+
+{% block main %}
+
+<script>
+    function placeButtons() {
+        var button1 = document.createElement("button")
+        var button2 = document.createElement("button")
+
+        var img1 = document.createElement("img")
+        var img2 = document.createElement("img")
+
+        var inQueue = document.getElementById("header")
+
+        var div = document.createElement("div")
+
+        var ref = document.createElement("a")
+
+        button1.classList.add("btn")
+        button1.classList.add("btn-inqueue-purple")
+        button1.classList.add("w-25")
+        button1.classList.add("section")
+
+        button2.classList.add("btn")
+        button2.classList.add("btn-inqueue-purple")
+        button2.classList.add("w-25")
+        button2.classList.add("section")
+        button2.style = "background-color: rgb(98, 92, 196); border-color: rgb(84, 78, 163);"
+
+        img1.src = "../static/images/settings.png"
+        img1.style = "width: 35%; height: auto;"
+
+        img2.src = "../static/images/calendar.png"
+        img2.style = "width: 35%; height: auto;"
+
+        button1.appendChild(img1)
+        button2.appendChild(img2)
+
+        ref.href = "/protected/ {{ query_result[business_name"] }} /settings"
+        ref.style= "display: none;"
+        ref.appendChild(button1)
+
+        div.classList.add("col-6")
+        div.appendChild(ref)
+        div.appendChild(button2)
+
+        inQueue.appendChild(div)
+    }
+
+    placeButtons();
+</script>
+
+<style>
+    .section
+    {
+        float: right;
+    }
+</style>
+
+{% endblock %}
