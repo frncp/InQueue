@@ -20,10 +20,6 @@ Modifica i dati della tua attività
 
         var ref = document.createElement("a")
 
-        var url = new URL(window.location.href);
-        var parts = toString(url).split("/");
-        var bname = parts[parts.length - 2];
-
         button1.classList.add("btn")
         button1.classList.add("btn-inqueue-purple")
         button1.classList.add("w-25")
@@ -41,7 +37,7 @@ Modifica i dati della tua attività
         img2.src = "/static/images/settings.png"
         img2.style = "width: 35%; height: auto;"
 
-        ref.href = "/protected/" + "Motori$zFmhljzi" + "/calendar"
+        ref.href = "/protected/{{ query_result["business_name"] }}/calendar"
         //button1.appendChild(ref)
         ref.appendChild(button1)
 
