@@ -30,8 +30,8 @@ import certifi
 
 
 # SERVER SETTINGS
-SERVER_NO_FORWARD = False # True = Flask default configuration, run it locally (for testing, debug)
-SERVER_LOCAL_ONLY = False  # True = Run it locally
+SERVER_NO_FORWARD = True # True = Flask default configuration, run it locally (for testing, debug)
+SERVER_LOCAL_ONLY = True  # True = Run it locally
 SERVER_DOMAIN_NAME = 'inqueue.it' # Your domain name here
 
 
@@ -228,6 +228,11 @@ def logout():
     return 'Logged out'
 
 
+@app.route('/business-calendar', methods=["GET"])
+def calendar2():
+    return render_template("booking-calendar.html")
+
+
 @login_manager.unauthorized_handler
 def unauthorized_handler():
     return 'Unauthorized'
@@ -256,11 +261,21 @@ def get_slots():
     return jsonify(available_hours)
 
 
-# API TO GET HOUR SLOTS
+# API TO GET CITIES
 @app.route('/getcities', methods=['GET'])
 def get_cities():
     return jsonify(CITIES)
 
+# API TO GET BOOKINGS
+@app.route('/getbookings', methods=['GET'])
+def get_bookings():
+    b_name = request.args.get('b_name')
+    bookingsDB = bookings_collection.find({"business_name": b_name})
+    bookings = []
+    for item in bookingsDB:
+        bookings.append({"name": item["name"], "surname": item["surname"], "email": item["email"],
+        "cellphone": item["cellphone"], "day": item["day"], "time": item["time"], "service": item["service"], "rated": item["rated"]})
+    return jsonify(bookings)
 
 @app.route('/select', methods=["POST", "GET"])
 def homepage_new():
