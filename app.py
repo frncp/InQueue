@@ -30,8 +30,8 @@ import certifi
 
 
 # SERVER SETTINGS
-SERVER_NO_FORWARD = True # True = Flask default configuration, run it locally (for testing, debug)
-SERVER_LOCAL_ONLY = True  # True = Run it locally
+SERVER_NO_FORWARD = False # True = Flask default configuration, run it locally (for testing, debug)
+SERVER_LOCAL_ONLY = False  # True = Run it locally
 SERVER_DOMAIN_NAME = 'inqueue.it' # Your domain name here
 
 
@@ -134,6 +134,10 @@ def id_generator(size=8, chars=string.digits + string.ascii_letters):
     return ''.join(random.choice(chars) for _ in range(size))
 
 
+def decorate_business_name(business_name):
+    return business_name + "$" + id_generator()
+
+
 class User(flask_login.UserMixin):
     pass
 
@@ -163,13 +167,6 @@ def request_loader(request):
     user.is_authenticated = (password_from_request == query_result['password'])
     return user
 
-
-@app.route('/protected')
-@flask_login.login_required
-def protected():
-    return 'Logged in as: ' + flask_login.current_user.id
-
-
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'GET':
@@ -181,13 +178,16 @@ def login():
         user.id = email
         flask_login.login_user(user)
         return redirect('/protected/'+qr['business_name']+'/calendar')
-        #return redirect(url_for('protected'))
     return 'Bad login'
 
 
 @app.route('/protected/<business_name>/settings', methods=['GET', 'POST'])
+@flask_login.login_required
 def modify_business(business_name):
-    query_result_account = accounts_collection.find_one({"email": flask_login.current_user.id})
+    try:
+        query_result_account = accounts_collection.find_one({"email": flask_login.current_user.id})
+    except AttributeError:
+        return redirect('/login')
     if query_result_account["business_name"] != business_name:
         print("non loggato ma ha provato a modificare la pagina di qualcuno, redirect non scritto, fix this")
         return redirect(render_template('not_logged_in.html'))  # TODO: Write new page or redirect to login
@@ -200,32 +200,79 @@ def modify_business(business_name):
     else:
         # Instead of checking for eventual changes, just set everything as business asked in POST request
         new_t_delta = request.form["slot"]
-        new_open_time1 = request.form["open_time1"]
-        new_close_time1 = request.form["close_time1"]
-        new_open_time2 = request.form["open_time2"]
-        new_close_time2 = request.form["close_time2"]
+        new_open_time1 = request.form["open-time1"]
+        new_close_time1 = request.form["close-time1"]
+        new_open_time2 = request.form["open-time2"]
+        new_close_time2 = request.form["close-time2"]
+        new_business_name = request.form["business_name"]
+        new_business_name = decorate_business_name(new_business_name)
+        # Account replacement
+        account_document = {"business_name": new_business_name, "fname": request.form["fname"],
+                            "lname": request.form["lname"], "email": request.form["email"], "cellphone": request.form["cellphone"],
+                            "password": request.form["password"]}
+        accounts_collection.delete_one({"business_name": business_name})
+        accounts_collection.insert_one(account_document)
+        # Business replacement
+        document = {"business_name": new_business_name, "business_type": request.form["type"],
+                    "open_time1": new_open_time1, "close_time1": new_close_time1, "open_time2": new_open_time2,
+                    "close_time2": new_close_time2, "city": request.form["city"], "address": request.form["address"],
+                    "lat": request.form["lat"], "lon": request.form["lon"],
+                    "creation_date": query_result["creation_date"], "creation_time": query_result["creation_time"],
+                    "rating": query_result["rating"], "ratings": query_result["ratings"]}
+        businesses_collection.delete_one({"business_name": business_name})
+        b_sign_up_result = businesses_collection.insert_one(document)
+        # Business photo replacement
+
+        photo = request.files['img'].read()
+        if len(photo) == 0:
+            print("è vuota")
+            photo_query_result = businesses_photo_collection.find_one({"business_name": business_name})
+            photo = photo_query_result["img"]
+        photo_document = {"_id": b_sign_up_result.inserted_id, "business_name": new_business_name,
+                          "img": photo}
+        businesses_photo_collection.delete_one({"business_name": business_name})
+        businesses_photo_collection.insert_one(photo_document)
+
+        # Array of services and time slots for the business
+        num_of_services = int(request.form["num_of_services"])
+        services = [str(request.form["service"])]
+        service_n = 2
+        while service_n <= num_of_services:
+            service = request.form["service_" + str(service_n)]
+            if len(service) > 0:
+                services.append(service)
+            service_n += 1
+        businesses_collection.update_one({'_id': b_sign_up_result.inserted_id},
+                                         {'$push': {"service": {'$each': services}}})
+
         formatted_time_slots = slot_times(new_t_delta, new_open_time1, new_close_time1, new_open_time2, new_close_time2)
-        return render_template('business-change-info.html',
-                               query_result=query_result, business_types_dict_italian=business_types_dict_italian,
-                               t_delta=new_t_delta)
+        businesses_collection.update_one({'_id': b_sign_up_result.inserted_id},
+                                         {'$push': {"slots": {'$each': formatted_time_slots}}})
+        # Change businesses name in bookings or they won't be displayed
+        bookings_collection.update_one({"business_name": business_name}, {'$set': {"business_name": new_business_name}})
+        return redirect('/protected/'+new_business_name+'/settings')
+
 
 @app.route('/protected/<business_name>/calendar', methods=['GET'])
+@flask_login.login_required
 def calendar(business_name):
-    query_result_account = accounts_collection.find_one({"email": flask_login.current_user.id})
-
+    try:
+        query_result_account = accounts_collection.find_one({"email": flask_login.current_user.id})
+    except AttributeError:
+        return redirect('/login')
     if query_result_account["business_name"] != business_name:
         print("non loggato ma ha provato a modificare la pagina di qualcuno, redirect non scritto, fix this")
-        return redirect(render_template('not_logged_in.html'))  # TODO: Write new page or redirect to login
+        return redirect(render_template('not_logged_in.html')), 403  # TODO: Write new page or redirect to login
 
     query_result = businesses_collection.find_one({"business_name": business_name})
-    query_result2 = bookings_collection.find({"business_name": business_name})
-    return render_template('calendar.html', query_result=query_result, query_result_account=query_result_account,
-                            query_result2 = query_result2)
+    return render_template('calendar.html', query_result=query_result, query_result_account=query_result_account)
+
 
 @app.route('/logout')
+@flask_login.login_required
 def logout():
     flask_login.logout_user()
-    return 'Logged out'
+    return redirect("/select")
 
 
 @app.route('/business-calendar', methods=["GET"])
@@ -266,16 +313,24 @@ def get_slots():
 def get_cities():
     return jsonify(CITIES)
 
+
 # API TO GET BOOKINGS
-@app.route('/getbookings', methods=['GET'])
+@app.route('/protected/getbookings', methods=['GET'])
 def get_bookings():
-    b_name = request.args.get('b_name')
-    bookingsDB = bookings_collection.find({"business_name": b_name})
+    try:
+        query_result_account = accounts_collection.find_one({"email": flask_login.current_user.id})
+    except AttributeError:
+        return 403
+    business_name = request.args.get('b_name')
+    if query_result_account["business_name"] != business_name:
+        return jsonify([]), 403
+    bookingsDB = bookings_collection.find({"business_name": business_name})
     bookings = []
     for item in bookingsDB:
         bookings.append({"name": item["name"], "surname": item["surname"], "email": item["email"],
         "cellphone": item["cellphone"], "day": item["day"], "time": item["time"], "service": item["service"], "rated": item["rated"]})
     return jsonify(bookings)
+
 
 @app.route('/select', methods=["POST", "GET"])
 def homepage_new():
@@ -400,7 +455,7 @@ def partners_page():
     if request.method == "POST":
         # Business details caching
         email = request.form["email"]
-        business_name = request.form["bname"]
+        business_name = request.form["business_name"]
         open_time1 = request.form["open-time1"]
         close_time1 = request.form["close-time1"]
         open_time2 = request.form["open-time2"]
@@ -413,17 +468,7 @@ def partners_page():
             return redirect("/email_already_signed_up")  # TODO
 
         # Decorate business_name with random string to force uniqueness
-        business_name = business_name + "$" + id_generator()
-
-        # Business services reading
-        num_of_services = int(request.form["num_of_services"])
-        services = [str(request.form["service"])]
-        service_n = 2
-        while service_n <= num_of_services:
-            service = request.form["service_"+str(service_n)]
-            if len(service) > 0:
-                services.append(service)
-            service_n += 1
+        business_name = decorate_business_name(business_name)
 
         # Account insert
         account_document = {"business_name": business_name, "fname": request.form["fname"],
@@ -445,8 +490,17 @@ def partners_page():
         businesses_photo_collection.insert_one(photo_document)
 
         # Array of services and time slots for the business
+        num_of_services = int(request.form["num_of_services"])
+        services = [str(request.form["service"])]
+        service_n = 2
+        while service_n <= num_of_services:
+            service = request.form["service_" + str(service_n)]
+            if len(service) > 0:
+                services.append(service)
+            service_n += 1
         businesses_collection.update_one({'_id': b_sign_up_result.inserted_id},
                                          {'$push': {"service": {'$each': services}}})
+
         formatted_time_slots = slot_times(slot, open_time1, close_time1, open_time2, close_time2)
         businesses_collection.update_one({'_id': b_sign_up_result.inserted_id},
                                          {'$push': {"slots": {'$each': formatted_time_slots}}})

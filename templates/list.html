@@ -89,7 +89,7 @@
         let businesses_creation_order_reversed; // TODO: const?
         setType();
 
-        window.onload = () => {
+        window.onload = function() {
             cardContainer = document.getElementById("deck");
             businesses_creation_order = Array.from(cardContainer.getElementsByClassName("card"));
             businesses_creation_order_reversed = businesses_creation_order.slice().reverse();
@@ -161,7 +161,7 @@
                 outer = cards[i].parentNode;
                 title = cards[i].querySelector(".card-title");
                 if (title.innerText.toUpperCase().indexOf(filter) > -1) {
-                    outer.style.display = "";
+                    outer.style.display = " "
                 } else {
                     outer.style.display = "none";
                 }
@@ -182,9 +182,15 @@
 
                     if(btype == "barber" || btype == "hairdresser") {
                         outer.style.display = "";
+                        outer.classList.add('animate__animated')
+                        outer.classList.add('animate__fadeInUp')
+                        outer.classList.add('animate__faster')
                     }
                     else {
                         outer.style.display = "none";
+                        outer.classList.remove('animate__animated')
+                        outer.classList.remove('animate__fadeInUp')
+                        outer.classList.remove('animate__faster')
                     }
                 }
             }
@@ -194,10 +200,16 @@
                     btype = cards[i].dataset.businessType;
 
                     if(btype == "beautician") {
-                        outer.style.display = "";
+                       outer.style.display = "";
+                        outer.classList.add('animate__animated')
+                        outer.classList.add('animate__fadeInUp')
+                        outer.classList.add('animate__faster')
                     }
                     else {
                         outer.style.display = "none";
+                        outer.classList.remove('animate__animated')
+                        outer.classList.remove('animate__fadeInUp')
+                        outer.classList.remove('animate__faster')
                     }
                 }
             }
@@ -209,8 +221,15 @@
 
                     if(btype == "field") {
                         outer.style.display = "";
-                    } else {
+                        outer.classList.add('animate__animated')
+                        outer.classList.add('animate__fadeInUp')
+                        outer.classList.add('animate__faster')
+                    }
+                    else {
                         outer.style.display = "none";
+                        outer.classList.remove('animate__animated')
+                        outer.classList.remove('animate__fadeInUp')
+                        outer.classList.remove('animate__faster')
                     }
                 }
             }
@@ -221,9 +240,15 @@
 
                     if(btype == "museum" || btype == "attraction") {
                         outer.style.display = "";
+                        outer.classList.add('animate__animated')
+                        outer.classList.add('animate__fadeInUp')
+                        outer.classList.add('animate__faster')
                     }
                     else {
                         outer.style.display = "none";
+                        outer.classList.remove('animate__animated')
+                        outer.classList.remove('animate__fadeInUp')
+                        outer.classList.remove('animate__faster')
                     }
                 }
             }
@@ -234,9 +259,15 @@
 
                     if(btype == "car-repair") {
                         outer.style.display = "";
+                        outer.classList.add('animate__animated')
+                        outer.classList.add('animate__fadeInUp')
+                        outer.classList.add('animate__faster')
                     }
                     else {
                         outer.style.display = "none";
+                        outer.classList.remove('animate__animated')
+                        outer.classList.remove('animate__fadeInUp')
+                        outer.classList.remove('animate__faster')
                     }
                 }
             }
@@ -247,9 +278,15 @@
 
                     if(btype == "gym") {
                         outer.style.display = "";
+                        outer.classList.add('animate__animated')
+                        outer.classList.add('animate__fadeInUp')
+                        outer.classList.add('animate__faster')
                     }
                     else {
                         outer.style.display = "none";
+                        outer.classList.remove('animate__animated')
+                        outer.classList.remove('animate__fadeInUp')
+                        outer.classList.remove('animate__faster')
                     }
                 }
             }
@@ -260,8 +297,15 @@
 
                     if(btype == "freelance") {
                         outer.style.display = "";
-                    } else {
+                        outer.classList.add('animate__animated')
+                        outer.classList.add('animate__fadeInUp')
+                        outer.classList.add('animate__faster')
+                    }
+                    else {
                         outer.style.display = "none";
+                        outer.classList.remove('animate__animated')
+                        outer.classList.remove('animate__fadeInUp')
+                        outer.classList.remove('animate__faster')
                     }
                 }
             }
@@ -272,6 +316,9 @@
                     btype = cards[i].dataset.businessType;
 
                     outer.style.display = "";
+                    outer.classList.remove('animate__animated')
+                        outer.classList.remove('animate__fadeInUp')
+                        outer.classList.remove('animate__faster')
                 }
             }
 
