@@ -32,6 +32,7 @@ Aggiungi la tua attività su InQueue
                 <div class="col mt-3">
                     <label for="type">Tipologia</label>
                     <select class="form-select form-select-md mb-3" id="type" name="type" onchange="disableByType(this)">
+                        <option value="" disabled selected>Seleziona una tipologia per la tua attività</option>>
                         <option value="barber">Barbiere</option>
                         <option value="beautician">Estetista</option>
                         <option value="hairdresser">Parrucchiere</option>
@@ -61,7 +62,7 @@ Aggiungi la tua attività su InQueue
                 <label for="address">Indirizzo</label>
                 <div class="input-group mb-3">
               <button class="btn btn-outline-secondary" type="button" onclick="businessGPS()" id="GPSButton">Localizzami</button>
-                <input type="text" class="form-control" name="address" id="address" placeholder="Via Nuova Poggioreale" required autocomplete="no">
+                <input type="text" class="form-control" name="address" id="address" placeholder="Via Roma" required autocomplete="no">
                 </div>
               </div>
             
@@ -391,6 +392,9 @@ function addForm(idForm, counter) {
     numElement.value = String(num)
     newInp.id = idForm + '_' + num
     newInp.name = idForm + '_' + num
+    newInp.type="text"
+    newInp.autocomplete="no"
+    newInp.required=true
 }
 
 

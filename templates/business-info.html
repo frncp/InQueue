@@ -157,8 +157,7 @@
 
         // AJAX to get time slots depending on the date selected
         function getTimesJSON(date, callback) {
-            let business = '{{ query_result["business_name"] }}'
-            let string_api = "/getslots?b_name=" + business + "&date=" + date.toString()
+            let string_api = "/getslots?b_name=" + '{{ query_result["business_name"] }}' + "&date=" + date.toString()
             let request = new XMLHttpRequest()            
 
             request.onerror = function () {

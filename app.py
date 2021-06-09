@@ -91,6 +91,45 @@ business_types_dict_italian = {
 }
 
 
+def slot_size(query_result):
+    time_format = '%H:%M'
+    t1 = query_result["slots"][0]
+    t2 = query_result["slots"][1]
+    t_delta = datetime.strptime(t2, time_format) - datetime.strptime(t1, time_format)
+    return t_delta.seconds//60
+
+
+def slot_times(slot, open_time1, close_time1, open_time2, close_time2):
+    # Time slots
+    delta = timedelta(
+        minutes=int(slot)
+    )
+    # Morning slots
+    time = datetime.strptime(open_time1, '%H:%M')
+    slots = []
+    close_time = datetime.strptime(close_time1, '%H:%M')
+    if time > close_time:
+        close_time = close_time.replace(day=2)
+    while time < close_time:
+        slots.append(time)
+        time = time + delta
+    formatted_time_slots = []
+    for time_slot in slots:
+        formatted_time_slots.append(time_slot.strftime('%H:%M'))
+    # Evening slots
+    time = datetime.strptime(open_time2, '%H:%M')
+    slots_2 = []
+    close_time_2 = datetime.strptime(close_time2, '%H:%M')
+    if time > close_time_2:
+        close_time_2 = close_time_2.replace(day=2)
+    while time < close_time_2:
+        slots_2.append(time)
+        time = time + delta
+    for time_slot in slots_2:
+        formatted_time_slots.append(time_slot.strftime('%H:%M'))
+    return formatted_time_slots
+
+
 def id_generator(size=8, chars=string.digits + string.ascii_letters):
     return ''.join(random.choice(chars) for _ in range(size))
 
@@ -125,6 +164,12 @@ def request_loader(request):
     return user
 
 
+@app.route('/protected')
+@flask_login.login_required
+def protected():
+    return 'Logged in as: ' + flask_login.current_user.id
+
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'GET':
@@ -140,15 +185,27 @@ def login():
 
 @app.route('/protected/<business_name>', methods=['GET', 'POST'])
 def modify_business(business_name):
+    query_result_account = accounts_collection.find_one({"email": flask_login.current_user.id})
+    if query_result_account["business_name"] != business_name:
+        print("non loggato ma ha provato a modificare la pagina di qualcuno, redirect non scritto, fix this")
+        return redirect(render_template('not_logged_in.html'))  # TODO: Write new page or redirect to login
+    query_result = businesses_collection.find_one({"business_name": business_name})
+    t_delta = slot_size(query_result)
     if request.method == 'GET':
-        query_result = businesses_collection.find_one({"business_name": business_name})
-        return render_template('business-change-info.html', query_result=query_result)
-
-
-@app.route('/protected')
-@flask_login.login_required
-def protected():
-    return 'Logged in as: ' + flask_login.current_user.id
+        return render_template('business-change-info.html', query_result=query_result, t_delta=t_delta,
+                               query_result_account=query_result_account,
+                               business_types_dict_italian=business_types_dict_italian)
+    else:
+        # Instead of checking for eventual changes, just set everything as business asked in POST request
+        new_t_delta = request.form["slot"]
+        new_open_time1 = request.form["open_time1"]
+        new_close_time1 = request.form["close_time1"]
+        new_open_time2 = request.form["open_time2"]
+        new_close_time2 = request.form["close_time2"]
+        formatted_time_slots = slot_times(new_t_delta, new_open_time1, new_close_time1, new_open_time2, new_close_time2)
+        return render_template('business-change-info.html',
+                               query_result=query_result, business_types_dict_italian=business_types_dict_italian,
+                               t_delta=new_t_delta)
 
 
 @app.route('/logout')
@@ -312,33 +369,24 @@ def bookings_confirmation_page(booking_id):
 @app.route("/partner", methods=["POST", "GET"])
 def partners_page():
     if request.method == "POST":
-        # Account
-        fname = request.form["fname"]
-        lname = request.form["lname"]
+        # Business details caching
         email = request.form["email"]
-        password = request.form["password"]
-        cellphone = request.form["cellphone"]
-        # Business
-        img = request.files['img'].read()
         business_name = request.form["bname"]
-        business_type = request.form["type"]
         open_time1 = request.form["open-time1"]
         close_time1 = request.form["close-time1"]
         open_time2 = request.form["open-time2"]
         close_time2 = request.form["close-time2"]
         slot = request.form["slot"]
-        # Business position
-        city = request.form["city"]
-        address = request.form["address"]
-        lat = request.form["lat"]
-        lon = request.form["lon"]
+
         # Check if account is already existing
         account_found = accounts_collection.find_one({"email": email})
         if account_found is not None:
             return redirect("/email_already_signed_up")  # TODO
+
         # Decorate business_name with random string to force uniqueness
         business_name = business_name + "$" + id_generator()
-        # Business services
+
+        # Business services reading
         num_of_services = int(request.form["num_of_services"])
         services = [str(request.form["service"])]
         service_n = 2
@@ -348,60 +396,43 @@ def partners_page():
                 services.append(service)
             service_n += 1
 
-        # Time slots
-        delta = timedelta(
-            minutes=int(slot)
-        )
-        # Morning slots
-        time = datetime.strptime(open_time1, '%H:%M')
-        slots = []
-        close_time = datetime.strptime(close_time1, '%H:%M')
-        if time > close_time:
-            close_time = close_time.replace(day=2)
-        while time < close_time:
-            slots.append(time)
-            time = time + delta
-        formatted_time_slots = []
-        for time_slot in slots:
-            formatted_time_slots.append(time_slot.strftime('%H:%M'))
-        # Evening slots
-        time = datetime.strptime(open_time2, '%H:%M')
-        slots_2 = []
-        close_time_2 = datetime.strptime(close_time2, '%H:%M')
-        if time > close_time_2:
-            close_time_2 = close_time_2.replace(day=2)
-        while time < close_time_2:
-            slots_2.append(time)
-            time = time + delta
-        for time_slot in slots_2:
-            formatted_time_slots.append(time_slot.strftime('%H:%M'))
-
-        # Time of creation to insert in DB
+        # Account insert
+        account_document = {"business_name": business_name, "fname": request.form["fname"],
+                            "lname": request.form["lname"], "email": email, "cellphone": request.form["cellphone"],
+                            "password": request.form["password"]}
+        accounts_collection.insert_one(account_document)
+        # Business insert
         today = str(date.today()).replace("/", "-", 3)
         now = datetime.now().strftime('%H:%M:%S')
-        account_document = {"business_name": business_name, "fname": fname, "lname": lname, "email": email,
-                            "cellphone": cellphone, "password": password}
-        accounts_collection.insert_one(account_document)
-        document = {"business_name": business_name, "business_type": business_type, "open_time1": open_time1, "close_time1": close_time1,
-                    "open_time2": open_time2, "close_time2": close_time2, "city": city, "address": address, "lat": lat,
-                    "lon": lon, "creation_date": today, "creation_time": now, "rating": float(0.0), "ratings": 0}
+        document = {"business_name": business_name, "business_type": request.form["type"], "open_time1": open_time1,
+                    "close_time1": close_time1, "open_time2": open_time2, "close_time2": close_time2,
+                    "city": request.form["city"], "address": request.form["address"], "lat": request.form["lat"],
+                    "lon": request.form["lon"], "creation_date": today, "creation_time": now, "rating": float(0.0),
+                    "ratings": 0}
         b_sign_up_result = businesses_collection.insert_one(document)
-        photo_document = {"_id": b_sign_up_result.inserted_id, "business_name": business_name, "img": img}
+        # Business photo insert
+        photo_document = {"_id": b_sign_up_result.inserted_id, "business_name": business_name,
+                          "img": request.files['img'].read()}
         businesses_photo_collection.insert_one(photo_document)
 
+        # Array of services and time slots for the business
         businesses_collection.update_one({'_id': b_sign_up_result.inserted_id},
                                          {'$push': {"service": {'$each': services}}})
+        formatted_time_slots = slot_times(slot, open_time1, close_time1, open_time2, close_time2)
         businesses_collection.update_one({'_id': b_sign_up_result.inserted_id},
                                          {'$push': {"slots": {'$each': formatted_time_slots}}})
 
         return redirect("/newBusiness_confirmation/"+business_name)
     else:
-        #msg = Message("Hello",
-        #              sender=("inQueue", "antoniototimorelli@gmail.com"),
-        #              recipients=["mattiarip@gmail.com"])
-        #msg.body = "Funzia?"
-        #mail.send(msg)
+        """
+        msg = Message("Hello",
+                      sender=("inQueue", "antoniototimorelli@gmail.com"),
+                      recipients=["mattiarip@gmail.com"])
+        msg.body = "Funzia?"
+        mail.send(msg)
+        """
         return render_template("business-creation.html")
+
 
 # TODO
 @app.route('/newBusiness_confirmation/<business_name>', methods=["GET"])
@@ -419,12 +450,13 @@ def send_business_image(business_name):
 
 
 @app.route('/list/<city>', methods=["GET"])
-def list(city):
+def list_cities(city):
     # These cookies do not exists, since they are deleted after first usage in main page
     lat_from_cookie = request.cookies.get("lat")
     lon_from_cookie = request.cookies.get("lon")
     businesses_in_city = businesses_collection.find({"city": city})
-    resp = make_response(render_template('list.html', businesses_in_city=businesses_in_city, city=city, business_types_dict_italian=business_types_dict_italian))
+    resp = make_response(render_template('list.html', businesses_in_city=businesses_in_city, city=city,
+                                         business_types_dict_italian=business_types_dict_italian))
     try:
         resp.set_cookie("lat", value=lat_from_cookie, max_age=0)
         resp.set_cookie("lon", value=lon_from_cookie, max_age=0)
