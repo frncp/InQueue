@@ -18,7 +18,7 @@ Modifica i dati della tua attività
 
         var div = document.createElement("div")
 
-        var ref = document.createElement("a")
+        //var ref = document.createElement("a")
 
         button1.classList.add("btn")
         button1.classList.add("btn-inqueue-purple")
@@ -40,12 +40,12 @@ Modifica i dati della tua attività
         button1.appendChild(img1)
         button2.appendChild(img2)
 
-        ref.href = "/protected/ + " {{ query_result["business_name"] }} + "/calendar"
-        ref.style= "display: none;"
-        ref.appendChild(button2)
+        //ref.href = "/protected/ + " {{ query_result["business_name"] }} + "/calendar"
+        //ref.style= "display: none;"
+        //ref.appendChild(button2)
 
 
-    div.classList.add("col-6")
+        div.classList.add("col-6")
         div.appendChild(button1)
         div.appendChild(button2)
 
@@ -64,10 +64,7 @@ Modifica i dati della tua attività
         float: right;
     }
 </style>
-<!--
-<button class="btn btn-inqueue-purple w-25 section"><img src="../static/images/settings.png" style="width: 15%; height: auto;"></button>
-<button class="btn btn-inqueue-purple w-25 section"><img src="../static/images/calendar.png" style="width: 15%; height: auto;"></button>
--->
+
 <h2 class="mt-5 mb-4">Modifica qui i dati della tua attività, sovrascrivendo i vecchi</h2>
 <p class="text-muted">Quando hai finito con le modifiche, clicca su applica in fondo alla pagina</p>
 <div class="container">

@@ -18,7 +18,7 @@ Modifica i dati della tua attività
 
         var div = document.createElement("div")
 
-        var ref = document.createElement("a")
+        //var ref = document.createElement("a")
 
         button1.classList.add("btn")
         button1.classList.add("btn-inqueue-purple")
@@ -40,12 +40,12 @@ Modifica i dati della tua attività
         button1.appendChild(img1)
         button2.appendChild(img2)
 
-        ref.href = "/protected/ {{ query_result[business_name"] }} /settings"
-        ref.style= "display: none;"
-        ref.appendChild(button1)
+        //ref.href = "/protected/ {{ query_result[business_name"] }} /settings"
+        //ref.style= "display: none;"
+        //ref.appendChild(button1)
 
         div.classList.add("col-6")
-        div.appendChild(ref)
+        div.appendChild(button1)
         div.appendChild(button2)
 
         inQueue.appendChild(div)
