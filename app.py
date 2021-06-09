@@ -180,7 +180,7 @@ def login():
         user = User()
         user.id = email
         flask_login.login_user(user)
-        return redirect('/protected/'+qr['business_name']+'/settings')
+        return redirect('/protected/'+qr['business_name']+'/calendar')
         #return redirect(url_for('protected'))
     return 'Bad login'
 
@@ -218,7 +218,7 @@ def calendar(business_name):
         return redirect(render_template('not_logged_in.html'))  # TODO: Write new page or redirect to login
 
     query_result = businesses_collection.find_one({"business_name": business_name})
-    query_result2 =  bookings_collection.find({"business_name": b_name})
+    query_result2 = bookings_collection.find({"business_name": business_name})
     return render_template('calendar.html', query_result=query_result, query_result_account=query_result_account,
                             query_result2 = query_result2)
 
