@@ -52,14 +52,7 @@
         <div class="row row-cols-1 row-cols-sm-1 row-cols-md-2 row-cols-xl-3 row-cols-xxl-4" id="deck">
             {% for element in businesses_in_city %}
                 <div class="col mb-4">
-                    <div class="card">
-
-                        <!-- Escamotage -->
-                        <div style="display: none;" id="rating">{{ element["rating"] }}</div>
-                        <div style="display: none;" id="ratings">{{ element["ratings"] }}</div>
-                        <div style="display: none;" id="b_type">{{ element["business_type"] }}</div>
-                        <!-- Escamotage end -->
-
+                    <div class="card" data-rating="{{ element["rating"] }}" data-rating-number="{{ element["ratings"] }}" data-business-type="{{ element["business_type"] }}">
                         <img src="/photos/{{ element["business_name"] }}.jpg" class="card-img-top" style="width: 100%; height:
                 100%; object-fit: cover" alt="">
                         <a href="/business/{{ element["business_name"] }}">
@@ -111,8 +104,8 @@
         }
 
         function compareRating(a, b) {
-            let at = parseFloat(document.getElementById('rating').innerText);
-            let bt = parseFloat(document.getElementById('rating').innerText);
+            let at = parseFloat(a.dataset.rating);
+            let bt = parseFloat(a.dataset.ratingNumber);
             if (at > bt) {
                 return -1;
             }
@@ -185,7 +178,7 @@
             if (value == "barber_hairdresser") {
                 for (i = 0; i < cards.length; i++) {
                     outer = cards[i].parentNode;
-                    btype = cards[i].querySelector("#b_type").innerText;
+                    btype = cards[i].dataset.businessType;
 
                     if(btype == "barber" || btype == "hairdresser") {
                         outer.style.display = "";
@@ -198,7 +191,7 @@
             else if (value == "beautician") {
                 for (i = 0; i < cards.length; i++) {
                     outer = cards[i].parentNode;
-                    btype = cards[i].querySelector("#b_type").innerText;
+                    btype = cards[i].dataset.businessType;
 
                     if(btype == "beautician") {
                         outer.style.display = "";
@@ -212,7 +205,7 @@
             {
                 for (i = 0; i < cards.length; i++) {
                     outer = cards[i].parentNode;
-                    btype = cards[i].querySelector("#b_type").innerText;
+                    btype = cards[i].dataset.businessType;
 
                     if(btype == "field") {
                         outer.style.display = "";
@@ -224,7 +217,7 @@
             else if (value == "places") {
                 for (i = 0; i < cards.length; i++) {
                     outer = cards[i].parentNode;
-                    btype = cards[i].querySelector("#b_type").innerText;
+                    btype = cards[i].dataset.businessType;
 
                     if(btype == "museum" || btype == "attraction") {
                         outer.style.display = "";
@@ -237,7 +230,7 @@
             else if (value == "car-repair") {
                 for (i = 0; i < cards.length; i++) {
                     outer = cards[i].parentNode;
-                    btype = cards[i].querySelector("#b_type").innerText;
+                    btype = cards[i].dataset.businessType;
 
                     if(btype == "car-repair") {
                         outer.style.display = "";
@@ -250,7 +243,7 @@
             else if (value == "gym") {
                 for (i = 0; i < cards.length; i++) {
                     outer = cards[i].parentNode;
-                    btype = cards[i].querySelector("#b_type").innerText;
+                    btype = cards[i].dataset.businessType;
 
                     if(btype == "gym") {
                         outer.style.display = "";
@@ -263,7 +256,7 @@
             else if (value == "freelance") {
                 for (i = 0; i < cards.length; i++) {
                     outer = cards[i].parentNode;
-                    btype = cards[i].querySelector("#b_type").innerText;
+                    btype = cards[i].dataset.businessType;
 
                     if(btype == "freelance") {
                         outer.style.display = "";
@@ -276,7 +269,7 @@
             {
                 for (i = 0; i < cards.length; i++) {
                     outer = cards[i].parentNode;
-                    btype = cards[i].querySelector("#b_type").innerText;
+                    btype = cards[i].dataset.businessType;
 
                     outer.style.display = "";
                 }
