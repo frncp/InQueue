@@ -5,7 +5,7 @@ Modifica i dati della tua attività
 {% endblock %}
 
 {% block main %}
-
+    <!--
 <script>
     function placeButtons() {
         var button1 = document.createElement("button")
@@ -37,16 +37,16 @@ Modifica i dati della tua attività
         img2.src = "/static/images/settings.png"
         img2.style = "width: 35%; height: auto;"
 
-        ref.href = "/protected/{{ query_result["business_name"] }}/calendar"
+        ref.href = "/protected/{{ query_result["business_name"] }}/settings"
         //button1.appendChild(ref)
-        ref.appendChild(button1)
+        ref.appendChild(button2)
 
         button1.appendChild(img1)
         button2.appendChild(img2)
 
         div.classList.add("col-6")
+        div.appendChild(button1)
         div.appendChild(ref)
-        div.appendChild(button2)
 
         inQueue.appendChild(div)
     }
@@ -64,7 +64,7 @@ Modifica i dati della tua attività
 </style>
 
 <h2 class="mt-5 mb-4">Modifica qui i dati della tua attività, sovrascrivendo i vecchi</h2>
-<p class="text-muted">Quando hai finito con le modifiche, clicca su applica in fondo alla pagina</p>
+<p class="text-muted">Quando hai finito con le modifiche, clicca su "Applica le modifiche" in fondo alla pagina</p>
 <div class="container">
     <form action="#" method="POST" id="form" enctype="multipart/form-data" class="mt-5">
         <section id="form1">
@@ -72,17 +72,17 @@ Modifica i dati della tua attività
             <div class="mb-3">
                 <label for="img" class="form-label d-block">Immagine di presentazione</label>
                 <img id="output" width="200" class="my-2 mx-auto d-block"/>
-                <input class="form-control" type="file" accept="image/*" id="img" name="img" onchange="loadFile(event)" required>
+                <input class="form-control" type="file" accept="image/*" id="img" name="img" onchange="loadFile(event)" >
               </div>
             <div class="row">
                 <div class="col-md mt-3">
-                    <label for="bname">Nome attività</label>
-                    <input required type="text" autocomplete="activity-name" class="form-control" id="bname" name="bname" value="{{ query_result["business_name"] }}">
+                    <label for="business_name">Nome attività</label>
+                    <input required type="text" pattern="[A-Za-z0-9 ]*" autocomplete="activity-name" class="form-control" id="business_name" name="business_name" value="{{ query_result["business_name"][:-9] }}">
                 </div>
                 <div class="col mt-3">
                     <label for="type">Tipologia</label>
                     <select class="form-select form-select-md mb-3" id="type" name="type" onchange="disableByType(this)">
-                        <option value="{{query_result["business_type"]}}" disabled selected>{{ business_types_dict_italian[query_result["business_type"]] }}</option>
+                        <option value="{{query_result["business_type"]}}" selected>{{ business_types_dict_italian[query_result["business_type"]] }}</option>
                         <option value="barber">Barbiere</option>
                         <option value="beautician">Estetista</option>
                         <option value="hairdresser">Parrucchiere</option>
@@ -104,8 +104,8 @@ Modifica i dati della tua attività
 
 
 
-              <input type="text" class="form-control" name="lat" id="lat" readonly hidden required>
-              <input type="text" class="form-control" name="lon" id="lon" readonly hidden required>
+              <input type="text" class="form-control" name="lat" id="lat" value="{{ query_result["lat"] }}" readonly hidden required>
+              <input type="text" class="form-control" name="lon" id="lon" value="{{ query_result["lon"] }}"readonly hidden required>
             <div class="row">
 
              <div class="col">
@@ -190,7 +190,7 @@ Modifica i dati della tua attività
             <div class="row">
                 <div class="col-sm" id="services-container">
                     <label for="service">Servizio</label>
-                    <input type="text" class="form-control mt-2" id="service" name="service" autocomplete="no" value="{{ query_result["service"][0] }}"required>
+                    <input type="text" class="form-control" id="service" name="service" autocomplete="no" value="{{ query_result["service"][0] }}"required>
                     {% for i in range(1,query_result["service"]|length)  %}
                         {% set service_string = ["service_", i + 1]|join('') %}
                     <input type="text" class="form-control mt-2" id="{{  service_string }}" name="{{  service_string }}" autocomplete="no" value="{{ query_result["service"][i] }}"required>
@@ -242,7 +242,7 @@ Modifica i dati della tua attività
               </div>
              <label for="password-confirm">Conferma password</label>
              <input type="password" name="password-confirm" id="password-confirm" class="form-control" onkeyup="validatePassword()" required/>
-             <input class="btn btn-danger w-100 mt-4" type="submit" onclick="addValidateCSS(); validateAll()">
+             <input class="btn btn-danger w-100 mt-4" type="submit" onclick="addValidateCSS(); validateAll()" value="Applica le modifiche"/>
          </section>
     </form>
 </div>
@@ -258,14 +258,14 @@ Modifica i dati della tua attività
     }
 
     function validateFirstForm() {
-        let bname = (document.getElementById('bname').checkValidity())
+        let business_name = (document.getElementById('business_name').checkValidity())
         let addr = ((document.getElementById('address').value).length > 0)
         let city = ((document.getElementById('city').value).length > 0)
         let inlat = document.getElementById('lat').value
         let inlon = document.getElementById('lon').value
 
 
-        if (bname && addr && city){
+        if (business_name && addr && city){
             if((inlat > -90 && inlat < 90) && (inlon > -180 && inlon < 180))
                 return true
         }

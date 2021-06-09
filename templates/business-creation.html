@@ -26,8 +26,8 @@ Aggiungi la tua attività su InQueue
               </div>
             <div class="row">
                 <div class="col-md mt-3">
-                    <label for="bname">Nome attività</label>
-                    <input required type="text" autocomplete="activity-name" class="form-control" id="bname" name="bname" placeholder="Nome attività">
+                    <label for="business_name">Nome attività</label>
+                    <input required type="text" pattern="[A-Za-z0-9 ]*" autocomplete="activity-name" class="form-control" id="business_name" name="business_name" placeholder="Nome attività">
                 </div>
                 <div class="col mt-3">
                     <label for="type">Tipologia</label>
@@ -203,14 +203,14 @@ Aggiungi la tua attività su InQueue
     }
 
     function validateFirstForm() {
-        let bname = (document.getElementById('bname').checkValidity())
+        let business_name = (document.getElementById('business_name').checkValidity())
         let addr = ((document.getElementById('address').value).length > 0)
         let city = ((document.getElementById('city').value).length > 0)
         let inlat = document.getElementById('lat').value
         let inlon = document.getElementById('lon').value
 
 
-        if (bname && addr && city){
+        if (business_name && addr && city){
             if((inlat > -90 && inlat < 90) && (inlon > -180 && inlon < 180))
                 return true
         }
