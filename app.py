@@ -312,10 +312,16 @@ def get_cities():
 
 
 # API TO GET BOOKINGS
-@app.route('/getbookings', methods=['GET'])
+@app.route('/protected/getbookings', methods=['GET'])
 def get_bookings():
-    b_name = request.args.get('b_name')
-    bookingsDB = bookings_collection.find({"business_name": b_name})
+    try:
+        query_result_account = accounts_collection.find_one({"email": flask_login.current_user.id})
+    except AttributeError:
+        return 403
+    business_name = request.args.get('b_name')
+    if query_result_account["business_name"] != business_name:
+        return jsonify([]), 403
+    bookingsDB = bookings_collection.find({"business_name": business_name})
     bookings = []
     for item in bookingsDB:
         bookings.append({"name": item["name"], "surname": item["surname"], "email": item["email"],

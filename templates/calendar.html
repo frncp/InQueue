@@ -1,8 +1,17 @@
 {% extends 'base.html' %}
 
 {% block title %}
-Visualizza le prenotazioni ricevute
+    Calendario prenotazioni - InQueue
 {% endblock %}
+
+{% block head %}
+    <!--https://github.com/year-calendar/js-year-calendar-->
+    <script src="https://unpkg.com/js-year-calendar@latest/dist/js-year-calendar.min.js"></script>
+    <script src="https://unpkg.com/js-year-calendar@latest/locales/js-year-calendar.it.js"></script>
+    <link rel="stylesheet" type="text/css"
+          href="https://unpkg.com/js-year-calendar@latest/dist/js-year-calendar.min.css"/>
+{% endblock %}
+
 
 {% block main %}
 
@@ -52,6 +61,97 @@ Visualizza le prenotazioni ricevute
     }
     placeButtons();
 </script>
+-->
+    <style>
+        #dropdownMenuButton {
+            width: 115px;
+            height: 115px;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+            transition: transform .2s;
+        }
+
+        #dropdownMenuButton:hover {
+            transform: scale(1.2);
+        }
+
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+            z-index: 1;
+        }
+    </style>
+
+    <div class="row">
+        <div class="dropdown">
+            <img style="float: right;" src="/photos/{{ query_result["business_name"] }}.jpg"
+                 id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                 data-offset="10,20">
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" style="width: 15%; height: auto;">
+                <a class="dropdown-item" href="/protected/{{ query_result["business_name"] }}/settings">
+                    <img src="/static/images/settings.png" style="width: 15%; height: auto;">
+                    Impostazioni
+                </a>
+                <a class="dropdown-item" href="/protected/{{ query_result["business_name"] }}/calendar">
+                    <img src="/static/images/calendar.png" style="width: 15%; height: auto;">
+                    Prenotazioni
+                </a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="/logout">
+                    <img src="/static/images/logout.png" style="width: 15%; height: auto;">
+                    Log out
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="calendar"></div>
+    <div id="events"></div>
+    <script>
+        new Calendar('.calendar', {
+            style: 'background',
+            language: 'it',
+            dataSource: function () {
+                return fetch(`/protected/getbookings?b_name={{ query_result.business_name }}`)
+                    .then(result => result.json())
+                    .then(result => {
+                        if (result) {
+                            return result.map(r => ({
+                                startDate: new Date(r.day.concat('T', r.time)),
+                                endDate: new Date(r.day.concat('T', r.time)),
+                                name: r.name + ' ' + r.surname,
+                                details: r.service + '<br>' + r.time
+                            }));
+                        }
+
+                        return [];
+                    });
+            },
+            clickDay: function (e) {
+                if (e.events.length > 0) {
+                    var content = '';
+
+                    for (var i in e.events) {
+                        content += '<div class="event-tooltip-content">'
+                            + '<div class="event-name">' + e.events[i].name + '</div>'
+                            + '<div class="event-details">' + e.events[i].details + '</div>'
+                            + '</div><hr>';
+                    }
+                    document.getElementById('events').innerHTML = content
+                    return
+                }
+                document.getElementById('events').innerHTML = ""
+            }
+        })
+    </script>
+
+
+
+
 
 <style>
     .section

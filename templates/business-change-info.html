@@ -138,7 +138,7 @@ Modifica i dati della tua attività
                 let businessPositionMap = L.map('businessPositionMap').setView([{{ query_result["lat"] }}, {{ query_result["lon"] }}], 6);
                 businessPositionMap.zoomControl.remove()
                 L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                  attribution: 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a>',
+                  attribution: 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
                 }).addTo(businessPositionMap);
 
                 let markerIcon = L.icon({
@@ -149,10 +149,9 @@ Modifica i dati della tua attività
                   popupAnchor: [1, -34],
                   shadowSize: [41, 41]
                 });
-                let mark = L.marker([{{ query_result["lat"] }}, {{ query_result["lon"] }}], {icon: markerIcon}).addTo(businessPositionMap);
-                centerLeafletMapOnMarker(businessPositionMap, mark)
+                let marker = L.marker([{{ query_result["lat"] }}, {{ query_result["lon"] }}], {icon: markerIcon, draggable: true}).addTo(businessPositionMap);
+                centerLeafletMapOnMarker(businessPositionMap, marker)
               </script>
-            <button class="btn btn-inqueue-purple w-100 mt-3 d-none" id="nextForm2Button" type="button" onclick="showNextForm('form2', this, validateFirstForm)">AVANTI</button>
         </section>
 
         <section id="form2">
@@ -203,7 +202,6 @@ Modifica i dati della tua attività
                     <input type="number" class="form-control" id="slot" name="slot" min="15" max="180" steps="15" value="{{ t_delta }}"required>
                 </div>
             </div>
-            <button class="btn btn-inqueue-purple w-100 mt-3 d-none" id="nextForm3Button" type="button" onclick="showNextForm('form3', this, validateSecondForm)">AVANTI</button>
         </section>
         <section id="form3">
             <h3>Infine, dicci chi sei</h3>
@@ -227,7 +225,6 @@ Modifica i dati della tua attività
                     <input required type="tel" class="form-control" autocomplete="cellphone" id="cellphone" name="cellphone" placeholder="Telefono" value="{{ query_result_account["cellphone"] }}" pattern="^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$" title="Inserisci un numero di telefono valido">
                 </div>
             </div>
-             <button class="btn btn-inqueue-purple w-100 mt-3 d-none" id="nextForm4Button" type="button" onclick="showNextForm('form4', this, validateThirdForm)">AVANTI</button>
         </section>
          <section id="form4">
              <h3>Seleziona una password per il tuo account</h3>
@@ -248,14 +245,7 @@ Modifica i dati della tua attività
 </div>
 
 <script type="text/javascript">
-    window.onload = function() {
-        document.getElementById('form2').classList.add('d-none')
-        document.getElementById('nextForm2Button').classList.remove('d-none')
-        document.getElementById('form3').classList.add('d-none')
-        document.getElementById('nextForm3Button').classList.remove('d-none')
-        document.getElementById('form4').classList.add('d-none')
-        document.getElementById('nextForm4Button').classList.remove('d-none')
-    }
+
 
     function validateFirstForm() {
         let business_name = (document.getElementById('business_name').checkValidity())
@@ -381,8 +371,6 @@ function enable(element) {
 
 businessPositionMap.on('click', positionClick)
 
-
-let marker = new L.marker([], {icon: markerIcon, draggable: true})
 
 marker.on('dragend', function() {updateData(marker._latlng.lat, marker._latlng.lng)})
 
