@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Calendario prenotazioni - InQueue
+{% endblock %}
+
+{% block head %}
+<!--https://github.com/year-calendar/js-year-calendar-->
+<script src="https://unpkg.com/js-year-calendar@latest/dist/js-year-calendar.min.js"></script>
+<script src="https://unpkg.com/js-year-calendar@latest/locales/js-year-calendar.it.js"></script>
+<link rel="stylesheet" type="text/css" href="https://unpkg.com/js-year-calendar@latest/dist/js-year-calendar.min.css" />
+{% endblock %}
+
+{% block main %}
+
+<div class="calendar"></div>
+<div id="events"></div>
+<script>
+    new Calendar('.calendar', {
+    style: 'background',
+    language: 'it',
+    dataSource: function() {
+    // Load data from GitHub API
+    return fetch(`/getbookings?b_name=Ape Escape$36BKJIZg`)
+      .then(result => result.json())
+      .then(result => {
+        if (result) {
+          return result.map(r => ({
+            startDate: new Date(r.day.concat('T', r.time)),
+            endDate: new Date(r.day.concat('T', r.time)),
+            name: r.name + ' ' +  r.surname,
+            details: r.service + '<br>' + r.time
+          }));
+        }
+        
+        return [];
+      });
+  },
+  clickDay: function(e) {
+    if (e.events.length > 0) {
+      var content = '';
+                
+      for (var i in e.events) {
+        content += '<div class="event-tooltip-content">'
+          + '<div class="event-name">' + e.events[i].name + '</div>'
+                                      + '<div class="event-details">' + e.events[i].details + '</div>'
+          + '</div><hr>';
+      }
+    }
+    document.getElementById('events').innerHTML = content
+  }
+})
+</script>
+{% endblock %}
