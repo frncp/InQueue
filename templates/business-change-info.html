@@ -52,14 +52,57 @@ Modifica i dati della tua attività
     }
     placeButtons();
 </script>
+-->
+    <style>
+        #dropdownMenuButton {
+            width: 115px;
+            height: 115px;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+            transition: transform .2s;
+        }
+
+        #dropdownMenuButton:hover {
+            transform: scale(1.2);
+        }
+
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+            z-index: 1;
+        }
+    </style>
+
+    <div class="row">
+        <div class="dropdown">
+            <img style="float: right;" src="/photos/{{ query_result["business_name"] }}.jpg"
+                 id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                 data-offset="10,20">
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" style="width: 15%; height: auto;">
+                <a class="dropdown-item" href="/protected/{{ query_result["business_name"] }}/settings">
+                    <img src="/static/images/settings.png" style="width: 15%; height: auto;">
+                    Impostazioni
+                </a>
+                <a class="dropdown-item" href="/protected/{{ query_result["business_name"] }}/calendar">
+                    <img src="/static/images/calendar.png" style="width: 15%; height: auto;">
+                    Prenotazioni
+                </a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="/logout">
+                    <img src="/static/images/logout.png" style="width: 15%; height: auto;">
+                    Log out
+                </a>
+            </div>
+        </div>
+    </div>
 
 <style>
     #businessPositionMap{
         height: 30rem;
-    }
-
-    .section {
-        float: right;
     }
 </style>
 

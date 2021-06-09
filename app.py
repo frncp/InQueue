@@ -182,6 +182,7 @@ def login():
 
 
 @app.route('/protected/<business_name>/settings', methods=['GET', 'POST'])
+@flask_login.login_required
 def modify_business(business_name):
     try:
         query_result_account = accounts_collection.find_one({"email": flask_login.current_user.id})
@@ -253,6 +254,7 @@ def modify_business(business_name):
 
 
 @app.route('/protected/<business_name>/calendar', methods=['GET'])
+@flask_login.login_required
 def calendar(business_name):
     try:
         query_result_account = accounts_collection.find_one({"email": flask_login.current_user.id})
@@ -267,9 +269,10 @@ def calendar(business_name):
 
 
 @app.route('/logout')
+@flask_login.login_required
 def logout():
     flask_login.logout_user()
-    return 'Logged out'
+    return redirect("/select")
 
 
 @app.route('/business-calendar', methods=["GET"])

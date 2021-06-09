@@ -89,7 +89,7 @@
         let businesses_creation_order_reversed; // TODO: const?
         setType();
 
-        window.onload = () => {
+        window.onload = function() {
             cardContainer = document.getElementById("deck");
             businesses_creation_order = Array.from(cardContainer.getElementsByClassName("card"));
             businesses_creation_order_reversed = businesses_creation_order.slice().reverse();
