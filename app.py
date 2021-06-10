@@ -28,6 +28,7 @@ import random
 
 import certifi
 
+import qrcode
 
 # SERVER SETTINGS
 SERVER_NO_FORWARD = True # True = Flask default configuration, run it locally (for testing, debug)
@@ -412,26 +413,36 @@ def business_page(business_name):
 
 @app.route('/files/tickets/<booking_id>.pdf')
 def send_booking_pdf(booking_id):
-    query_result = PDFs_collection.find_one({"_id": booking_id})
+    pdf_query = PDFs_collection.find_one({"_id": booking_id})
     pdf_data = bookings_collection.find_one({"_id": ObjectId(booking_id)})
-    if query_result is None:
-        file_name = curr_path + "\\temp\\" + booking_id + ".pdf"
+    # if pdf_query is None:
+    if pdf_query is None:
+        temp_path = curr_path + "\\temp\\"
+        pdf_file_name = temp_path + booking_id + ".pdf"
+        qr_file_name = temp_path + booking_id + ".jpg"
         # PDF creation
-        logo = open("logo.png", "rb")
-        canvas = Canvas(file_name, pagesize=(612.0, 792.0))
-        canvas.drawString(100, 700, "Let's write something into this")
-        service = pdf_data["service"]
-        business_name = pdf_data["business_name"]        
+        canvas = Canvas(pdf_file_name, pagesize=(612.0, 792.0))
+        canvas.drawImage(curr_path+"\\logo.png", 280, 720, 50, 50, [0, 0, 0, 0, 0, 0])
+        canvas.drawString(280, 700, "InQueue")
+        canvas.drawString(250, 650, "IL TUO BIGLIETTO")
+        canvas.drawString(100, 600, "Hai prenotato il servizio " + pdf_data["service"])
+        canvas.drawString(100, 580, "Presso " + pdf_data["business_name"][:-9])
+        canvas.drawString(100, 560, "In data " + pdf_data["day"] + " alle ore " + pdf_data["time"])
+        canvas.drawString(50, 400, "Hai prenotato come " + pdf_data["name"] + ' ' + pdf_data["surname"] + ' (' + pdf_data["email"] + ')')
+        qr_img = qrcode.make("BOOKING ID: "+booking_id+"\nNAME: "+pdf_data["name"]+"\nSURNAME: "+pdf_data["surname"]+"\nDAY: "+pdf_data["day"]+"\nTIME: "+pdf_data["time"]+"\nSERVICE: "+pdf_data["service"])
+        qr_img.save(qr_file_name)
+        canvas.drawImage(qr_file_name, 450, 150, 100, 100)
         canvas.save()
-        file = open(file_name, "rb")
+        file = open(pdf_file_name, "rb")
         # DB insert and retrieval
         document = {"_id": booking_id, "pdf": file.read()}
         PDFs_collection.insert_one(document)
-        query_result = PDFs_collection.find_one({"_id": booking_id})
+        pdf_query = PDFs_collection.find_one({"_id": booking_id})
         # Temp file deletion
         file.close()
-        os.remove(file_name)
-    return send_file(BytesIO(query_result["pdf"]), mimetype="application/pdf")
+        os.remove(pdf_file_name)
+        os.remove(qr_file_name)
+    return send_file(BytesIO(pdf_query["pdf"]), mimetype="application/pdf")
 
 
 @app.route('/booking_confirmation/<booking_id>')
@@ -517,6 +528,7 @@ def partners_page():
 @app.route('/rating-test')
 def rate():
     return render_template("rate.html")
+
 
 # TODO
 @app.route('/newBusiness_confirmation/<business_name>', methods=["GET"])
