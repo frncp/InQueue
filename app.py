@@ -372,6 +372,7 @@ def city_home(city):
     businesses_in_city = businesses_collection.find({"city": city})
     resp = make_response(render_template('index.html', businesses_in_city=businesses_in_city, city=city,
                                          business_types_dict_italian=business_types_dict_italian))
+    resp.set_cookie("city", value=city, max_age=60 * 60 * 24)
     try:
         resp.set_cookie("lat", value=lat_from_cookie, max_age=0)
         resp.set_cookie("lon", value=lon_from_cookie, max_age=0)
@@ -517,6 +518,10 @@ def partners_page():
         """
         return render_template("business-creation.html")
 
+
+@app.route('/rating-test')
+def rate():
+    return render_template("rate.html")
 
 # TODO
 @app.route('/newBusiness_confirmation/<business_name>', methods=["GET"])
