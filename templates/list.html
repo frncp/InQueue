@@ -52,7 +52,7 @@
         <div class="row row-cols-1 row-cols-sm-1 row-cols-md-2 row-cols-xl-3 row-cols-xxl-4" id="deck">
             {% for element in businesses_in_city %}
                 <div class="col mb-4">
-                    <div class="card" data-rating="{{ element["rating"] }}" data-rating-number="{{ element["ratings"] }}" data-business-type="{{ element["business_type"] }}">
+                    <div class="card" data-rating="{{ element["rating"] }}" data-rating-number="{{ element["ratings"] }}" data-business-type="{{ element["business_type"] }}" data-creation-time="{{ element["creation_time"] }}" data-creation-date="{{ element["creation_date"] }}">
                         <img src="/photos/{{ element["business_name"] }}.jpg" class="card-img-top" style="width: 100%; height:
                 100%; object-fit: cover" alt="">
                         <a href="/business/{{ element["business_name"] }}">
@@ -86,13 +86,11 @@
         <script>
         let cardContainer;
         let businesses_creation_order; // TODO: const?
-        let businesses_creation_order_reversed; // TODO: const?
         setType();
 
         window.onload = function() {
             cardContainer = document.getElementById("deck");
             businesses_creation_order = Array.from(cardContainer.getElementsByClassName("card"));
-            businesses_creation_order_reversed = businesses_creation_order.slice().reverse();
         }
 
         function setType() {
@@ -101,6 +99,29 @@
             let select = document.getElementById("type");
             select.value = type;
             filter2();
+        }
+
+        function compareTime(a, b) {
+            let at = a.dataset.creationDate;
+            let bt = b.dataset.creationDate;
+            if (at < bt) {
+                return -1;
+            }
+            if (at > bt) {
+                return 1;
+            }
+            if (at == bt) {
+                let at2 = a.dataset.creationTime;
+                let bt2 = b.dataset.creationTime;
+
+                if (at2 < bt2) {
+                    return -1;
+                }
+                if (at2 > bt2) {
+                    return 1;
+                }
+            }
+            return 0;
         }
 
         function compareRating(a, b) {
@@ -131,13 +152,13 @@
         function filter(type) {
             let i, cardsArray;
             cardContainer.innerHTML = "";
+            cardsArray = businesses_creation_order.slice();
+
             if (type == 'p') {
-                cardsArray = businesses_creation_order.slice();
                 cardsArray.sort(compareRating);
             } else if (type == 'n') {
-                cardsArray = businesses_creation_order_reversed.slice();
+                cardsArray.sort(compareTime);
             } else if (type == 'no') {
-                cardsArray = businesses_creation_order.slice();
                 cardsArray.sort(compareTitle);
             }
 
