@@ -18,7 +18,7 @@ from io import BytesIO
 from reportlab.pdfgen.canvas import Canvas
 import os
 
-from passwords import DB_USER, DB_PASSWORD, DB_CLIENT_NAME
+from passwords import DB_USER, DB_PASSWORD, DB_CLIENT_NAME, EMAIL_USER, EMAIL_PASSWORD
 from cities import CITIES
 
 import string
@@ -71,9 +71,9 @@ login_manager.init_app(app)
 # Mailing settings
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
-app.config['MAIL_USERNAME'] = 's'
-app.config['MAIL_PASSWORD'] = 's'
-app.config['MAIL_DEFAULT_SENDER'] = ('inQueue', 's')
+app.config['MAIL_USERNAME'] = EMAIL_USER
+app.config['MAIL_PASSWORD'] = EMAIL_PASSWORD
+app.config['MAIL_DEFAULT_SENDER'] = ('inQueue', EMAIL_USER)
 app.config['MAIL_USE_TLS'] = True
 app.config['MAIL_USE_SSL'] = False
 mail = Mail()
