@@ -71,9 +71,9 @@ login_manager.init_app(app)
 # Mailing settings
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
-app.config['MAIL_USERNAME'] = 'antoniototimorelli@gmail.com'
-app.config['MAIL_PASSWORD'] = 'zzecqsiwqmklrtus'
-app.config['MAIL_DEFAULT_SENDER'] = ('inQueue', 'antoniotitomorelli@gmail.com')
+app.config['MAIL_USERNAME'] = 's'
+app.config['MAIL_PASSWORD'] = 's'
+app.config['MAIL_DEFAULT_SENDER'] = ('inQueue', 's')
 app.config['MAIL_USE_TLS'] = True
 app.config['MAIL_USE_SSL'] = False
 mail = Mail()
@@ -87,7 +87,8 @@ business_types_dict_italian = {
     "museum": "Museo",
     "attraction": "Luogo d'interesse",
     "freelance": "Libero professionista",
-    "gym": "Palestra"
+    "gym": "Palestra",
+    "car-repair": "Meccanico"
 }
 
 

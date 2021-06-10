@@ -5,54 +5,6 @@ Modifica i dati della tua attività
 {% endblock %}
 
 {% block main %}
-    <!--
-<script>
-    function placeButtons() {
-        var button1 = document.createElement("button")
-        var button2 = document.createElement("button")
-
-        var img1 = document.createElement("img")
-        var img2 = document.createElement("img")
-
-        var inQueue = document.getElementById("header")
-
-        var div = document.createElement("div")
-
-        var ref = document.createElement("a")
-
-        button1.classList.add("btn")
-        button1.classList.add("btn-inqueue-purple")
-        button1.classList.add("w-25")
-        button1.classList.add("section")
-
-        button2.classList.add("btn")
-        button2.classList.add("btn-inqueue-purple")
-        button2.classList.add("w-25")
-        button2.classList.add("section")
-        //button2.style = "background-color: rgb(98, 92, 196); border-color: rgb(84, 78, 163);"
-
-        img1.src = "/static/images/calendar.png"
-        img1.style = "width: 35%; height: auto;"
-
-        img2.src = "/static/images/settings.png"
-        img2.style = "width: 35%; height: auto;"
-
-        ref.href = "/protected/{{ query_result["business_name"] }}/settings"
-        //button1.appendChild(ref)
-        ref.appendChild(button2)
-
-        button1.appendChild(img1)
-        button2.appendChild(img2)
-
-        div.classList.add("col-6")
-        div.appendChild(button1)
-        div.appendChild(ref)
-
-        inQueue.appendChild(div)
-    }
-    placeButtons();
-</script>
--->
     <style>
         #dropdownMenuButton {
             width: 115px;
@@ -107,7 +59,7 @@ Modifica i dati della tua attività
 </style>
 
 <h2 class="mt-5 mb-4">Modifica qui i dati della tua attività, sovrascrivendo i vecchi</h2>
-<p class="text-muted">Quando hai finito con le modifiche, clicca su "Applica le modifiche" in fondo alla pagina</p>
+<p class="text-muted text-center">Quando hai finito con le modifiche, clicca su "Applica le modifiche" in fondo alla pagina</p>
 <div class="container">
     <form action="#" method="POST" id="form" enctype="multipart/form-data" class="mt-5">
         <section id="form1">
@@ -270,7 +222,7 @@ Modifica i dati della tua attività
             </div>
         </section>
          <section id="form4">
-             <h3>Seleziona una password per il tuo account</h3>
+             <h3>Inserisci la tua password per confermare le modifiche effettuate</h3>
              <label for="password">Password</label>
              <div class="input-group mb-3">
                 <input type="password" name="password" id="password" autocomplete="new-password" class="form-control" onchange="validatePassword()" required/>
