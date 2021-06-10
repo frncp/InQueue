@@ -30,8 +30,8 @@ import certifi
 
 
 # SERVER SETTINGS
-SERVER_NO_FORWARD = False # True = Flask default configuration, run it locally (for testing, debug)
-SERVER_LOCAL_ONLY = False  # True = Run it locally
+SERVER_NO_FORWARD = True # True = Flask default configuration, run it locally (for testing, debug)
+SERVER_LOCAL_ONLY = True  # True = Run it locally
 SERVER_DOMAIN_NAME = 'inqueue.it' # Your domain name here
 
 
@@ -441,12 +441,7 @@ def bookings_confirmation_page(booking_id):
     except bson.errors.InvalidId:
         return redirect('/404/')
     if query_result is not None:
-        service = query_result["service"]
-        business_name = query_result["business_name"]
-        day = query_result["day"]
-        time = query_result["time"]
-        # Use parameters found from query
-        return render_template("booked.html", service=service, business_name=business_name, day=day, time=time)
+        return render_template("booked.html", query_result=query_result)
     else:
         return redirect('/404/')
     # TODO: Add parameters to function

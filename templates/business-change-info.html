@@ -134,6 +134,7 @@ Modifica i dati della tua attività
                 businessPositionMap.zoomControl.remove()
                 L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
                   attribution: 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
+                  minZoom: 5
                 }).addTo(businessPositionMap);
 
                 let markerIcon = L.icon({

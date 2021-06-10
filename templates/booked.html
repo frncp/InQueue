@@ -17,10 +17,13 @@ Hai prenotato su Inqueue
 <h2>Riepilogo</h2>
 
         <p class="h4 mt-3">HAI PRENOTATO</p>
-        <p class="text-primary">{{service}}</p> 
+        <p class="h5 text-primary">{{query_result["service"]}}</p> 
 
 
-Da {{business_name[:-9]}} per il giorno {{day}} alle ore {{time}} <br>
+<p class="h5">Da {{query_result["business_name"][:-9]}} per il giorno {{query_result["day"]}} alle ore {{query_result["time"]}}</p> <br>
+<form action="/files/tickets/{{query_result["_id"]}}.pdf" method="get" target="_blank">
+<input type="submit" class="btn btn-inqueue-purple" value="PDF">
+</form>
 {% endblock %}
 
 </div>
