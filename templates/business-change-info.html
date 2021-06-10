@@ -422,12 +422,19 @@ function addForm(idForm, counter) {
     let numElement = document.getElementById(counter)
     let num = Number(numElement.value)
     let currInp = document.getElementById(idForm+'_'+num)
-    if (num == 1)
+    let newInp
+    if (currInp) {
+        if (num == 1)
+            currInp = document.getElementById(idForm)
+        newInp = currInp.parentNode.insertBefore(input, currInp.nextSibling)
+        num = num + 1
+    } else {
+        num = 1
         currInp = document.getElementById(idForm)
-    let newInp = currInp.parentNode.insertBefore(input, currInp.nextSibling)
+        newInp = currInp.parentNode.insertBefore(input, currInp.nextSibling)
+    }
     newInp.classList.add('form-control')
     newInp.classList.add('mt-2')
-    num = num + 1
     numElement.value = String(num)
     newInp.id = idForm + '_' + num
     newInp.name = idForm + '_' + num
