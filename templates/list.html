@@ -16,7 +16,7 @@
     <div class="city_container">
         <h1>Prenota attività a <a href="/select" id="selectedCity" class="inqueue-orange text-decoration-none"
                                   onclick="localityModifier()">{{ city }} <img
-                class="dropdown_icon" src="{{ url_for('static', filename='images/dropdown.png') }}" width="20px"> </a>
+                class="dropdown_icon" src="{{ url_for('static', filename='images/location-pointer.png') }}" width="25px"> </a>
         </h1>
     </div>
 
@@ -104,8 +104,8 @@
         }
 
         function compareRating(a, b) {
-            let at = parseFloat(a.dataset.rating);
-            let bt = parseFloat(a.dataset.ratingNumber);
+            let at = parseFloat(a.dataset.rating) / parseFloat(a.dataset.ratingNumber);
+            let bt = parseFloat(b.dataset.rating) / parseFloat(b.dataset.ratingNumber);
             if (at > bt) {
                 return -1;
             }
@@ -146,6 +146,10 @@
                 div.classList.add("col");
                 div.classList.add("mb-4");
                 cardContainer.appendChild(div);
+
+                cardsArray[i].classList.add('animate__animated')
+                cardsArray[i].classList.add('animate__fadeInUp')
+                cardsArray[i].classList.add('animate__faster')
                 div.appendChild(cardsArray[i]);
             }
             filter2();
@@ -161,9 +165,12 @@
                 outer = cards[i].parentNode;
                 title = cards[i].querySelector(".card-title");
                 if (title.innerText.toUpperCase().indexOf(filter) > -1) {
-                    outer.style.display = " "
+                    outer.style.display = ""
+                    outer.classList.add('animate__animated')
+                    outer.classList.add('animate__fadeInUp')
+                    outer.classList.add('animate__faster')
                 } else {
-                    outer.style.display = "none";
+                    outer.style.display = "none"
                 }
             }
         }
@@ -316,9 +323,9 @@
                     btype = cards[i].dataset.businessType;
 
                     outer.style.display = "";
-                    outer.classList.remove('animate__animated')
-                        outer.classList.remove('animate__fadeInUp')
-                        outer.classList.remove('animate__faster')
+                    outer.classList.add('animate__animated')
+                    outer.classList.add('animate__fadeInUp')
+                    outer.classList.add('animate__faster')
                 }
             }
 

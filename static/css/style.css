@@ -57,6 +57,10 @@
     }
 }
 
+.city_container a:hover {
+    color: #ffb071ff;
+}
+
 /* END CIRCLES */
 
 /* CARDS */
@@ -153,6 +157,7 @@ h2 {
     background-color: #8d85ffff;
     border-color: rgb(119, 112, 221);
 }
+
 .btn-inqueue-purple-gradient {
     background: #8d85ff;
     background: -moz-linear-gradient(-45deg,  #8d85ff 0%, #cbc7ff 100%);
