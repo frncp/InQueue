@@ -28,6 +28,7 @@ SERVER_LOCAL_ONLY = True  # True = Run it locally
 SERVER_DOMAIN_NAME = 'inqueue.it' # Your domain name here
 
 
+
 # DATABASE SETTINGS
 '''
 [!] IMPORTANT:
@@ -48,14 +49,25 @@ SERVER_DOMAIN_NAME = 'inqueue.it' # Your domain name here
 mongo_client_string = DB_STRING
 client = pymongo.MongoClient(mongo_client_string, tlsCAFile=certifi.where())
 db = client[DB_CLIENT_NAME]
+
 businesses_collection = db["businesses"]
+businesses_collection.drop()
+
 bookings_collection = db["bookings"]
+bookings_collection.drop()
+
 PDFs_collection = db["bookings_PDFs"]
+PDFs_collection.drop()
+
 accounts_collection = db["accounts"]
+accounts_collection.drop()
+
 businesses_photo_collection = db["businesses_photo"]
+businesses_photo_collection.drop()
+
 # Start app
 app = Flask(__name__)
-app.secret_key = 'super secret string'
+app.secret_key = os.urandom(12).hex()
 # Start login manager
 login_manager = flask_login.LoginManager()
 login_manager.init_app(app)
@@ -81,6 +93,52 @@ business_types_dict_italian = {
     "gym": "Palestra",
     "car-repair": "Meccanico"
 }
+
+def init_db():
+    business_elements = []
+    business_elements_entire = []
+
+
+    document = {"business_name": "AMP Parco Sommerso di Gaiola", "business_type": "attraction",
+                        "open_time1": "9:00", "close_time1": "13:00", "open_time2": "14:00",
+                        "close_time2": "18:00", "city": "Napoli", "address": "Discesa Gaiola, 80123 Napoli NA",
+                        "lat": "40.79137", "lon": "14.18684",
+                        "creation_date": "2020-01-02", "creation_time": "08:33",
+                        "rating": "3.8", "ratings": "132", "service":["Turno 1 - 12€", "Turno 2 - 12€"], "slots":["09:00","11:00","14:00","16:00"]}
+
+    businesses_collection.insert_one(document)
+
+    business_elements.append({"business_name": "", "business_type": "",
+                                                         "open_time1": new_open_time1, "close_time1": new_close_time1, "open_time2": new_open_time2,
+                                                         "close_time2": new_close_time2, "city": request.form["city"], "address": request.form["address"],
+                                                         "lat": request.form["lat"], "lon": request.form["lon"],
+                                                         "creation_date": "2020-01-02", "creation_time": "",
+                                                         "rating": query_result["rating"], "ratings": query_result["ratings"], "service":[""], "slots":[]})
+
+
+    mylist = [
+      { "name": "Amy", "address": "Apple st 652"},
+      { "name": "Hannah", "address": "Mountain 21"},
+      { "name": "Michael", "address": "Valley 345"},
+      { "name": "Sandy", "address": "Ocean blvd 2"},
+      { "name": "Betty", "address": "Green Grass 1"},
+      { "name": "Richard", "address": "Sky st 331"},
+      { "name": "Susan", "address": "One way 98"},
+      { "name": "Vicky", "address": "Yellow Garden 2"},
+      { "name": "Ben", "address": "Park Lane 38"},
+      { "name": "William", "address": "Central st 954"},
+      { "name": "Chuck", "address": "Main Road 989"},
+      { "name": "Viola", "address": "Sideway 1633"}
+    ]
+
+
+    businesses_collection = db["businesses"]
+    businesses_collection.insert_many(business_elements)
+
+    bookings_collection = db["bookings"]
+    PDFs_collection = db["bookings_PDFs"]
+    accounts_collection = db["accounts"]
+    businesses_photo_collection = db["businesses_photo"]
 
 
 def slot_size(query_result):
@@ -333,13 +391,8 @@ def homepage_new():
         return render_template("home.html", city_from_cookie=city_from_cookie)
     else:
         city = request.form["city"]
-        lat = request.form["lat"]
-        print("latitudine settata", lat)
-        lon = request.form["lon"]
         resp = make_response(redirect('/'+city))
         resp.set_cookie("city", value=city, max_age=60 * 60 * 24)
-        resp.set_cookie("lat", value=lat, max_age=60 * 60)
-        resp.set_cookie("lon", value=lon, max_age=60 * 60)
         return resp
 
 
@@ -354,22 +407,12 @@ def homepage():
 
 @app.route('/<city>')
 def city_home(city):
-    lat_from_cookie = request.cookies.get("lat")
-    lon_from_cookie = request.cookies.get("lon")
-    print(lat_from_cookie)
-    print(lon_from_cookie)
     if city not in CITIES:
         return redirect('/select')
     businesses_in_city = businesses_collection.find({"city": city})
     resp = make_response(render_template('index.html', businesses_in_city=businesses_in_city, city=city,
                                          business_types_dict_italian=business_types_dict_italian))
     resp.set_cookie("city", value=city, max_age=60 * 60 * 24)
-    try:
-        resp.set_cookie("lat", value=lat_from_cookie, max_age=0)
-        resp.set_cookie("lon", value=lon_from_cookie, max_age=0)
-    except TypeError:
-        print("Cookie not set")
-        # TODO: assume coords of a city based on the center of it
     return resp
 
 
