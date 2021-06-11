@@ -15,10 +15,10 @@ This is a university project made for the 2021 edition of the Tecnologie Web (We
 You can test it by visiting [inqueue.it](https://inqueue.it).
 
 ## How to get started
-### Mongo DB Atlas
+### On Mongo DB Atlas
 Make sure you've added your IP address to the project's IP Access List.
-<p align="center"><img src="/screenshots/1.png" width="492" height="298"/></p>
-<p align="center"><img src="/screenshots/2.png" width="492" height="298"/></p>
+<p align="center"><img src="/screenshots/1.png"/></p>
+<p align="center"><img src="/screenshots/2.png"/></p>
 
 ### Docker
 **Requirements**: Docker.
@@ -47,8 +47,8 @@ To build this app the following technologies have been used:
 - Flask (licensed under the [BSD 3-Clause "New" or "Revised" License](https://github.com/pallets/flask/blob/main/LICENSE.rst))
 - qrcode ([LICENSE](https://github.com/lincolnloop/python-qrcode/blob/master/LICENSE))
 - reportlab
-- js-year-calendar (licensed under the [Apache License 2.0·](https://github.com/year-calendar/js-year-calendar/blob/master/LICENSE)
-- star-rating.js (licensed under the [MIT License](https://github.com/pryley/star-rating.js/blob/master/LICENSE)
+- js-year-calendar (licensed under the [Apache License 2.0·](https://github.com/year-calendar/js-year-calendar/blob/master/LICENSE))
+- star-rating.js (licensed under the [MIT License](https://github.com/pryley/star-rating.js/blob/master/LICENSE))
 
 ## Assets
 Here's a list of the assets we used and their authors:
