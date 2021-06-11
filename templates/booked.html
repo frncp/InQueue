@@ -22,7 +22,7 @@ Hai prenotato su Inqueue
 
 <p class="h5">Da {{query_result["business_name"][:-9]}} per il giorno {{query_result["day"]}} alle ore {{query_result["time"]}}</p> <br>
 <form action="/files/tickets/{{query_result["_id"]}}.pdf" method="get" target="_blank">
-<input type="submit" class="btn btn-inqueue-purple" value="PDF">
+<input type="submit" class="btn btn-inqueue-purple" value="Scarica il PDF">
 </form>
 {% endblock %}
 

@@ -125,8 +125,8 @@
         }
 
         function compareRating(a, b) {
-            let at = parseFloat(a.dataset.rating) / parseFloat(a.dataset.ratingNumber);
-            let bt = parseFloat(b.dataset.rating) / parseFloat(b.dataset.ratingNumber);
+            let at = parseFloat(a.dataset.rating);
+            let bt = parseFloat(b.dataset.rating);
             if (at > bt) {
                 return -1;
             }

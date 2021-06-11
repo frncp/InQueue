@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block title %}
-Valuta la tua esperienza da {{ business_name }}
+Valuta la tua esperienza da {{ query_result["business_name"][:-9] }}
 {% endblock %}
 
 {% block head %}
@@ -10,28 +10,28 @@ Valuta la tua esperienza da {{ business_name }}
 {% endblock %}
 
 {% block main %}
-    <h1>Valuta la tua esperienza da {{business_name}} </h1>
+    <h1>Valuta la tua esperienza da {{ query_result["business_name"][:-9] }} </h1>
 <p class="muted">Esprimi un giudizio da 1 a 5 stelle</p>
 
 
-<h2>Come valuteresti {{business_name}}?</h2>
-<form>
-<div class="mx-auto mt-3" style="transform: translateX(45%);">
-<select class="star-rating">
-    <option value="">Seleziona una valutazione</option>
-    <option value="5">Eccellente</option>
-    <option value="4">Molto buono</option>
-    <option value="3">Buono</option>
-    <option value="2">Non buono</option>
-    <option value="1">Terribile</option>
-</select>
-</div>
-<input type="submit" class="btn btn-inqueue-purple mx-auto d-block mt-4">
-</form>
+<h2>{{ query_result["name"] }}, come valuteresti {{ query_result["business_name"][:-9] }}?</h2>
+    <form action="#" method="POST" id="form" enctype="multipart/form-data" class="mt-5">
+        <div class="mx-auto mt-3" style="transform: translateX(45%);">
+                <select class="star-rating" id="rating" name="rating">
+                    <option value="">Seleziona una valutazione</option>
+                    <option value="5">Eccellente</option>
+                    <option value="4">Molto buono</option>
+                    <option value="3">Buono</option>
+                    <option value="2">Non buono</option>
+                    <option value="1">Terribile</option>
+                </select>
+        </div>
+        <input type="submit" class="btn btn-inqueue-purple mx-auto d-block mt-4">
+    </form>
 
 <script src="{{url_for('static', filename='js/star-rating.js')}}"></script>
 <script>
-    var stars = new StarRating('.star-rating',{tooltip: false})
+    let stars = new StarRating('.star-rating',{tooltip: false})
     </script>
 
 

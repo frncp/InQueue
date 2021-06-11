@@ -22,7 +22,7 @@
 
         <div class="flex-md-column px-5">
             <h1 class="">{{ formatted_name }}</h1>
-            ⭐⭐⭐⭐⭐ <span class="text-secondary">37</span>
+            <span id="stars" value="{{ query_result["rating"] }}">⭐⭐⭐⭐⭐</span><span class="text-secondary">{{ query_result["ratings"] }}</span>
             <div id="businessPositionMap"></div>
 
             <script type="text/javascript">

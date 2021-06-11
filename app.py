@@ -5,33 +5,25 @@ import werkzeug.exceptions
 import requests
 import json
 from http import cookies
-
+import os
 import pymongo
 from pymongo import MongoClient, errors
 import base64
 import bson
 from bson.binary import Binary
 from bson.objectid import ObjectId
-
 from datetime import date, datetime, timedelta
 from io import BytesIO
 from reportlab.pdfgen.canvas import Canvas
-import os
-
-from passwords import DB_USER, DB_PASSWORD, DB_CLIENT_NAME, EMAIL_USER, EMAIL_PASSWORD
+import qrcode
+from passwords import DB_STRING, DB_CLIENT_NAME, EMAIL_USER, EMAIL_PASSWORD
 from cities import CITIES
-
 import string
 import random
-
-# import ssl
-
 import certifi
 
-import qrcode
-
 # SERVER SETTINGS
-SERVER_NO_FORWARD = True # True = Flask default configuration, run it locally (for testing, debug)
+SERVER_NO_FORWARD = False # True = Flask default configuration, run it locally (for testing, debug)
 SERVER_LOCAL_ONLY = True  # True = Run it locally
 SERVER_DOMAIN_NAME = 'inqueue.it' # Your domain name here
 
@@ -53,7 +45,7 @@ SERVER_DOMAIN_NAME = 'inqueue.it' # Your domain name here
 '''
 
 # DB Connection
-mongo_client_string = "mongodb+srv://" + DB_USER + ":" + DB_PASSWORD + "@cluster0.dfin1.mongodb.net/"+ DB_CLIENT_NAME + "?retryWrites=true&w=majority"
+mongo_client_string = DB_STRING
 client = pymongo.MongoClient(mongo_client_string, tlsCAFile=certifi.where())
 db = client[DB_CLIENT_NAME]
 businesses_collection = db["businesses"]
@@ -66,8 +58,6 @@ app = Flask(__name__)
 app.secret_key = 'super secret string'
 # Start login manager
 login_manager = flask_login.LoginManager()
-# login_manager.session_protection = 'strong'
-# login_manager.login_view = 'login'
 login_manager.init_app(app)
 # Mailing settings
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
@@ -399,8 +389,14 @@ def business_page(business_name):
                     "cellphone": cellphone, "day": day, "time": time, "service": service, "booking_date": today,
                     "booking_time": now, "rated": False}
         booking_result = bookings_collection.insert_one(document)
+        if SERVER_LOCAL_ONLY:
+            # server_name = "http://127.0.0.1:80"
+            server_name = "https://127.0.0.1:443"
+        else:
+            server_name = SERVER_DOMAIN_NAME
+        rating_link = server_name + "/rating/" + str(booking_result.inserted_id)
         msg = Message(subject="Come valuti "+business_name[:-9]+"?",
-                      html=render_template('email-inlined.html', user_name=fname),
+                      html=render_template('email-inlined.html', user_name=fname, rating_link=rating_link),
                       recipients=[email])
         mail.send(msg)
         return redirect("/booking_confirmation/"+str(booking_result.inserted_id))
@@ -455,7 +451,6 @@ def bookings_confirmation_page(booking_id):
         return render_template("booked.html", query_result=query_result)
     else:
         return redirect('/404/')
-    # TODO: Add parameters to function
 
 
 @app.route("/partner", methods=["POST", "GET"])
@@ -525,12 +520,33 @@ def partners_page():
         return render_template("business-creation.html")
 
 
-@app.route('/rating-test')
-def rate():
-    return render_template("rate.html")
+@app.route('/rating/<booking_id>', methods=["GET", "POST"])
+def rate(booking_id):
+    # Check booking existence and if it's already rated
+    try:
+        query_result = bookings_collection.find_one({"_id": ObjectId(booking_id)})
+    except bson.errors.InvalidId:
+        return redirect('/404/')
+    if query_result["rated"]:
+        return render_template("already-rated.html")  # TODO: non-existent page
+
+    if request.method == 'GET':
+        return render_template("rate.html", query_result=query_result)
+    else:
+        business_name = query_result["business_name"]
+        business_query_result = businesses_collection.find_one({"business_name": business_name})
+        new_business_ratings = business_query_result["ratings"] + 1
+        new_rating = (business_query_result["rating"]*(new_business_ratings-1))/new_business_ratings + (int(request.form["rating"])/new_business_ratings)
+        businesses_collection.update_one({"business_name": business_name},
+                                         {'$set': {"rating": new_rating}})
+        businesses_collection.update_one({"business_name": business_name},
+                                         {'$set': {"ratings": new_business_ratings}})
+        bookings_collection.update_one({"business_name": business_name},
+                                       {'$set': {"rated": True}})
+        return redirect("/business/"+business_name)
 
 
-# TODO
+# TODO:
 @app.route('/newBusiness_confirmation/<business_name>', methods=["GET"])
 def partner_confirmation_page(business_name):
     business_document = businesses_collection.find_one({"business_name": business_name})
@@ -570,9 +586,6 @@ if __name__ == "__main__":
         pass
     https_available = False
     try:
-        # SSL cert approach commented out to test the other one
-        # context = ssl.SSLContext()
-        # context.load_cert_chain(curr_path + '/cert.pem', curr_path + '/privkey.pem')
         context = (curr_path + '/cert.pem', curr_path + '/privkey.pem')
         https_available = True # True = create https page
     except FileNotFoundError:
