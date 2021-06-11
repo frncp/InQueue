@@ -17,6 +17,7 @@ from io import BytesIO
 from reportlab.pdfgen.canvas import Canvas
 import qrcode
 from passwords import DB_STRING, DB_CLIENT_NAME, EMAIL_USER, EMAIL_PASSWORD
+from documents_db_init import DOCUMENTS
 from cities import CITIES
 import string
 import random
@@ -94,51 +95,118 @@ business_types_dict_italian = {
     "car-repair": "Meccanico"
 }
 
+
 def init_db():
-    business_elements = []
-    business_elements_entire = []
 
+    # La Gaiola - Insert
+    business_name = decorate_business_name("Parco Sommerso di Gaiola")
+    document = {"business_name": business_name, "business_type": "attraction",
+                "open_time1": "9:00", "close_time1": "13:00", "open_time2": "14:00",
+                "close_time2": "18:00", "city": "Napoli", "address": "Discesa Gaiola, 80123 Napoli NA",
+                "lat": "40.79137", "lon": "14.18684",
+                "creation_date": "2020-01-02", "creation_time": "08:30:00",
+                "rating": float(3.8), "ratings": 132, "service":["Escursione - 12€"],
+                "slots": ["09:00", "11:00", "14:00", "16:00"]}
+    document_account = {"business_name": business_name, "fname": "Maurizio",
+                        "lname": "Simeone", "email": "maurizio@test.com",
+                        "cellphone": "1231231233",
+                        "password": "test"}
+    document_booking = {"business_name": business_name, "name": "Orlando", "surname": "Furioso",
+                        "email": "orlando@test.com",
+                        "cellphone": "3333333333", "day": "2021-07-01", "time": "14:00", "service": "Escursione - 12€",
+                        "booking_date": "2021-06-11",
+                        "booking_time": "12:00", "rated": False}
 
-    document = {"business_name": "AMP Parco Sommerso di Gaiola", "business_type": "attraction",
-                        "open_time1": "9:00", "close_time1": "13:00", "open_time2": "14:00",
-                        "close_time2": "18:00", "city": "Napoli", "address": "Discesa Gaiola, 80123 Napoli NA",
-                        "lat": "40.79137", "lon": "14.18684",
-                        "creation_date": "2020-01-02", "creation_time": "08:33",
-                        "rating": "3.8", "ratings": "132", "service":["Turno 1 - 12€", "Turno 2 - 12€"], "slots":["09:00","11:00","14:00","16:00"]}
+    b_sign_up_result = businesses_collection.insert_one(document)
+    accounts_collection.insert_one(document_account)
+    bookings_collection.insert_one(document_booking)
+    photo = open("./static/images/business_photos_db_init/laGaiola.jpg", "rb")
+    document_photo = {"_id": b_sign_up_result.inserted_id, "business_name": business_name,
+                      "img": photo.read()}
+    businesses_photo_collection.insert_one(document_photo)
 
-    businesses_collection.insert_one(document)
+    # Zelda - Insert
+    business_name = decorate_business_name("ZeldaHair")
+    document = {"business_name": business_name, "business_type": "hairdresser",
+                "open_time1": "6:00", "close_time1": "12:00", "open_time2": "16:00",
+                "close_time2": "18:00", "city": "Roma", "address": "Via Carlo Conti Rossini, 39, 00147 Roma RM",
+                "lat": "41.902982", "lon": "12.496266",
+                "creation_date": "2020-01-02", "creation_time": "08:30:00",
+                "rating": float(3.8), "ratings": 999, "service": ["Ganondorf - 5€"],
+                "slots": ["06:00", "8:00", "10:00", "16:00"]}
+    document_account = {"business_name": business_name, "fname": "Link",
+                        "lname": "Ombra", "email": "link@test.com",
+                        "cellphone": "3443443443",
+                        "password": "test"}
+    document_booking = {"business_name": business_name, "name": "Majora", "surname": "Mask",
+                        "email": "majora@test.com",
+                        "cellphone": "3333333333", "day": "2021-07-01", "time": "14:00", "service": "Ganondorf - 5€",
+                        "booking_date": "2021-06-11",
+                        "booking_time": "12:00", "rated": False}
 
-    business_elements.append({"business_name": "", "business_type": "",
-                                                         "open_time1": new_open_time1, "close_time1": new_close_time1, "open_time2": new_open_time2,
-                                                         "close_time2": new_close_time2, "city": request.form["city"], "address": request.form["address"],
-                                                         "lat": request.form["lat"], "lon": request.form["lon"],
-                                                         "creation_date": "2020-01-02", "creation_time": "",
-                                                         "rating": query_result["rating"], "ratings": query_result["ratings"], "service":[""], "slots":[]})
+    b_sign_up_result = businesses_collection.insert_one(document)
+    accounts_collection.insert_one(document_account)
+    bookings_collection.insert_one(document_booking)
+    photo = open("./static/images/business_photos_db_init/Zelda.jpg", "rb")
+    document_photo = {"_id": b_sign_up_result.inserted_id, "business_name": business_name,
+                      "img": photo.read()}
+    businesses_photo_collection.insert_one(document_photo)
 
+    # Pipe Piper - insert
+    business_name = decorate_business_name("Pied Piper")
+    document = {"business_name": business_name, "business_type": "freelance",
+                "open_time1": "10:00", "close_time1": "13:00", "open_time2": "17:00",
+                "close_time2": "18:00", "city": "Napoli", "address": "Via Posillipo, Napoli NA",
+                "lat": "40.79137", "lon": "14.18684",
+                "creation_date": "2020-01-02", "creation_time": "08:30",
+                "rating": float(3.8), "ratings": 22, "service": ["Silicon - 222222€"],
+                "slots": ["10:00", "11:00", "12:00", "17:00"]}
+    document_account = {"business_name": business_name, "fname": "Pied",
+                        "lname": "Piper", "email": "pied@test.com",
+                        "cellphone": "1231231233",
+                        "password": "test"}
+    document_booking = {"business_name": business_name, "name": "Pied", "surname": "Piper",
+                        "email": "pied@test.com",
+                        "cellphone": "3333333333", "day": "2021-07-01", "time": "14:00", "service": "Silicon - 222222€",
+                        "booking_date": "2021-06-11",
+                        "booking_time": "12:00", "rated": False}
 
-    mylist = [
-      { "name": "Amy", "address": "Apple st 652"},
-      { "name": "Hannah", "address": "Mountain 21"},
-      { "name": "Michael", "address": "Valley 345"},
-      { "name": "Sandy", "address": "Ocean blvd 2"},
-      { "name": "Betty", "address": "Green Grass 1"},
-      { "name": "Richard", "address": "Sky st 331"},
-      { "name": "Susan", "address": "One way 98"},
-      { "name": "Vicky", "address": "Yellow Garden 2"},
-      { "name": "Ben", "address": "Park Lane 38"},
-      { "name": "William", "address": "Central st 954"},
-      { "name": "Chuck", "address": "Main Road 989"},
-      { "name": "Viola", "address": "Sideway 1633"}
-    ]
+    b_sign_up_result = businesses_collection.insert_one(document)
+    accounts_collection.insert_one(document_account)
+    bookings_collection.insert_one(document_booking)
+    photo = open("./static/images/business_photos_db_init/pdppr.jpg", "rb")
+    document_photo = {"_id": b_sign_up_result.inserted_id, "business_name": business_name,
+                      "img": photo.read()}
+    businesses_photo_collection.insert_one(document_photo)
 
+    # Lost - Insert
+    business_name = decorate_business_name("LostGym")
+    document = {"business_name": business_name, "business_type": "gym",
+                "open_time1": "4:00", "close_time1": "16:00", "open_time2": "18:00",
+                "close_time2": "22:00", "city": "Roma", "address": "Piazzale Ostiense, 00154 Roma RM",
+                "lat": "41.902782", "lon": "12.496366",
+                "creation_date": "2020-01-02", "creation_time": "08:30:00",
+                "rating": float(3.8), "ratings": 132,
+                "service": ["Sayid Hassan Jarrah - 20€", "Claire Littleton - 25€"],
+                "slots": ["04:00", "06:00", "08:00", "10:00", "12:00", "14:00", "18:00", "20:00"]}
+    document_account = {"business_name": business_name, "fname": "Jack",
+                        "lname": "Shepard", "email": "jack@test.com",
+                        "cellphone": "3443443443",
+                        "password": "test"}
+    document_booking = {"business_name": business_name, "name": "Raffaele", "surname": "Montella",
+                        "email": "raffaele@test.com",
+                        "cellphone": "3333333333", "day": "2021-07-01", "time": "14:00",
+                        "service": "Claire Littleton - 20€",
+                        "booking_date": "2021-06-11",
+                        "booking_time": "12:00", "rated": False}
 
-    businesses_collection = db["businesses"]
-    businesses_collection.insert_many(business_elements)
-
-    bookings_collection = db["bookings"]
-    PDFs_collection = db["bookings_PDFs"]
-    accounts_collection = db["accounts"]
-    businesses_photo_collection = db["businesses_photo"]
+    b_sign_up_result = businesses_collection.insert_one(document)
+    accounts_collection.insert_one(document_account)
+    bookings_collection.insert_one(document_booking)
+    photo = open("./static/images/business_photos_db_init/Lost.jpg", "rb")
+    document_photo = {"_id": b_sign_up_result.inserted_id, "business_name": business_name,
+                      "img": photo.read()}
+    businesses_photo_collection.insert_one(document_photo)
 
 
 def slot_size(query_result):
@@ -275,7 +343,6 @@ def modify_business(business_name):
 
         photo = request.files['img'].read()
         if len(photo) == 0:
-            print("è vuota")
             photo_query_result = businesses_photo_collection.find_one({"business_name": business_name})
             photo = photo_query_result["img"]
         photo_document = {"_id": b_sign_up_result.inserted_id, "business_name": new_business_name,
@@ -622,6 +689,8 @@ def list_cities(city):
 
 
 if __name__ == "__main__":
+    #Comment next line to get empty DB
+    init_db()
     curr_path = os.path.dirname(__file__)
     try:
         os.mkdir(curr_path+"/temp")
