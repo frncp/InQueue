@@ -1,30 +1,24 @@
-from flask import Flask, render_template, url_for, request, redirect, send_from_directory, make_response, send_file, jsonify
+from flask import Flask, render_template, request, redirect, make_response, send_file, jsonify
 from flask_mail import Mail, Message
 import flask_login
 import werkzeug.exceptions
-import requests
-import json
-from http import cookies
 import os
 import pymongo
-from pymongo import MongoClient, errors
-import base64
 import bson
-from bson.binary import Binary
 from bson.objectid import ObjectId
 from datetime import date, datetime, timedelta
 from io import BytesIO
 from reportlab.pdfgen.canvas import Canvas
 import qrcode
 from passwords import DB_STRING, DB_CLIENT_NAME, EMAIL_USER, EMAIL_PASSWORD
-from documents_db_init import DOCUMENTS
+from documents_db_init import init_db
 from cities import CITIES
 import string
 import random
 import certifi
 
 # SERVER SETTINGS
-SERVER_NO_FORWARD = False # True = Flask default configuration, run it locally (for testing, debug)
+SERVER_NO_FORWARD = True # True = Flask default configuration, run it locally (for testing, debug)
 SERVER_LOCAL_ONLY = True  # True = Run it locally
 SERVER_DOMAIN_NAME = 'inqueue.it' # Your domain name here
 
@@ -37,19 +31,11 @@ client = pymongo.MongoClient(mongo_client_string, tlsCAFile=certifi.where())
 db = client[DB_CLIENT_NAME]
 
 businesses_collection = db["businesses"]
-businesses_collection.drop()
-
 bookings_collection = db["bookings"]
-bookings_collection.drop()
-
 PDFs_collection = db["bookings_PDFs"]
-PDFs_collection.drop()
-
 accounts_collection = db["accounts"]
-accounts_collection.drop()
-
 businesses_photo_collection = db["businesses_photo"]
-businesses_photo_collection.drop()
+
 
 # Start app
 app = Flask(__name__)
@@ -79,150 +65,6 @@ business_types_dict_italian = {
     "gym": "Palestra",
     "car-repair": "Meccanico"
 }
-
-
-def init_db():
-
-    # La Gaiola - Insert
-    business_name = decorate_business_name("Parco Sommerso di Gaiola")
-    document = {"business_name": business_name, "business_type": "attraction",
-                "open_time1": "9:00", "close_time1": "13:00", "open_time2": "14:00",
-                "close_time2": "18:00", "city": "Napoli", "address": "Discesa Gaiola, 80123 Napoli NA",
-                "lat": "40.79137", "lon": "14.18684",
-                "creation_date": "2020-01-02", "creation_time": "08:30:00",
-                "rating": float(3.8), "ratings": 132, "service":["Escursione - 12€"],
-                "slots": ["09:00", "11:00", "14:00", "16:00"]}
-    document_account = {"business_name": business_name, "fname": "Maurizio",
-                        "lname": "Simeone", "email": "maurizio@test.com",
-                        "cellphone": "1231231233",
-                        "password": "test"}
-    document_booking = {"business_name": business_name, "name": "Orlando", "surname": "Furioso",
-                        "email": "orlando@test.com",
-                        "cellphone": "3333333333", "day": "2021-07-01", "time": "14:00", "service": "Escursione - 12€",
-                        "booking_date": "2021-06-11",
-                        "booking_time": "12:00", "rated": False}
-
-    b_sign_up_result = businesses_collection.insert_one(document)
-    accounts_collection.insert_one(document_account)
-    bookings_collection.insert_one(document_booking)
-    photo = open("./static/images/business_photos_db_init/laGaiola.jpg", "rb")
-    document_photo = {"_id": b_sign_up_result.inserted_id, "business_name": business_name,
-                      "img": photo.read()}
-    businesses_photo_collection.insert_one(document_photo)
-
-    # Zelda - Insert
-    business_name = decorate_business_name("ZeldaHair")
-    document = {"business_name": business_name, "business_type": "hairdresser",
-                "open_time1": "6:00", "close_time1": "12:00", "open_time2": "16:00",
-                "close_time2": "18:00", "city": "Roma", "address": "Via Carlo Conti Rossini, 39, 00147 Roma RM",
-                "lat": "41.902982", "lon": "12.496266",
-                "creation_date": "2020-01-02", "creation_time": "08:30:00",
-                "rating": float(3.8), "ratings": 999, "service": ["Ganondorf - 5€"],
-                "slots": ["06:00", "8:00", "10:00", "16:00"]}
-    document_account = {"business_name": business_name, "fname": "Link",
-                        "lname": "Ombra", "email": "link@test.com",
-                        "cellphone": "3443443443",
-                        "password": "test"}
-    document_booking = {"business_name": business_name, "name": "Majora", "surname": "Mask",
-                        "email": "majora@test.com",
-                        "cellphone": "3333333333", "day": "2021-07-01", "time": "14:00", "service": "Ganondorf - 5€",
-                        "booking_date": "2021-06-11",
-                        "booking_time": "12:00", "rated": False}
-
-    b_sign_up_result = businesses_collection.insert_one(document)
-    accounts_collection.insert_one(document_account)
-    bookings_collection.insert_one(document_booking)
-    photo = open("./static/images/business_photos_db_init/Zelda.jpg", "rb")
-    document_photo = {"_id": b_sign_up_result.inserted_id, "business_name": business_name,
-                      "img": photo.read()}
-    businesses_photo_collection.insert_one(document_photo)
-
-    # Pipe Piper - insert
-    business_name = decorate_business_name("Pied Piper")
-    document = {"business_name": business_name, "business_type": "freelance",
-                "open_time1": "10:00", "close_time1": "13:00", "open_time2": "17:00",
-                "close_time2": "18:00", "city": "Napoli", "address": "Via Posillipo, Napoli NA",
-                "lat": "40.79137", "lon": "14.18684",
-                "creation_date": "2020-01-02", "creation_time": "08:30",
-                "rating": float(3.8), "ratings": 22, "service": ["Silicon - 222222€"],
-                "slots": ["10:00", "11:00", "12:00", "17:00"]}
-    document_account = {"business_name": business_name, "fname": "Pied",
-                        "lname": "Piper", "email": "pied@test.com",
-                        "cellphone": "1231231233",
-                        "password": "test"}
-    document_booking = {"business_name": business_name, "name": "Pied", "surname": "Piper",
-                        "email": "pied@test.com",
-                        "cellphone": "3333333333", "day": "2021-07-01", "time": "14:00", "service": "Silicon - 222222€",
-                        "booking_date": "2021-06-11",
-                        "booking_time": "12:00", "rated": False}
-
-    b_sign_up_result = businesses_collection.insert_one(document)
-    accounts_collection.insert_one(document_account)
-    bookings_collection.insert_one(document_booking)
-    photo = open("./static/images/business_photos_db_init/pdppr.jpg", "rb")
-    document_photo = {"_id": b_sign_up_result.inserted_id, "business_name": business_name,
-                      "img": photo.read()}
-    businesses_photo_collection.insert_one(document_photo)
-
-    # Lost - Insert
-    business_name = decorate_business_name("LostGym")
-    document = {"business_name": business_name, "business_type": "gym",
-                "open_time1": "4:00", "close_time1": "16:00", "open_time2": "18:00",
-                "close_time2": "22:00", "city": "Roma", "address": "Piazzale Ostiense, 00154 Roma RM",
-                "lat": "41.902782", "lon": "12.496366",
-                "creation_date": "2020-01-02", "creation_time": "08:30:00",
-                "rating": float(3.8), "ratings": 132,
-                "service": ["Sayid Hassan Jarrah - 20€", "Claire Littleton - 25€"],
-                "slots": ["04:00", "06:00", "08:00", "10:00", "12:00", "14:00", "18:00", "20:00"]}
-    document_account = {"business_name": business_name, "fname": "Jack",
-                        "lname": "Shepard", "email": "jack@test.com",
-                        "cellphone": "3443443443",
-                        "password": "test"}
-    document_booking = {"business_name": business_name, "name": "Raffaele", "surname": "Montella",
-                        "email": "raffaele@test.com",
-                        "cellphone": "3333333333", "day": "2021-07-01", "time": "14:00",
-                        "service": "Claire Littleton - 20€",
-                        "booking_date": "2021-06-11",
-                        "booking_time": "12:00", "rated": False}
-
-    b_sign_up_result = businesses_collection.insert_one(document)
-    accounts_collection.insert_one(document_account)
-    bookings_collection.insert_one(document_booking)
-    photo = open("./static/images/business_photos_db_init/Lost.jpg", "rb")
-    document_photo = {"_id": b_sign_up_result.inserted_id, "business_name": business_name,
-                      "img": photo.read()}
-    businesses_photo_collection.insert_one(document_photo)
-
-    # Saul Goodman - insert
-    business_name = decorate_business_name("Saul Goodman")
-    document = {"business_name": business_name, "business_type": "freelance", "open_time1": "13:30", "close_time1": "15:30", "open_time2": "16:30", "close_time2": "19:30", "city": "Napoli", "address": "Piazza Giuseppe Mazzini",
-    "lat": "40.8516229",  "lon": "14.2426546", "creation_date": "2021-06-11", "creation_time": "14:37:43",
-    "rating": float(1),  "ratings": 10,  "service": ["Difesa", "Offesa", "Difesa + Offesa"], "slots": ["13:30", "14:30", "16:30", "17:30", "18:30"]}
-    document_account = {"business_name": business_name, "fname": "Saul",
-                        "lname": "Goodman", "email": "saul@test.com",
-                        "cellphone": "3443443443",
-                        "password": "test"}
-    document_booking = {"business_name": business_name, "name": "Raffaele", "surname": "Montella",
-                        "email": "raffaele@test.com",
-                        "cellphone": "3333333333", "day": "2021-07-01", "time": "14:00",
-                        "service": "Claire Littleton - 20€",
-                        "booking_date": "2021-06-11",
-                        "booking_time": "12:00", "rated": False}
-    b_sign_up_result = businesses_collection.insert_one(document)
-    accounts_collection.insert_one(document_account)
-    bookings_collection.insert_one(document_booking)
-    photo = open("./static/images/business_photos_db_init/saul.jpg", "rb")
-    document_photo = {"_id": b_sign_up_result.inserted_id, "business_name": business_name,
-                      "img": photo.read()}
-    # Insert from array
-    businesses_photo_collection.insert_one(document_photo)
-    i = 1
-    for element in DOCUMENTS:
-        b_sign_up_result = businesses_collection.insert_one(element)
-        photo = open("./static/images/business_photos_db_init/" + i + ".jpg", "rb")
-        i = i + 1
-        document_photo = {"_id": b_sign_up_result.inserted_id, "business_name": element["business_name"], "img": photo.read()}
-        businesses_photo_collection.insert_one(document_photo)
 
 
 def slot_size(query_result):
@@ -301,6 +143,7 @@ def request_loader(request):
     user.is_authenticated = (password_from_request == query_result['password'])
     return user
 
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'GET':
@@ -323,8 +166,7 @@ def modify_business(business_name):
     except AttributeError:
         return redirect('/login')
     if query_result_account["business_name"] != business_name:
-        print("non loggato ma ha provato a modificare la pagina di qualcuno, redirect non scritto, fix this")
-        return redirect(render_template('not_logged_in.html'))  # TODO: Write new page or redirect to login
+        return redirect('/login')
     query_result = businesses_collection.find_one({"business_name": business_name})
     t_delta = slot_size(query_result)
     if request.method == 'GET':
@@ -394,8 +236,7 @@ def calendar(business_name):
     except AttributeError:
         return redirect('/login')
     if query_result_account["business_name"] != business_name:
-        print("non loggato ma ha provato a modificare la pagina di qualcuno, redirect non scritto, fix this")
-        return redirect(render_template('not_logged_in.html')), 403  # TODO: Write new page or redirect to login
+        return redirect('/login')
 
     query_result = businesses_collection.find_one({"business_name": business_name})
     return render_template('calendar.html', query_result=query_result, query_result_account=query_result_account)
@@ -457,11 +298,12 @@ def get_bookings():
     business_name = request.args.get('b_name')
     if query_result_account["business_name"] != business_name:
         return jsonify([]), 403
-    bookingsDB = bookings_collection.find({"business_name": business_name})
+    bookings_db = bookings_collection.find({"business_name": business_name})
     bookings = []
-    for item in bookingsDB:
+    for item in bookings_db:
         bookings.append({"name": item["name"], "surname": item["surname"], "email": item["email"],
-        "cellphone": item["cellphone"], "day": item["day"], "time": item["time"], "service": item["service"], "rated": item["rated"]})
+                         "cellphone": item["cellphone"], "day": item["day"], "time": item["time"],
+                         "service": item["service"], "rated": item["rated"]})
     return jsonify(bookings)
 
 
@@ -516,8 +358,7 @@ def business_page(business_name):
                     "booking_time": now, "rated": False}
         booking_result = bookings_collection.insert_one(document)
         if SERVER_LOCAL_ONLY:
-            # server_name = "http://127.0.0.1:80"
-            server_name = "https://127.0.0.1:443"
+            server_name = "http://127.0.0.1:80"
         else:
             server_name = SERVER_DOMAIN_NAME
         rating_link = server_name + "/rating/" + str(booking_result.inserted_id)
@@ -594,7 +435,7 @@ def partners_page():
         # Check if account is already existing
         account_found = accounts_collection.find_one({"email": email})
         if account_found is not None:
-            return redirect("/email_already_signed_up")  # TODO
+            return "email_already_signed_up", 410
 
         # Decorate business_name with random string to force uniqueness
         business_name = decorate_business_name(business_name)
@@ -636,13 +477,6 @@ def partners_page():
 
         return redirect("/newBusiness_confirmation/"+business_name)
     else:
-        """
-        msg = Message("Hello",
-                      sender=("inQueue", "antoniototimorelli@gmail.com"),
-                      recipients=["mattiarip@gmail.com"])
-        msg.body = "Funzia?"
-        mail.send(msg)
-        """
         return render_template("business-creation.html")
 
 
@@ -654,7 +488,7 @@ def rate(booking_id):
     except bson.errors.InvalidId:
         return redirect('/404/')
     if query_result["rated"]:
-        return render_template("already-rated.html")  # TODO: non-existent page
+        return "Business already rated ", 410
 
     if request.method == 'GET':
         return render_template("rate.html", query_result=query_result)
@@ -672,7 +506,6 @@ def rate(booking_id):
         return redirect("/business/"+business_name)
 
 
-# TODO:
 @app.route('/newBusiness_confirmation/<business_name>', methods=["GET"])
 def partner_confirmation_page(business_name):
     business_document = businesses_collection.find_one({"business_name": business_name})
@@ -696,31 +529,11 @@ def list_cities(city):
 
 
 if __name__ == "__main__":
-    #Comment next line to get empty DB
-    init_db()
+    # Comment next line to get default DB
+    init_db(businesses_collection, accounts_collection, bookings_collection, businesses_photo_collection, PDFs_collection)
     curr_path = os.path.dirname(__file__)
     try:
         os.mkdir(curr_path+"/temp")
     except FileExistsError:
         pass
-    https_available = False
-    try:
-        context = (curr_path + '/cert.pem', curr_path + '/privkey.pem')
-        https_available = True # True = create https page
-    except FileNotFoundError:
-        print("HTTPs certification files not found")
-    # Server starting
-    if SERVER_NO_FORWARD and SERVER_LOCAL_ONLY:
-        app.run(debug=True)
-    elif SERVER_LOCAL_ONLY and (not SERVER_NO_FORWARD):
-        if https_available:
-            app.run(debug=True, port=443, ssl_context=context)
-        else:
-            app.run(debug=True, port=80)
-    else:
-        # Port forwarding needed on router
-        app.config['SERVER_NAME'] = SERVER_DOMAIN_NAME
-        if https_available:
-            app.run(host='0.0.0.0', port=443, debug=True, ssl_context=context)
-        else:
-            app.run(host='0.0.0.0', port=80, debug=True)
+    app.run(host='0.0.0.0', debug=True, use_debugger=True)
