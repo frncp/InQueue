@@ -24,7 +24,7 @@ Make sure you've added your IP address to the project's IP Access List.
 **Requirements**: Docker.
 If you don't have Docker installed, follow [these instructions](https://docs.docker.com/engine/install/) to start.
 
-1. Add your MongoDB Atlas and gmail smtp account credentials to the `docker/.env.dev` file
+1. Add your MongoDB Atlas and smtp.gmail.com account credentials to the `docker/.env.dev` file
 2. Run `docker-compose -f docker-compose.yml --env-file ./ .env.dev up --build` on your terminal
 3. Open your browser and connect to [localhost:5000](http://localhost:5000)
 
