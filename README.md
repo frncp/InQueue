@@ -17,8 +17,8 @@ You can test it by visiting [inqueue.it](https://inqueue.it).
 ## How to get started
 ### Mongo DB Atlas
 Make sure you've added your IP address to the project's IP Access List.
-<p align="center"><img src="/screenshots/1.png" width="150" /></p>
-<p align="center"><img src="/screenshots/2.png" width="150" /></p>
+<p align="center"><img src="/screenshots/1.png"/></p>
+<p align="center"><img src="/screenshots/2.png"/></p>
 
 ### Docker
 **Requirements**: Docker.
