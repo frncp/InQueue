@@ -9,7 +9,20 @@
 InQueue is a small **web application** aimed at helping people with **booking a service in their area**. 
 This is a university project made for the 2021 edition of the Tecnologie Web (Web Technologies) course at the [*Università degli Studi di Napoli Parthenope*](https://github.com/uniparthenope).
 
-## How to get started
+| :exclamation:  This project was made for learning purposes only |
+|-----------------------------------------------------------------|
+
+You can test it by visiting [inqueue.it](https://inqueue.it).
+
+## How to get started (fast)
+**Requirements**: Docker.
+If you don't have Docker installed, follow [these instructions](https://docs.docker.com/engine/install/) to start.
+
+1. Add your MongoDB Atlas account credentials to the file `/docker/.env.dev`
+2. Run `docker-compose -f docker-compose.yml --env-file ./ .env.dev up --build` on your terminal
+3. Open your browser and connect to [localhost:5000](http://localhost:5000)
+
+## How to get started (the hard way)
 ### Setting up the database
 1. Create a MongoDB database
 2. Create a file named *`passwords.py`* in the root folder and insert the following parameters
@@ -56,9 +69,6 @@ Here's a list of the assets we used and their authors:
 - *static/images/muscle.png* made by <a href="https://www.flaticon.com/authors/darius-dan" title="Darius Dan">Darius Dan</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a>
 - *static/images/logout.png* made by <a href="https://www.flaticon.com/authors/pixel-perfect" title="Pixel perfect">Pixel perfect</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a>
 - *static/images/down-arrow.png* made by <a href="https://smashicons.com/" title="Smashicons">Smashicons</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a>
-
-
-
 
 ## Authors
 The authors of this project are
