@@ -1,0 +1,402 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Prenota
+    {% if variable is defined %}
+        {{ activity }}
+    {% else %}
+        attività
+    {% endif %}
+    a
+    {{ city }}
+{% endblock %}
+
+{% block main %}
+    <!-- Togliere onclick="localityModifier()"??? -->
+    <div class="city_container">
+        <h1>Prenota attività a <a href="/select" id="selectedCity" class="inqueue-orange text-decoration-none">{{ city }} <img
+                class="dropdown_icon" src="{{ url_for('static', filename='images/location-pointer.png') }}" width="25px"> </a>
+        </h1>
+    </div>
+
+    <div class="row d-flex justify-content-center">
+        <div class="homepage-circle-container homepage-circle-container d-flex flex-column justify-content-center align-items-center">
+            <a href="/list/{{ city }}?type=places" class="text-decoration-none">
+                <img class="circle-img" src="../static/images/column.png" alt="visite" width="65px">
+                <p>Visite guidate</p>
+            </a>
+        </div>
+        <div class="homepage-circle-container d-flex flex-column justify-content-center align-items-center">
+            <a href="/list/{{ city }}?type=field" class="text-decoration-none">
+                <img class="circle-img" src="../static/images/soccer-field.png" alt="campi" width="65px">
+                <p>Campi sportivi</p>
+            </a>
+        </div>
+        <div class="homepage-circle-container d-flex flex-column justify-content-center align-items-center">
+            <a href="/list/{{ city }}?type=gym" class="text-decoration-none">
+
+                <img class="circle-img" src="../static/images/muscle.png" alt="palestre" width="65px">
+                <p>Palestre</p>
+            </a>
+        </div>
+        <div class="homepage-circle-container d-flex flex-column justify-content-center align-items-center">
+            <a href="/list/{{ city }}?type=beautician" class="text-decoration-none">
+                <img class="circle-img" src="../static/images/nail-polish.png" alt="centri_estetici" width="65px">
+                <p>Centri estetici</p>
+            </a>
+        </div>
+        <div class="homepage-circle-container d-flex flex-column justify-content-center align-items-center">
+            <a href="/list/{{ city }}?type=car-repair" class="text-decoration-none">
+                <img class="circle-img" src="../static/images/mechanic.png" alt="meccanici" width="65px">
+                <p>Meccanici</p>
+            </a>
+        </div>
+        <div class="homepage-circle-container d-flex flex-column justify-content-center align-items-center">
+            <a href="/list/{{ city }}?type=barber_hairdresser" class="text-decoration-none">
+                <img class="circle-img" src="../static/images/barber.png" alt="parrucchieri" width="65px">
+                <p>Parrucchieri e barbieri</p>
+            </a>
+        </div>
+        <div class="homepage-circle-container d-flex flex-column justify-content-center align-items-center">
+            <a href="/list/{{ city }}?type=freelance" class="text-decoration-none">
+                <img class="circle-img" src="../static/images/lawyer.png" alt="liberi_professionisti" width="65px">
+                <p>Liberi professionisti</p>
+            </a>
+        </div>
+    </div>
+
+
+    <h2 class="mt-5 mb-4">Ordina per:</h2>
+    <div class="row">
+        <button class="col filter btn btn-inqueue-purple" onclick="filter('p')">
+            Popolarità
+        </button>
+        <button class="col filter btn btn-inqueue-purple" onclick="filter('n')">
+            Novità
+        </button>
+        <button class="col filter btn btn-inqueue-purple" onclick="filter('no')">
+            Nome
+        </button>
+    </div>
+    <div class="row">
+        <select class="form-select form-select-md" id="type" name="type" onchange="filter2()">
+            <option value="all">Tutto</option>
+            <option value="barber_hairdresser">Parrucchieri e barbieri</option>
+            <option value="beautician">Centri estetici</option>
+            <option value="field">Campi sportivi</option>
+            <option value="places">Attrazioni</option>
+            <option value="freelance">Liberi professionisti</option>
+            <option value="car-repair">Meccanici</option>
+            <option value="gym">Palestre</option>
+        </select>
+        <input type="text" id="search" placeholder="Cerca" onkeyup="search()">
+    </div>
+    <hr>
+    <section class="container_deck">
+        <div class="row row-cols-1 row-cols-sm-1 row-cols-md-2 row-cols-xl-3 row-cols-xxl-4" id="deck">
+            {% for element in businesses_in_city %}
+                <div class="col mb-4">
+                    <div class="card" data-rating="{{ element["rating"] }}" data-rating-number="{{ element["ratings"] }}" data-business-type="{{ element["business_type"] }}" data-creation-time="{{ element["creation_time"] }}" data-creation-date="{{ element["creation_date"] }}">
+                        <img src="/photos/{{ element["business_name"] }}.jpg" class="card-img-top" style="width: 100%; height:
+                100%; object-fit: cover" alt="">
+                        <a href="/business/{{ element["business_name"] }}">
+                            <div class="card-body card-img-overlay d-flex flex-column">
+                                <div class="row">
+                                    <h5 class="card-title" id="title">{{ (element["business_name"])[:-9] }}</h5>
+                                </div>
+                                <div class="row">
+                                    <p class="card-subtitle">{{ element["address"] }}</p>
+                                </div>
+                                <div class="row">
+                                    <p class="card-subtitle small">{{ business_types_dict_italian[element["business_type"]] }}</p>
+                                </div>
+                                <div class="row info-row-3 mt-auto">
+                                    <div class="col-6 text-start small">
+                                        {{ element["rating"]|round }}
+                                        {% for n in range((element["rating"]|round)|int) %}
+                                        ⭐
+                                        {% endfor %}
+                                        ({{ element["ratings"] }})
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+
+
+        <script>
+        let cardContainer;
+        let businesses_creation_order; // TODO: const?
+        setType();
+
+        window.onload = function() {
+            cardContainer = document.getElementById("deck");
+            businesses_creation_order = Array.from(cardContainer.getElementsByClassName("card"));
+        }
+
+        function setType() {
+            let url = new URL(window.location.href);
+            let type = url.searchParams.get("type");
+            let select = document.getElementById("type");
+            select.value = type;
+            filter2();
+        }
+
+        function compareTime(a, b) {
+            let at = a.dataset.creationDate;
+            let bt = b.dataset.creationDate;
+            if (at < bt) {
+                return -1;
+            }
+            if (at > bt) {
+                return 1;
+            }
+            if (at == bt) {
+                let at2 = a.dataset.creationTime;
+                let bt2 = b.dataset.creationTime;
+
+                if (at2 < bt2) {
+                    return -1;
+                }
+                if (at2 > bt2) {
+                    return 1;
+                }
+            }
+            return 0;
+        }
+
+        function compareRating(a, b) {
+            let at = parseFloat(a.dataset.rating);
+            let bt = parseFloat(b.dataset.rating);
+            if (at > bt) {
+                return -1;
+            }
+            if (at < bt) {
+                return 1;
+            }
+            return 0;
+        }
+
+        function compareTitle(a, b) {
+            let at = a.getElementsByTagName("h5")[0].innerText.toUpperCase();
+            let bt = b.getElementsByTagName("h5")[0].innerText.toUpperCase();
+
+            if (at < bt) {
+                return -1;
+            }
+            if (at > bt) {
+                return 1;
+            }
+            return 0;
+        }
+
+        function filter(type) {
+            let i, cardsArray;
+            cardContainer.innerHTML = "";
+            cardsArray = businesses_creation_order.slice();
+
+            if (type == 'p') {
+                cardsArray.sort(compareRating);
+            } else if (type == 'n') {
+                cardsArray.sort(compareTime);
+            } else if (type == 'no') {
+                cardsArray.sort(compareTitle);
+            }
+
+            for (i = 0; i < cardsArray.length; i++) {
+                let div = document.createElement('div');
+                div.classList.add("col");
+                div.classList.add("mb-4");
+                cardContainer.appendChild(div);
+
+                cardsArray[i].classList.add('animate__animated')
+                cardsArray[i].classList.add('animate__fadeInUp')
+                cardsArray[i].classList.add('animate__faster')
+                div.appendChild(cardsArray[i]);
+            }
+            filter2();
+        }
+
+        function search() {
+            let input, filter, cards, cardContainer, title, i, outer;
+            input = document.getElementById("search");
+            filter = input.value.toUpperCase();
+            cardContainer = document.getElementById("deck");
+            cards = cardContainer.getElementsByClassName("card");
+            for (i = 0; i < cards.length; i++) {
+                outer = cards[i].parentNode;
+                title = cards[i].querySelector(".card-title");
+                if (title.innerText.toUpperCase().indexOf(filter) > -1) {
+                    outer.style.display = ""
+                    outer.classList.add('animate__animated')
+                    outer.classList.add('animate__fadeInUp')
+                    outer.classList.add('animate__faster')
+                } else {
+                    outer.style.display = "none"
+                }
+            }
+        }
+
+        function filter2() {
+            let value = document.getElementById("type").value;
+            let btype, cards, cardContainer, i, outer;
+
+            cardContainer = document.getElementById("deck");
+            cards = cardContainer.getElementsByClassName("card");
+
+            if (value == "barber_hairdresser") {
+                for (i = 0; i < cards.length; i++) {
+                    outer = cards[i].parentNode;
+                    btype = cards[i].dataset.businessType;
+
+                    if(btype == "barber" || btype == "hairdresser") {
+                        outer.style.display = "";
+                        outer.classList.add('animate__animated')
+                        outer.classList.add('animate__fadeInUp')
+                        outer.classList.add('animate__faster')
+                    }
+                    else {
+                        outer.style.display = "none";
+                        outer.classList.remove('animate__animated')
+                        outer.classList.remove('animate__fadeInUp')
+                        outer.classList.remove('animate__faster')
+                    }
+                }
+            }
+            else if (value == "beautician") {
+                for (i = 0; i < cards.length; i++) {
+                    outer = cards[i].parentNode;
+                    btype = cards[i].dataset.businessType;
+
+                    if(btype == "beautician") {
+                       outer.style.display = "";
+                        outer.classList.add('animate__animated')
+                        outer.classList.add('animate__fadeInUp')
+                        outer.classList.add('animate__faster')
+                    }
+                    else {
+                        outer.style.display = "none";
+                        outer.classList.remove('animate__animated')
+                        outer.classList.remove('animate__fadeInUp')
+                        outer.classList.remove('animate__faster')
+                    }
+                }
+            }
+            else if (value == "field")
+            {
+                for (i = 0; i < cards.length; i++) {
+                    outer = cards[i].parentNode;
+                    btype = cards[i].dataset.businessType;
+
+                    if(btype == "field") {
+                        outer.style.display = "";
+                        outer.classList.add('animate__animated')
+                        outer.classList.add('animate__fadeInUp')
+                        outer.classList.add('animate__faster')
+                    }
+                    else {
+                        outer.style.display = "none";
+                        outer.classList.remove('animate__animated')
+                        outer.classList.remove('animate__fadeInUp')
+                        outer.classList.remove('animate__faster')
+                    }
+                }
+            }
+            else if (value == "places") {
+                for (i = 0; i < cards.length; i++) {
+                    outer = cards[i].parentNode;
+                    btype = cards[i].dataset.businessType;
+
+                    if(btype == "museum" || btype == "attraction") {
+                        outer.style.display = "";
+                        outer.classList.add('animate__animated')
+                        outer.classList.add('animate__fadeInUp')
+                        outer.classList.add('animate__faster')
+                    }
+                    else {
+                        outer.style.display = "none";
+                        outer.classList.remove('animate__animated')
+                        outer.classList.remove('animate__fadeInUp')
+                        outer.classList.remove('animate__faster')
+                    }
+                }
+            }
+            else if (value == "car-repair") {
+                for (i = 0; i < cards.length; i++) {
+                    outer = cards[i].parentNode;
+                    btype = cards[i].dataset.businessType;
+
+                    if(btype == "car-repair") {
+                        outer.style.display = "";
+                        outer.classList.add('animate__animated')
+                        outer.classList.add('animate__fadeInUp')
+                        outer.classList.add('animate__faster')
+                    }
+                    else {
+                        outer.style.display = "none";
+                        outer.classList.remove('animate__animated')
+                        outer.classList.remove('animate__fadeInUp')
+                        outer.classList.remove('animate__faster')
+                    }
+                }
+            }
+            else if (value == "gym") {
+                for (i = 0; i < cards.length; i++) {
+                    outer = cards[i].parentNode;
+                    btype = cards[i].dataset.businessType;
+
+                    if(btype == "gym") {
+                        outer.style.display = "";
+                        outer.classList.add('animate__animated')
+                        outer.classList.add('animate__fadeInUp')
+                        outer.classList.add('animate__faster')
+                    }
+                    else {
+                        outer.style.display = "none";
+                        outer.classList.remove('animate__animated')
+                        outer.classList.remove('animate__fadeInUp')
+                        outer.classList.remove('animate__faster')
+                    }
+                }
+            }
+            else if (value == "freelance") {
+                for (i = 0; i < cards.length; i++) {
+                    outer = cards[i].parentNode;
+                    btype = cards[i].dataset.businessType;
+
+                    if(btype == "freelance") {
+                        outer.style.display = "";
+                        outer.classList.add('animate__animated')
+                        outer.classList.add('animate__fadeInUp')
+                        outer.classList.add('animate__faster')
+                    }
+                    else {
+                        outer.style.display = "none";
+                        outer.classList.remove('animate__animated')
+                        outer.classList.remove('animate__fadeInUp')
+                        outer.classList.remove('animate__faster')
+                    }
+                }
+            }
+            else if (value == "all")
+            {
+                for (i = 0; i < cards.length; i++) {
+                    outer = cards[i].parentNode;
+                    btype = cards[i].dataset.businessType;
+
+                    outer.style.display = "";
+                    outer.classList.add('animate__animated')
+                    outer.classList.add('animate__fadeInUp')
+                    outer.classList.add('animate__faster')
+                }
+            }
+
+        }
+
+    </script>
+
+{% endblock %}

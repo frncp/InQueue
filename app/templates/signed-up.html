@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Registrazione completata!
+{% endblock %}
+
+{% block main %}
+    <h1>Benvenuto!</h1>
+{{account_document["fname"]}} la registrazione del tuo business è andata a buon fine.
+<a href="/business/{{ business_document["business_name"] }}">{{business_document["business_name"][:-9]}}</a> è ora presente nella lista delle attività di <a href="/{{ business_document["city"] }}">{{ business_document["city"] }}</a>. <br>
+
+Ricorda le credenziali di accesso del tuo account per verificare le prenotazioni ricevute e modificare i dati della tua attività.
+{% endblock %}

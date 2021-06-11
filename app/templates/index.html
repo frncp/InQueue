@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Prenota
+{% if variable is defined %}
+{{ activity }}
+{% else %}
+attività
+{% endif %}
+a
+{{ city }}
+{% endblock %}
+
+{% block main %}
+<div class="city_container">
+    <h1>Prenota attività a <a href="/select" id="selectedCity"
+                              class="inqueue-orange text-decoration-none">{{ city }} <img
+            class="location_icon" src="{{ url_for('static', filename='images/location-pointer.png') }}" width="25px"> </a>
+    </h1>
+</div>
+
+<div class="row d-flex justify-content-center">
+    <div class="homepage-circle-container homepage-circle-container d-flex flex-column justify-content-center align-items-center">
+        <a href="/list/{{ city }}?type=places" class="text-decoration-none">
+            <img class="circle-img" src="../static/images/column.png" alt="visite" width="65px">
+            <p>Visite guidate</p>
+        </a>
+    </div>
+    <div class="homepage-circle-container d-flex flex-column justify-content-center align-items-center">
+        <a href="/list/{{ city }}?type=field" class="text-decoration-none">
+            <img class="circle-img" src="../static/images/soccer-field.png" alt="campi" width="65px">
+            <p>Campi sportivi</p>
+        </a>
+    </div>
+    <div class="homepage-circle-container d-flex flex-column justify-content-center align-items-center">
+        <a href="/list/{{ city }}?type=gym" class="text-decoration-none">
+
+            <img class="circle-img" src="../static/images/muscle.png" alt="palestre" width="65px">
+            <p>Palestre</p>
+        </a>
+    </div>
+    <div class="homepage-circle-container d-flex flex-column justify-content-center align-items-center">
+        <a href="/list/{{ city }}?type=beautician" class="text-decoration-none">
+            <img class="circle-img" src="../static/images/nail-polish.png" alt="centri_estetici" width="65px">
+            <p>Centri estetici</p>
+        </a>
+    </div>
+    <div class="homepage-circle-container d-flex flex-column justify-content-center align-items-center">
+        <a href="/list/{{ city }}?type=car-repair" class="text-decoration-none">
+            <img class="circle-img" src="../static/images/mechanic.png" alt="meccanici" width="65px">
+            <p>Meccanici</p>
+        </a>
+    </div>
+    <div class="homepage-circle-container d-flex flex-column justify-content-center align-items-center">
+        <a href="/list/{{ city }}?type=barber_hairdresser" class="text-decoration-none">
+            <img class="circle-img" src="../static/images/barber.png" alt="parrucchieri" width="65px">
+            <p>Parrucchieri e barbieri</p>
+        </a>
+    </div>
+    <div class="homepage-circle-container d-flex flex-column justify-content-center align-items-center">
+        <a href="/list/{{ city }}?type=freelance" class="text-decoration-none">
+            <img class="circle-img" src="../static/images/lawyer.png" alt="liberi_professionisti" width="65px">
+            <p>Liberi professionisti</p>
+        </a>
+    </div>
+</div>
+
+<h2 class="mt-5 mb-4">Attività</h2>
+
+<section class="container_deck">
+    <div class="row row-cols-1 row-cols-sm-1 row-cols-md-2 row-cols-xl-3 row-cols-xxl-4" id="deck">
+        {% for element in businesses_in_city[:8] %}
+        <div class="col mb-4">
+            <div class="card">
+                <img src="/photos/{{ element["business_name"] }}.jpg" class="card-img-top" style="width: 100%; height:
+                100%; object-fit: cover" alt="">
+                <a href="/business/{{ element["business_name"] }}">
+                <div class="card-body card-img-overlay d-flex flex-column">
+                    <div class="row">
+                        <h5 class="card-title" id="title">{{ (element["business_name"])[:-9] }}</h5>
+                    </div>
+                    <div class="row">
+                        <p class="card-subtitle">{{ element["address"] }}</p>
+                    </div>
+                    <div class="row">
+                        <p class="card-subtitle small">{{ business_types_dict_italian[element["business_type"]] }}</p>
+                    </div>
+                    <div class="row info-row-3 mt-auto">
+                        <div class="col-6 text-start small">
+                            {{ element["rating"]|round }}
+                            {% for n in range((element["rating"]|round)|int) %}
+                            ⭐
+                            {% endfor %}
+                            ({{ element["ratings"] }})
+                        </div>
+                    </div>
+                </div>
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<div class="button-container">
+    <a href="/list/{{ city }}">
+        <button class="btn btn-inqueue-purple w-75" type="button">Vedi Altro</button>
+    </a>
+</div>
+
+{% endblock %}

@@ -1,0 +1,9 @@
+{
+  "name": "InQueue",
+  "theme_color": "#8d85ff",
+  "background_color": "#8d85ff",
+  "display": "standalone",
+  "orientation": "portrait",
+  "scope": "/",
+  "start_url": "/"
+}

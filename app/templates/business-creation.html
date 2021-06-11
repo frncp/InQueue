@@ -1,0 +1,413 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Aggiungi la tua attività su InQueue
+{% endblock %}
+
+{% block main %}
+
+
+<style>
+    #businessPositionMap{
+        height: 30rem;
+    }
+</style>
+
+<h2 class="mt-5 mb-4">Registra la tua attività</h2>
+<p class="text-muted text-center">Registra la tua attività su InQueue per ricevere le prenotazioni online</p>
+<div class="container">
+    <form action="#" method="POST" id="form" enctype="multipart/form-data" class="mt-5">
+        <section id="form1">
+            <h3>Inizia col darci le informazioni sulla tua attività</h3>
+            <div class="mb-3">
+                <label for="img" class="form-label d-block">Immagine di presentazione</label>
+                <img id="output" width="200" class="my-2 mx-auto d-block"/>	
+                <input class="form-control" type="file" accept="image/*" id="img" name="img" onchange="loadFile(event)" required>
+              </div>
+            <div class="row">
+                <div class="col-md mt-3">
+                    <label for="business_name">Nome attività</label>
+                    <input required type="text" pattern="[A-Za-z0-9 ]*" autocomplete="activity-name" class="form-control" id="business_name" name="business_name" placeholder="Nome attività">
+                </div>
+                <div class="col mt-3">
+                    <label for="type">Tipologia</label>
+                    <select class="form-select form-select-md mb-3" id="type" name="type" onchange="disableByType(this)">
+                        <option value="" disabled selected>Seleziona una tipologia per la tua attività</option>>
+                        <option value="barber">Barbiere</option>
+                        <option value="beautician">Estetista</option>
+                        <option value="hairdresser">Parrucchiere</option>
+                        <option value="field">Campo sportivo</option>
+                        <option value="museum">Museo</option>
+                        <option value="attraction">Luogo d'interesse</option>
+                        <option value="freelance">Libero professionista</option>
+                        <option value="car-repair">Meccanico</option>
+                        <option value="gym">Palestra</option>
+                    </select>
+                </div>
+            </div>
+
+            <h3>Inserisci l'indirizzo della tua attività</h3>
+            <p class="text-muted">Clicca sulla mappa per aggiungere la posizione in cui si trova la tua attività</p>
+
+            
+            
+
+                
+            
+              <input type="text" class="form-control" name="lat" id="lat" readonly hidden required>
+              <input type="text" class="form-control" name="lon" id="lon" readonly hidden required>
+            <div class="row">
+
+             <div class="col">
+                <label for="address">Indirizzo</label>
+                <div class="input-group mb-3">
+              <button class="btn btn-outline-secondary" type="button" onclick="businessGPS()" id="GPSButton">Localizzami</button>
+                <input type="text" class="form-control" name="address" id="address" placeholder="Via Roma" required autocomplete="no">
+                </div>
+              </div>
+            
+
+            <div class="col">
+              <label for="city">Città</label>   
+            <div class="row">           
+               <div class="col mb-3 autocomplete">
+                  <input type="text" class="form-control" placeholder="Napoli" name="city" id="city" required autocomplete="no">
+                </div>  
+                <div class="col">
+                <button class="btn btn-outline-secondary" type="button" onclick="getAddress((document.getElementById('address').value + ' ' + document.getElementById('city').value))">Cerca</button>
+                </div>
+                </div>
+
+             </div>
+        </div>
+
+
+            <div id="businessPositionMap"></div>
+            <script type="text/javascript">
+                /* LEAFLET */
+                let businessPositionMap = L.map('businessPositionMap').setView([42.088, 12.564], 6);
+                businessPositionMap.zoomControl.remove()
+                L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                  aattribution: 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
+                  minZoom: 5
+                }).addTo(businessPositionMap);
+      
+                let markerIcon = L.icon({
+                  iconUrl: '../static/images/leafletimages/marker-icon.png',
+                  shadowUrl: '../static/images/leafletimages/marker-shadow.png',
+                  iconSize: [25, 41],
+                  iconAnchor: [12, 41],
+                  popupAnchor: [1, -34],
+                  shadowSize: [41, 41]
+                });
+                
+              </script>
+            <button class="btn btn-inqueue-purple w-100 mt-3 d-none" id="nextForm2Button" type="button" onclick="showNextForm('form2', this, validateFirstForm)">AVANTI</button>
+        </section>
+
+        <section id="form2">
+            <h3>Ora aggiungi gli orari di apertura</h3>
+            <div class="row mt-5">
+                <h5>Mattina</h5>
+                <div class="col-sm">
+                    <label for="open-time1">Orario di apertura:</label>
+                    <input type="time" step="900" id="open-time1" name="open-time1" class="form-control form-control-md mb-3">
+                </div>
+
+                <div class="col-sm">
+                    <div class="col-sm">
+                        <label for="close-time1">Orario di chiusura:</label>
+                        <input type="time" step="900" id="close-time1" name="close-time1" class="form-control form-control-md mb-3">
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <h5>Pomeriggio</h5>
+                <div class="col-sm">
+                    <label for="open-time2">Orario di apertura:</label>
+                    <input type="time" step="900" id="open-time2" name="open-time2" class="form-control form-control-md mb-3">
+                </div>
+
+                <div class="col-sm">
+                    <div class="col-sm">
+                        <label for="close-time2">Orario di chiusura:</label>
+                        <input type="time" step="900" id="close-time2" name="close-time2" class="form-control form-control-md mb-3">
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm" id="services-container">
+                    <label for="service">Servizio</label>
+                    <input type="text" class="form-control" id="service" name="service" autocomplete="no" required>
+                    <button type="button" class="btn btn-primary mt-3" onclick="addForm('service', 'num_of_services')">Aggiungi</button>
+                    <input hidden class="d-none" name="num_of_services" id="num_of_services" type="text" value="1">
+                </div>
+                <div class="col-sm">
+                    <label for="service">Intervallo in minuti per ogni prenotazione</label>
+                    <input type="number" class="form-control" id="slot" name="slot" min="15" max="180" steps="15" required>
+                </div>
+            </div>
+            <button class="btn btn-inqueue-purple w-100 mt-3 d-none" id="nextForm3Button" type="button" onclick="showNextForm('form3', this, validateSecondForm)">AVANTI</button>
+        </section>
+        <section id="form3">
+            <h3>Infine, dicci chi sei</h3>
+            <div class="row">
+                <div class="col mt-3">
+                    <label for="fname">Nome</label>
+                    <input required type="text" autocomplete="given-name" class="form-control" id="fname" name="fname" placeholder="Nome">
+                </div>
+                <div class="col-md mt-3">
+                    <label for="lname">Cognome</label>
+                    <input required type="text" autocomplete="family-name" class="form-control" id="lname" name="lname" placeholder="Cognome">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md mt-3">
+                    <label for="email">Email</label>
+                    <input required type="email" autocomplete="email" class="form-control" id="email" name="email" placeholder="Email">
+                </div>
+                <div class="col mt-3">
+                    <label for="cellphone">Telefono</label>
+                    <input required type="tel" class="form-control" autocomplete="cellphone" id="cellphone" name="cellphone" placeholder="Telefono" pattern="^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$" title="Inserisci un numero di telefono valido">
+                </div>
+            </div>
+             <button class="btn btn-inqueue-purple w-100 mt-3 d-none" id="nextForm4Button" type="button" onclick="showNextForm('form4', this, validateThirdForm)">AVANTI</button>
+        </section>
+         <section id="form4">
+             <h3>Seleziona una password per il tuo account</h3>
+             <label for="password">Password</label>
+             <div class="input-group mb-3">
+                <input type="password" name="password" id="password" autocomplete="new-password" class="form-control" onchange="validatePassword()" required/>
+                <div class="input-group-append">
+                    <div class="input-group-text">
+                  <input type="checkbox" aria-label="Mostra password" id="show-password" onclick="showPassword()" tabindex="-1"><label class="mr-2" for="show-password">Mostra password</label>
+                  </div>
+                </div>
+              </div>             
+             <label for="password-confirm">Conferma password</label>
+             <input type="password" name="password-confirm" id="password-confirm" class="form-control" onkeyup="validatePassword()" required/>
+             <input class="btn btn-danger w-100 mt-4" type="submit" onclick="addValidateCSS(); validateAll()">
+         </section>
+    </form>
+</div>
+
+<script type="text/javascript">
+    window.onload = function() {
+        document.getElementById('form2').classList.add('d-none')
+        document.getElementById('nextForm2Button').classList.remove('d-none')
+        document.getElementById('form3').classList.add('d-none')
+        document.getElementById('nextForm3Button').classList.remove('d-none')
+        document.getElementById('form4').classList.add('d-none')
+        document.getElementById('nextForm4Button').classList.remove('d-none')
+    }
+
+    function validateFirstForm() {
+        let business_name = (document.getElementById('business_name').checkValidity())
+        let addr = ((document.getElementById('address').value).length > 0)
+        let city = ((document.getElementById('city').value).length > 0)
+        let inlat = document.getElementById('lat').value
+        let inlon = document.getElementById('lon').value
+
+
+        if (business_name && addr && city){
+            if((inlat > -90 && inlat < 90) && (inlon > -180 && inlon < 180))
+                return true
+        }
+        addValidateCSS('form1')
+        return false
+    }
+
+    function validateSecondForm() {
+        return true
+
+       let morningOpenTime = document.getElementById('open-time1')
+        let morningCloseTime = document.getElementById('close-time1')
+        let eveningOpenTime = document.getElementById('open-time2')
+        let eveningCloseTime = document.getElementById('close-time2')
+
+        if (morningCloseTime.value < morningOpenTime.value) {
+            morningOpenTime.setCustomValidity("Invalid field.")
+            morningCloseTime.setCustomValidity("Invalid field.")
+            return false
+        }
+
+        if (eveningCloseTime.value < eveningOpenTime.value) {
+            eveningOpenTime.setCustomValidity("Invalid field.")
+            eveningCloseTime.setCustomValidity("Invalid field.")
+            return false
+        }
+
+
+        if (morningCloseTime > eveningOpenTime) {
+            eveningOpenTime.setCustomValidity("Invalid field.")
+            morningCloseTime.setCustomValidity("Invalid field.")
+            return false
+        }
+
+
+
+        openTime.setCustomValidity("")
+        closeTime.setCustomValidity("")
+        addValidateCSS('form2')
+        return true
+    }
+
+    function validateThirdForm() {
+        return true
+
+    }
+
+    function validatePassword() {
+        let password = document.getElementById('password')
+        let passwordConfirm = document.getElementById('password-confirm')
+
+        addValidateCSS('form4')
+
+        if(password.value != passwordConfirm.value) {
+             passwordConfirm.setCustomValidity("Passwords not matching")
+         } else {
+            passwordConfirm.setCustomValidity('')
+         }
+    }
+
+    function showPassword(){
+        let passwordField = document.getElementById('password')
+
+        if (passwordField.type === "password")
+            passwordField.type = "text"
+        else
+            passwordField.type = "password"
+    }
+
+    function validateAll() {
+        if (validateFirstForm() && validateSecondForm())
+            return true
+        return false
+    }
+</script>
+
+<script>
+    let loadFile = function(event) {
+        let image = document.getElementById('output');
+        image.src = URL.createObjectURL(event.target.files[0]);
+    };
+    </script>
+
+<script>
+    function businessGPS() {
+        getPosition(getLatLonAndAddToBusiness)
+}  
+
+function getLatLonAndAddToBusiness(position) {
+    let oldPos = lat+lon
+    getLatLon(position)
+    if (oldPos != lat+lon) {
+        updateData(lat, lon)
+    }
+}
+
+
+function disableByType(element) {
+    if (element.value == 'field')
+        disable(document.getElementById('operator'))
+    else 
+        enable(document.getElementById('operator'))
+}
+
+function disable(element) {
+    element.disabled = true 
+}
+
+function enable(element) {
+    element.disabled = false 
+}
+
+
+businessPositionMap.on('click', positionClick)
+
+
+let marker = new L.marker([], {icon: markerIcon, draggable: true})
+
+marker.on('dragend', function() {updateData(marker._latlng.lat, marker._latlng.lng)})
+
+function updateData(new_lat, new_lon){
+  let lat = new_lat;
+  let lon = new_lon;
+  let data = getNominatimData(lat, lon)
+  let d
+  if(d = getCityName(data))
+    document.getElementById('city').value = d
+  document.getElementById('lat').value = data.lat
+  document.getElementById('lon').value = data.lon
+  if(d = getCityRoad(data))
+    document.getElementById('address').value = d
+  addMarker(lat, lon)
+}
+
+
+function getAddress(string) {
+    data = searchNominatimData(string)
+    if (!data) // search returned no results or blank query
+        return
+    getCityRoad(data[0])
+    document.getElementById('address').value = getCityRoad(data[0])
+    document.getElementById('city').value = getCityName(data[0])
+    let lat = data[0].lat
+    let lon = data[0].lon
+    document.getElementById('lat').value = lat
+    document.getElementById('lon').value = lon
+    addMarker(lat, lon)
+}
+
+function addMarker(lat, lon){
+    if (typeof marker != "undefined")
+           businessPositionMap.removeLayer(marker)
+    marker.setLatLng([lat, lon])
+    centerLeafletMapOnMarker(businessPositionMap, marker)
+    businessPositionMap.addLayer(marker);
+}
+
+
+function positionClick(e) {
+    updateData(e.latlng.lat, e.latlng.lng)    
+}
+
+if(!navigator.userAgent.toLowerCase().match(/mobile/i)) {
+    (document.getElementById('GPSButton')).classList.add('d-none')
+}
+
+
+function addForm(idForm, counter) {
+    let input = document.createElement('input')
+    let numElement = document.getElementById(counter)
+    let num = Number(numElement.value)
+    let currInp = document.getElementById(idForm+'_'+num)
+    let newInp
+    if (currInp) {
+        if (num == 1)
+            currInp = document.getElementById(idForm)
+        newInp = currInp.parentNode.insertBefore(input, currInp.nextSibling)
+        num = num + 1
+    } else {
+        num = 1
+        currInp = document.getElementById(idForm)
+        newInp = currInp.parentNode.insertBefore(input, currInp.nextSibling)
+    }
+    newInp.classList.add('form-control')
+    newInp.classList.add('mt-2')
+    numElement.value = String(num)
+    newInp.id = idForm + '_' + num
+    newInp.name = idForm + '_' + num
+    newInp.type="text"
+    newInp.autocomplete="no"
+    newInp.required=true
+}
+
+
+
+autocomplete(document.getElementById('city'), countries)
+</script>
+
+{% endblock %}

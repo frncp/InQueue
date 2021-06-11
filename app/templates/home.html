@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    InQueue - Prenota barbieri, musei, attrazioni, palestre e attività vicine a te
+{% endblock %}
+
+{% block main %}
+
+<div class="jumbotron jumbotron-fluid my-5 text-center">
+    <div class="container">
+        <h1 class="display-4">Prenota le attività vicine a te</h1>
+        <p class="lead">Con InQueue puoi prenotare le attività vicine a casa tua o nella zona in cui ti trovi!</p>
+    </div>
+</div>
+
+
+<div class="mh-100 w-100 text-center">
+    <h2>Cerca attività nella tua zona</h2>
+    <form autocomplete="off" action="#" method="POST" id="form" enctype="multipart/form-data" class="text-center my-5">
+        <div class="d-flex justify-content-center">
+            <div class="autocomplete mt-4" style="width:300px;">
+                <input id="city" class="form-control form-control-lg" type="search" name="city" placeholder="Città"
+                       value="{{ city_from_cookie }}" autofocus>
+            </div>
+            <div>
+            <input type="submit" class="btn btn-lg btn-inqueue-purple mt-4" value="Trova attività!">
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+    autocomplete(document.getElementById('city'), countries)
+</script>
+{% endblock %}
