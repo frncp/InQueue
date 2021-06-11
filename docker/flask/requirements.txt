@@ -1,4 +1,3 @@
-FOR /F %k in (requirements.txt) DO pip install %k
 flask==2.0.0
 requests==2.25.1
 pymongo==3.11.4

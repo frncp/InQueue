@@ -1,4 +1,4 @@
-<p align="center"><img src="logo.png" width="150" /></p>
+<p align="center"><img src="/app/logo.png" width="150" /></p>
 
 # InQueue
 <p align="center">

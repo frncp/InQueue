@@ -1,0 +1,38 @@
+# docker-compose.yml
+version: '3'
+services:
+    flask:
+        image: flask-pwa
+        build:
+            context: ./flask
+        volumes:
+            - "../:/app"
+        networks:    
+            - backend
+        environment:
+            - DB_CLIENT_NAME=${DB_CLIENT_NAME}
+            - DB_USER=${DB_USER}
+            - DB_CLUSTER_NAME=${DB_CLUSTER_NAME}
+            - DB_PASSWORD=${DB_PASSWORD}
+            - EMAIL_USER=${EMAIL_USER}
+            - EMAIL_PASSWORD=${EMAIL_PASSWORD}
+    nginx:
+        image: nginx-pwa
+        build:
+            context: ./nginx
+        ports:
+            - 5000:80
+        depends_on:
+            - flask
+        networks:
+            - frontend    
+            - backend    
+
+volumes:
+  databases:
+
+networks:
+  frontend:
+    driver: "bridge"
+  backend:
+    driver: "bridge"

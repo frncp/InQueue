@@ -10,55 +10,54 @@ from datetime import date, datetime, timedelta
 from io import BytesIO
 from reportlab.pdfgen.canvas import Canvas
 import qrcode
-from passwords import DB_STRING, DB_CLIENT_NAME, EMAIL_USER, EMAIL_PASSWORD
-from documents_db_init import init_db
-from cities import CITIES
+from app.documents_db_init import init_db
+from app.cities import CITIES
 import string
 import random
 import certifi
 
 # SERVER SETTINGS
-SERVER_NO_FORWARD = True # True = Flask default configuration, run it locally (for testing, debug)
 SERVER_LOCAL_ONLY = True  # True = Run it locally
 SERVER_DOMAIN_NAME = 'inqueue.it' # Your domain name here
 
-
-
-# DATABASE SETTINGS
 # DB Connection
-#mongo_client_string = "mongodb+srv://" + os.environ['DB_USER'] + ":" + os.environ['DB_PASSWORD'] + "@" + os.environ['DB_CLUSTER_NAME'] + ".mongodb.net/"+ os.environ['DB_CLIENT_NAME'] + "?retryWrites=true&w=majority"
-mongo_client_string = DB_STRING
-#client = pymongo.MongoClient(mongo_client_string, tlsCAFile=certifi.where(), connectTimeoutMS=30000, socketTimeoutMS=None, socketKeepAlive=True, connect=False, maxPoolsize=1)
-client = pymongo.MongoClient(mongo_client_string, tlsCAFile=certifi.where())
-#db = client[os.environ['DB_CLIENT_NAME']]
-db = client[DB_CLIENT_NAME]
-
+mongo_client_string = "mongodb+srv://" + os.environ['DB_USER'] + ":" + os.environ['DB_PASSWORD'] + "@" + os.environ['DB_CLUSTER_NAME'] + ".mongodb.net/"+ os.environ['DB_CLIENT_NAME'] + "?retryWrites=true&w=majority"
+client = pymongo.MongoClient(mongo_client_string, tlsCAFile=certifi.where(), connectTimeoutMS=30000, socketTimeoutMS=None, socketKeepAlive=True, connect=False, maxPoolsize=1)
+db = client[os.environ['DB_CLIENT_NAME']]
 businesses_collection = db["businesses"]
 bookings_collection = db["bookings"]
 PDFs_collection = db["bookings_PDFs"]
 accounts_collection = db["accounts"]
 businesses_photo_collection = db["businesses_photo"]
 
+# Comment next line to get default DB
+init_db(businesses_collection, accounts_collection, bookings_collection, businesses_photo_collection, PDFs_collection)
 
 # Start app
 app = Flask(__name__)
 app.secret_key = os.urandom(12).hex()
+
 # Start login manager
 login_manager = flask_login.LoginManager()
 login_manager.init_app(app)
+
 # Mailing settings
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
-#app.config['MAIL_USERNAME'] = os.environ['EMAIL_USER']
-#app.config['MAIL_PASSWORD'] = os.environ['EMAIL_PASSWORD']
-#app.config['MAIL_DEFAULT_SENDER'] = ('inQueue', os.environ['EMAIL_USER'])
-app.config['MAIL_USERNAME'] = EMAIL_USER
-app.config['MAIL_PASSWORD'] = EMAIL_PASSWORD
-app.config['MAIL_DEFAULT_SENDER'] = ('inQueue', EMAIL_USER)
+app.config['MAIL_USERNAME'] = os.environ['EMAIL_USER']
+app.config['MAIL_PASSWORD'] = os.environ['EMAIL_PASSWORD']
+app.config['MAIL_DEFAULT_SENDER'] = ('inQueue', os.environ['EMAIL_USER'])
 app.config['MAIL_USE_TLS'] = True
 app.config['MAIL_USE_SSL'] = False
 mail = Mail()
 mail.init_app(app)
+
+# Temp folder
+curr_path = os.path.dirname(__file__)
+try:
+    os.mkdir(curr_path+"/temp")
+except FileExistsError:
+    pass
 
 business_types_dict_italian = {
     "barber": "Barbiere",
@@ -364,7 +363,7 @@ def business_page(business_name):
                     "booking_time": now, "rated": False}
         booking_result = bookings_collection.insert_one(document)
         if SERVER_LOCAL_ONLY:
-            server_name = "http://127.0.0.1:80"
+            server_name = "http://localhost:5000"
         else:
             server_name = SERVER_DOMAIN_NAME
         rating_link = server_name + "/rating/" + str(booking_result.inserted_id)
@@ -386,12 +385,12 @@ def send_booking_pdf(booking_id):
     pdf_data = bookings_collection.find_one({"_id": ObjectId(booking_id)})
     # if pdf_query is None:
     if pdf_query is None:
-        temp_path = curr_path + "\\temp\\"
+        temp_path = curr_path + "/temp/"
         pdf_file_name = temp_path + booking_id + ".pdf"
         qr_file_name = temp_path + booking_id + ".jpg"
         # PDF creation
         canvas = Canvas(pdf_file_name, pagesize=(612.0, 792.0))
-        canvas.drawImage(curr_path+"\\logo.png", 280, 720, 50, 50, [0, 0, 0, 0, 0, 0])
+        canvas.drawImage(curr_path+"/logo.png", 280, 720, 50, 50, [0, 0, 0, 0, 0, 0])
         canvas.drawString(280, 700, "InQueue")
         canvas.drawString(250, 650, "IL TUO BIGLIETTO")
         canvas.drawString(100, 600, "Hai prenotato il servizio " + pdf_data["service"])
@@ -535,11 +534,4 @@ def list_cities(city):
 
 
 if __name__ == "__main__":
-    # Comment next line to get default DB
-    init_db(businesses_collection, accounts_collection, bookings_collection, businesses_photo_collection, PDFs_collection)
-    curr_path = os.path.dirname(__file__)
-    try:
-        os.mkdir(curr_path+"/temp")
-    except FileExistsError:
-        pass
     app.run(host='0.0.0.0', debug=True, use_debugger=True)

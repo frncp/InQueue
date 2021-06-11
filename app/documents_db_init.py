@@ -13,8 +13,8 @@ DOCUMENTS = [
         "creation_time": "12:20",
         "rating": float(3),
         "ratings": 200,
-        "service": "[Visita breve – 10 €, Visita lunga – 15 €]",
-        "slots": "[10:00, 11:00, 18:00, 19:00]",
+        "service": ["Visita breve – 10 €", "Visita lunga – 15 €"],
+        "slots": ["10:00", "11:00", "18:00", "19:00"],
         "business_type": "attraction"
     },
     {
@@ -31,8 +31,8 @@ DOCUMENTS = [
         "creation_time": "12:20",
         "rating": float(4),
         "ratings": 201,
-        "service": "[Visita breve – 10 €, Visita lunga – 15 €]",
-        "slots": "[10:00, 11:00, 18:00, 19:00]",
+        "service": ["Visita breve – 10 €", "Visita lunga – 15 €"],
+        "slots": ["10:00", "11:00", "18:00", "19:00"],
         "business_type": "museum"
     },
     {
@@ -49,8 +49,8 @@ DOCUMENTS = [
         "creation_time": "12:20",
         "rating": float(5),
         "ratings": 202,
-        "service": "[Visita breve – 10 €, Visita lunga – 15 €]",
-        "slots": "[10:00, 11:00, 18:00, 19:00]",
+        "service": ["Visita breve – 10 €", "Visita lunga – 15 €"],
+        "slots": ["10:00", "11:00", "18:00", "19:00"],
         "business_type": "museum"
     },
     {
@@ -67,8 +67,8 @@ DOCUMENTS = [
         "creation_time": "12:20",
         "rating": float(3.4),
         "ratings": 203,
-        "service": "[Visita breve – 10 €, Visita lunga – 15 €]",
-        "slots": "[10:00, 11:00, 18:00, 19:00]",
+        "service": ["Visita breve – 10 €", "Visita lunga – 15 €"],
+        "slots": ["10:00", "11:00", "18:00", "19:00"],
         "business_type": "museum"
     },
     {
@@ -85,8 +85,8 @@ DOCUMENTS = [
         "creation_time": "12:20",
         "rating": float(4),
         "ratings": 204,
-        "service": "[Visita breve – 10 €, Visita lunga – 15 €]",
-        "slots": "[10:00, 11:00, 18:00, 19:00]",
+        "service": ["Visita breve – 10 €", "Visita lunga – 15 €"],
+        "slots": ["10:00", "11:00", "18:00", "19:00"],
         "business_type": "attraction"
     },
     {
@@ -103,8 +103,8 @@ DOCUMENTS = [
         "creation_time": "12:20",
         "rating": float(5),
         "ratings": 205,
-        "service": "[Visita breve – 10 €, Visita lunga – 15 €]",
-        "slots": "[10:00, 11:00, 18:00, 19:00]",
+        "service": ["Visita breve – 10 €", "Visita lunga – 15 €"],
+        "slots": ["10:00", "11:00", "18:00", "19:00"],
         "business_type": "museum"
     },
     {
@@ -121,8 +121,8 @@ DOCUMENTS = [
         "creation_time": "12:20",
         "rating": float(3),
         "ratings": 206,
-        "service": "[Visita breve – 10 €, Visita lunga – 15 €]",
-        "slots": "[10:00, 11:00, 18:00, 19:00]",
+        "service": ["Visita breve – 10 €", "Visita lunga – 15 €"],
+        "slots": ["10:00", "11:00", "18:00", "19:00"],
         "business_type": "museum"
     },
     {
@@ -139,8 +139,8 @@ DOCUMENTS = [
         "creation_time": "12:20",
         "rating": float(4.4),
         "ratings": 207,
-        "service": "[Visita breve – 10 €, Visita lunga – 15 €]",
-        "slots": "[10:00, 11:00, 18:00, 19:00]",
+        "service": ["Visita breve – 10 €", "Visita lunga – 15 €"],
+        "slots": ["10:00", "11:00", "18:00", "19:00"],
         "business_type": "museum"
     },
     {
@@ -157,8 +157,8 @@ DOCUMENTS = [
         "creation_time": "12:20",
         "rating": float(5),
         "ratings": 208,
-        "service": "[Visita breve – 10 €, Visita lunga – 15 €]",
-        "slots": "[10:00, 11:00, 18:00, 19:00]",
+        "service": ["Visita breve – 10 €", "Visita lunga – 15 €"],
+        "slots": ["10:00", "11:00", "18:00", "19:00"],
         "business_type": "museum"
     },
     {
@@ -175,8 +175,8 @@ DOCUMENTS = [
         "creation_time": "12:20",
         "rating": float(3),
         "ratings": 209,
-        "service": "[Visita breve – 10 €, Visita lunga – 15 €]",
-        "slots": "[10:00, 11:00, 18:00, 19:00]",
+        "service": ["Visita breve – 10 €", "Visita lunga – 15 €"],
+        "slots": ["10:00", "11:00", "18:00", "19:00"],
         "business_type": "museum"
     },
     {
@@ -193,8 +193,8 @@ DOCUMENTS = [
         "creation_time": "12:20",
         "rating": float(2.4),
         "ratings": 210,
-        "service": "[Visita breve – 10 €, Visita lunga – 15 €]",
-        "slots": "[10:00, 11:00, 18:00, 19:00]",
+        "service": ["Visita breve – 10 €", "Visita lunga – 15 €"],
+        "slots": ["10:00", "11:00", "18:00", "19:00"],
         "business_type": "museum"
     },
     {
@@ -211,8 +211,8 @@ DOCUMENTS = [
         "creation_time": "12:20",
         "rating": float(5),
         "ratings": 211,
-        "service": "[Visita breve – 10 €, Visita lunga – 15 €]",
-        "slots": "[10:00, 11:00, 18:00, 19:00]",
+        "service": ["Visita breve – 10 €", "Visita lunga – 15 €"],
+        "slots": ["10:00", "11:00", "18:00", "19:00"],
         "business_type": "museum"
     },
     {
@@ -229,8 +229,8 @@ DOCUMENTS = [
         "creation_time": "12:20",
         "rating": float(3),
         "ratings": 212,
-        "service": "[Visita breve – 10 €, Visita lunga – 15 €]",
-        "slots": "[10:00, 11:00, 18:00, 19:00]",
+        "service": ["Visita breve – 10 €", "Visita lunga – 15 €"],
+        "slots": ["10:00", "11:00", "18:00", "19:00"],
         "business_type": "museum"
     },
     {
@@ -247,8 +247,8 @@ DOCUMENTS = [
         "creation_time": "12:20",
         "rating": float(3.2),
         "ratings": 213,
-        "service": "[Visita breve – 10 €, Visita lunga – 15 €]",
-        "slots": "[10:00, 11:00, 18:00, 19:00]",
+        "service": ["Visita breve – 10 €", "Visita lunga – 15 €"],
+        "slots": ["10:00", "11:00", "18:00", "19:00"],
         "business_type": "museum"
     },
     {
@@ -265,8 +265,8 @@ DOCUMENTS = [
         "creation_time": "12:20",
         "rating": float(5),
         "ratings": 214,
-        "service": "[Visita breve – 10 €, Visita lunga – 15 €]",
-        "slots": "[10:00, 11:00, 18:00, 19:00]",
+        "service": ["Visita breve – 10 €", "Visita lunga – 15 €"],
+        "slots": ["10:00", "11:00", "18:00", "19:00"],
         "business_type": "museum"
     },
     {
@@ -283,8 +283,8 @@ DOCUMENTS = [
         "creation_time": "12:20",
         "rating": float(3.3),
         "ratings": 215,
-        "service": "[Visita breve – 10 €, Visita lunga – 15 €]",
-        "slots": "[10:00, 11:00, 18:00, 19:00]",
+        "service": ["Visita breve – 10 €", "Visita lunga – 15 €"],
+        "slots": ["10:00", "11:00", "18:00", "19:00"],
         "business_type": "museum"
     },
     {
@@ -301,8 +301,8 @@ DOCUMENTS = [
         "creation_time": "12:20",
         "rating": float(4),
         "ratings": 216,
-        "service": "[Visita breve – 10 €, Visita lunga – 15 €]",
-        "slots": "[10:00, 11:00, 18:00, 19:00]",
+        "service": ["Visita breve – 10 €", "Visita lunga – 15 €"],
+        "slots": ["10:00", "11:00", "18:00", "19:00"],
         "business_type": "museum"
     },
     {
@@ -319,8 +319,8 @@ DOCUMENTS = [
         "creation_time": "12:20",
         "rating": float(5),
         "ratings": 217,
-        "service": "[Visita breve – 10 €, Visita lunga – 15 €]",
-        "slots": "[10:00, 11:00, 18:00, 19:00]",
+        "service": ["Visita breve – 10 €", "Visita lunga – 15 €"],
+        "slots": ["10:00", "11:00", "18:00", "19:00"],
         "business_type": "museum"
     }
 ]
@@ -354,7 +354,7 @@ def init_db(businesses_collection, accounts_collection, bookings_collection, bus
     b_sign_up_result = businesses_collection.insert_one(document)
     accounts_collection.insert_one(document_account)
     bookings_collection.insert_one(document_booking)
-    photo = open("./static/images/business_photos_db_init/laGaiola.jpg", "rb")
+    photo = open("/app/app/static/images/business_photos_db_init/laGaiola.jpg", "rb")
     document_photo = {"_id": b_sign_up_result.inserted_id, "business_name": business_name,
                       "img": photo.read()}
     businesses_photo_collection.insert_one(document_photo)
@@ -381,7 +381,7 @@ def init_db(businesses_collection, accounts_collection, bookings_collection, bus
     b_sign_up_result = businesses_collection.insert_one(document)
     accounts_collection.insert_one(document_account)
     bookings_collection.insert_one(document_booking)
-    photo = open("./static/images/business_photos_db_init/Zelda.jpg", "rb")
+    photo = open("/app/app/static/images/business_photos_db_init/Zelda.jpg", "rb")
     document_photo = {"_id": b_sign_up_result.inserted_id, "business_name": business_name,
                       "img": photo.read()}
     businesses_photo_collection.insert_one(document_photo)
@@ -408,7 +408,7 @@ def init_db(businesses_collection, accounts_collection, bookings_collection, bus
     b_sign_up_result = businesses_collection.insert_one(document)
     accounts_collection.insert_one(document_account)
     bookings_collection.insert_one(document_booking)
-    photo = open("./static/images/business_photos_db_init/pdppr.jpg", "rb")
+    photo = open("/app/app/static/images/business_photos_db_init/pdppr.jpg", "rb")
     document_photo = {"_id": b_sign_up_result.inserted_id, "business_name": business_name,
                       "img": photo.read()}
     businesses_photo_collection.insert_one(document_photo)
@@ -437,7 +437,7 @@ def init_db(businesses_collection, accounts_collection, bookings_collection, bus
     b_sign_up_result = businesses_collection.insert_one(document)
     accounts_collection.insert_one(document_account)
     bookings_collection.insert_one(document_booking)
-    photo = open("./static/images/business_photos_db_init/Lost.jpg", "rb")
+    photo = open("/app/app/static/images/business_photos_db_init/Lost.jpg", "rb")
     document_photo = {"_id": b_sign_up_result.inserted_id, "business_name": business_name,
                       "img": photo.read()}
     businesses_photo_collection.insert_one(document_photo)
@@ -460,7 +460,7 @@ def init_db(businesses_collection, accounts_collection, bookings_collection, bus
     b_sign_up_result = businesses_collection.insert_one(document)
     accounts_collection.insert_one(document_account)
     bookings_collection.insert_one(document_booking)
-    photo = open("./static/images/business_photos_db_init/saul.jpg", "rb")
+    photo = open("/app/app/static/images/business_photos_db_init/saul.jpg", "rb")
     document_photo = {"_id": b_sign_up_result.inserted_id, "business_name": business_name,
                       "img": photo.read()}
     # Insert from array
@@ -468,7 +468,7 @@ def init_db(businesses_collection, accounts_collection, bookings_collection, bus
     i = 1
     for element in DOCUMENTS:
         b_sign_up_result = businesses_collection.insert_one(element)
-        photo = open("./static/images/business_photos_db_init/" + str(i) + ".jpg", "rb")
+        photo = open("/app/app/static/images/business_photos_db_init/" + str(i) + ".jpg", "rb")
         i = i + 1
         document_photo = {"_id": b_sign_up_result.inserted_id, "business_name": element["business_name"], "img": photo.read()}
         businesses_photo_collection.insert_one(document_photo)
