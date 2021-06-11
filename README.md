@@ -14,34 +14,23 @@ This is a university project made for the 2021 edition of the Tecnologie Web (We
 
 You can test it by visiting [inqueue.it](https://inqueue.it).
 
-## How to get started (fast)
+## How to get started
+### Mongo DB Atlas
+Make sure you've added your IP address to the project's IP Access List.
+<p align="center"><img src="/screenshots/1.png" width="150" /></p>
+<p align="center"><img src="/screenshots/2.png" width="150" /></p>
+
+### Docker
 **Requirements**: Docker.
 If you don't have Docker installed, follow [these instructions](https://docs.docker.com/engine/install/) to start.
 
-1. Add your MongoDB Atlas account credentials to the `docker/.env.dev` file
+1. Add your MongoDB Atlas and gmail smtp account credentials to the `docker/.env.dev` file
 2. Run `docker-compose -f docker-compose.yml --env-file ./ .env.dev up --build` on your terminal
 3. Open your browser and connect to [localhost:5000](http://localhost:5000)
 
-## How to get started (the hard way)
-### Setting up the database
-1. Create a MongoDB database
-2. Create a file named *`passwords.py`* in the root folder and insert the following parameters
-  - `DB_USER = your_DB_username` (the name of the database user)
-  - `DB_PASSWORD = your_DB_password` (the password for the database user)
-
-### Installing the requirements
-1. Open your terminal in the root folder
-2. Install Python 3 on your machine if you haven't it installed already.
-   To find out if you have Python 3 installed type `python3 --version` and press enter.
-   To install Python 3 on your machine, follow the [instructions given here](https://www.python.org/downloads/). 
-3. Create a virtual envirorment by giving the command `python3 -m venv env`
-4. Install all the requirements with `python3 -m pip install -r requirements.txt`
-
-### Executing
-1. Type `python3 app.py` to start the server
-2. Open your browser and reach the page [http://127.0.0.1:5000/](http://127.0.0.1:5000/)
-3. ????
-4. PROFIT!!! Congratulations, now you can try the web app. Unfortunately, you'll have to add some data on your database to start using it.
+### Database
+The MongoDB Atlas database is filled with some fake data using the init_db() function.
+To get an empty database you must comment line 34 in '/app/app.py'.
 
 ## Technologies
 To build this app the following technologies have been used:
