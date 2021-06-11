@@ -31,21 +31,6 @@ SERVER_DOMAIN_NAME = 'inqueue.it' # Your domain name here
 
 
 # DATABASE SETTINGS
-'''
-[!] IMPORTANT:
-        We use MongoDB Atlas for managing our database.
-        To use your own, create a file in the root of this folder named 'passwords.py' and add the following text:
-        # --------
-
-          DB_USER = # your DB USER
-          DB_PASSWORD = # your DB PASSWORD  
-
-            # (this file is gitignored, so you can keep it safely on you machine)
-
-        # -------
-
-'''
-
 # DB Connection
 mongo_client_string = DB_STRING
 client = pymongo.MongoClient(mongo_client_string, tlsCAFile=certifi.where())
@@ -673,18 +658,9 @@ def send_business_image(business_name):
 
 @app.route('/list/<city>', methods=["GET"])
 def list_cities(city):
-    # These cookies do not exists, since they are deleted after first usage in main page
-    lat_from_cookie = request.cookies.get("lat")
-    lon_from_cookie = request.cookies.get("lon")
     businesses_in_city = businesses_collection.find({"city": city})
     resp = make_response(render_template('list.html', businesses_in_city=businesses_in_city, city=city,
                                          business_types_dict_italian=business_types_dict_italian))
-    try:
-        resp.set_cookie("lat", value=lat_from_cookie, max_age=0)
-        resp.set_cookie("lon", value=lon_from_cookie, max_age=0)
-    except TypeError:
-        print("Cookie not set")
-        # TODO: assume coords of a city based on the center of it
     return resp
 
 
