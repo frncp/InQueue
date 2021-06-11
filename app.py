@@ -193,6 +193,37 @@ def init_db():
                       "img": photo.read()}
     businesses_photo_collection.insert_one(document_photo)
 
+    # Saul Goodman - insert
+    business_name = decorate_business_name("Saul Goodman")
+    document = {"business_name": business_name, "business_type": "freelance", "open_time1": "13:30", "close_time1": "15:30", "open_time2": "16:30", "close_time2": "19:30", "city": "Napoli", "address": "Piazza Giuseppe Mazzini",
+    "lat": "40.8516229",  "lon": "14.2426546", "creation_date": "2021-06-11", "creation_time": "14:37:43",
+    "rating": float(1),  "ratings": 10,  "service": ["Difesa", "Offesa", "Difesa + Offesa"], "slots": ["13:30", "14:30", "16:30", "17:30", "18:30"]}
+    document_account = {"business_name": business_name, "fname": "Saul",
+                        "lname": "Goodman", "email": "saul@test.com",
+                        "cellphone": "3443443443",
+                        "password": "test"}
+    document_booking = {"business_name": business_name, "name": "Raffaele", "surname": "Montella",
+                        "email": "raffaele@test.com",
+                        "cellphone": "3333333333", "day": "2021-07-01", "time": "14:00",
+                        "service": "Claire Littleton - 20€",
+                        "booking_date": "2021-06-11",
+                        "booking_time": "12:00", "rated": False}
+    b_sign_up_result = businesses_collection.insert_one(document)
+    accounts_collection.insert_one(document_account)
+    bookings_collection.insert_one(document_booking)
+    photo = open("./static/images/business_photos_db_init/saul.jpg", "rb")
+    document_photo = {"_id": b_sign_up_result.inserted_id, "business_name": business_name,
+                      "img": photo.read()}
+    # Insert from array
+    businesses_photo_collection.insert_one(document_photo)
+    i = 1
+    for element in DOCUMENTS:
+        b_sign_up_result = businesses_collection.insert_one(element)
+        photo = open("./static/images/business_photos_db_init/" + i + ".jpg", "rb")
+        i = i + 1
+        document_photo = {"_id": b_sign_up_result.inserted_id, "business_name": element["business_name"], "img": photo.read()}
+        businesses_photo_collection.insert_one(document_photo)
+
 
 def slot_size(query_result):
     time_format = '%H:%M'
