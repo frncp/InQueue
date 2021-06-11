@@ -1,7 +1,10 @@
 <p align="center"><img src="logo.png" width="150" /></p>
 
 # InQueue
-![](https://img.shields.io/badge/license-Apache%202-blue)
+<p align="center">
+    <img src="https://img.shields.io/badge/license-Apache%202-blue" />
+    <img src="https://img.shields.io/badge/university project-red" />
+</p>
 
 InQueue is a small **web application** aimed at helping people with **booking a service in their area**. 
 This is a university project made for the 2021 edition of the Tecnologie Web (Web Technologies) course at the [*Università degli Studi di Napoli Parthenope*](https://github.com/uniparthenope).
@@ -16,10 +19,8 @@ This is a university project made for the 2021 edition of the Tecnologie Web (We
 ### Installing the requirements
 1. Open your terminal in the root folder
 2. Install Python 3 on your machine if you haven't it installed already.
-  
-  To find out if you have Python 3 installed type `python3 --version` and press enter.
-
-  To install Python 3 on your machine, follow the [instructions given here](https://www.python.org/downloads/).
+   To find out if you have Python 3 installed type `python3 --version` and press enter.
+   To install Python 3 on your machine, follow the [instructions given here](https://www.python.org/downloads/). 
 3. Create a virtual envirorment by giving the command `python3 -m venv env`
 4. Install all the requirements with `python3 -m pip install -r requirements.txt`
 
