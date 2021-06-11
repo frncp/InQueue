@@ -20,6 +20,51 @@
         </h1>
     </div>
 
+    <div class="row d-flex justify-content-center">
+        <div class="homepage-circle-container homepage-circle-container d-flex flex-column justify-content-center align-items-center">
+            <a href="/list/{{ city }}?type=places" class="text-decoration-none">
+                <img class="circle-img" src="../static/images/column.png" alt="visite" width="65px">
+                <p>Visite guidate</p>
+            </a>
+        </div>
+        <div class="homepage-circle-container d-flex flex-column justify-content-center align-items-center">
+            <a href="/list/{{ city }}?type=field" class="text-decoration-none">
+                <img class="circle-img" src="../static/images/soccer-field.png" alt="campi" width="65px">
+                <p>Campi sportivi</p>
+            </a>
+        </div>
+        <div class="homepage-circle-container d-flex flex-column justify-content-center align-items-center">
+            <a href="/list/{{ city }}?type=gym" class="text-decoration-none">
+
+                <img class="circle-img" src="../static/images/muscle.png" alt="palestre" width="65px">
+                <p>Palestre</p>
+            </a>
+        </div>
+        <div class="homepage-circle-container d-flex flex-column justify-content-center align-items-center">
+            <a href="/list/{{ city }}?type=beautician" class="text-decoration-none">
+                <img class="circle-img" src="../static/images/nail-polish.png" alt="centri_estetici" width="65px">
+                <p>Centri estetici</p>
+            </a>
+        </div>
+        <div class="homepage-circle-container d-flex flex-column justify-content-center align-items-center">
+            <a href="/list/{{ city }}?type=car-repair" class="text-decoration-none">
+                <img class="circle-img" src="../static/images/mechanic.png" alt="meccanici" width="65px">
+                <p>Meccanici</p>
+            </a>
+        </div>
+        <div class="homepage-circle-container d-flex flex-column justify-content-center align-items-center">
+            <a href="/list/{{ city }}?type=barber_hairdresser" class="text-decoration-none">
+                <img class="circle-img" src="../static/images/barber.png" alt="parrucchieri" width="65px">
+                <p>Parrucchieri e barbieri</p>
+            </a>
+        </div>
+        <div class="homepage-circle-container d-flex flex-column justify-content-center align-items-center">
+            <a href="/list/{{ city }}?type=freelance" class="text-decoration-none">
+                <img class="circle-img" src="../static/images/lawyer.png" alt="liberi_professionisti" width="65px">
+                <p>Liberi professionisti</p>
+            </a>
+        </div>
+    </div>
 
 
     <h2 class="mt-5 mb-4">Ordina per:</h2>
@@ -66,12 +111,13 @@
                                 <div class="row">
                                     <p class="card-subtitle small">{{ business_types_dict_italian[element["business_type"]] }}</p>
                                 </div>
-                                <div class="row info-row-3 mt-auto row-cols-1">
-                                    <div class="col-6 text-start">
-                                        {{ element["rating"] }} ⭐ {{ element["ratings"] }}
-                                    </div>
-                                    <div class="col-6 text-end">
-                                        200m
+                                <div class="row info-row-3 mt-auto">
+                                    <div class="col-6 text-start small">
+                                        {{ element["rating"]|round }}
+                                        {% for n in range((element["rating"]|round)|int) %}
+                                        ⭐
+                                        {% endfor %}
+                                        ({{ element["ratings"] }})
                                     </div>
                                 </div>
                             </div>

@@ -89,11 +89,12 @@ a
                         <p class="card-subtitle small">{{ business_types_dict_italian[element["business_type"]] }}</p>
                     </div>
                     <div class="row info-row-3 mt-auto">
-                        <div class="col-6 text-start">
-                            {{ element["rating"] }} ⭐ {{ element["ratings"] }}
-                        </div>
-                        <div class="col-6 text-end">
-                            200m
+                        <div class="col-6 text-start small">
+                            {{ element["rating"]|round }}
+                            {% for n in range((element["rating"]|round)|int) %}
+                            ⭐
+                            {% endfor %}
+                            ({{ element["ratings"] }})
                         </div>
                     </div>
                 </div>

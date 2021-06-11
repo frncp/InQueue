@@ -1,3 +1,4 @@
+FOR /F %k in (requirements.txt) DO pip install %k
 flask==2.0.0
 requests==2.25.1
 pymongo==3.11.4
@@ -7,6 +8,6 @@ Flask-Login==0.5.0
 certifi~=2021.5.30
 Flask-Mail==0.9.1
 Werkzeug~=2.0.1
-uWSGI==2.0.19.1
+uWSGI==2.0.19
 qrcode==6.1
 Pillow==8.2.0

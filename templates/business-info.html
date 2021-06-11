@@ -22,7 +22,11 @@
 
         <div class="flex-md-column px-5">
             <h1 class="">{{ formatted_name }}</h1>
-            <span id="stars" value="{{ query_result["rating"] }}">⭐⭐⭐⭐⭐</span><span class="text-secondary">{{ query_result["ratings"] }}</span>
+            {{ query_result["rating"]|round }}
+            {% for n in range((query_result["rating"]|round)|int) %}
+            ⭐
+            {% endfor %}
+            ({{ query_result["ratings"] }})
             <div id="businessPositionMap"></div>
 
             <script type="text/javascript">
