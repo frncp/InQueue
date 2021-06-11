@@ -26,8 +26,11 @@ SERVER_DOMAIN_NAME = 'inqueue.it' # Your domain name here
 
 # DATABASE SETTINGS
 # DB Connection
+#mongo_client_string = "mongodb+srv://" + os.environ['DB_USER'] + ":" + os.environ['DB_PASSWORD'] + "@" + os.environ['DB_CLUSTER_NAME'] + ".mongodb.net/"+ os.environ['DB_CLIENT_NAME'] + "?retryWrites=true&w=majority"
 mongo_client_string = DB_STRING
+#client = pymongo.MongoClient(mongo_client_string, tlsCAFile=certifi.where(), connectTimeoutMS=30000, socketTimeoutMS=None, socketKeepAlive=True, connect=False, maxPoolsize=1)
 client = pymongo.MongoClient(mongo_client_string, tlsCAFile=certifi.where())
+#db = client[os.environ['DB_CLIENT_NAME']]
 db = client[DB_CLIENT_NAME]
 
 businesses_collection = db["businesses"]
@@ -46,6 +49,9 @@ login_manager.init_app(app)
 # Mailing settings
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
+#app.config['MAIL_USERNAME'] = os.environ['EMAIL_USER']
+#app.config['MAIL_PASSWORD'] = os.environ['EMAIL_PASSWORD']
+#app.config['MAIL_DEFAULT_SENDER'] = ('inQueue', os.environ['EMAIL_USER'])
 app.config['MAIL_USERNAME'] = EMAIL_USER
 app.config['MAIL_PASSWORD'] = EMAIL_PASSWORD
 app.config['MAIL_DEFAULT_SENDER'] = ('inQueue', EMAIL_USER)
