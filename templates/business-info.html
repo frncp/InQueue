@@ -11,7 +11,7 @@
     <style>
         #businessPositionMap {
             height: 150px;
-            width: 500px
+            width: 100%
         }
     </style>
 
@@ -20,15 +20,17 @@
             <img src="/photos/{{ query_result["business_name"] }}.jpg" style="width:100%">
         </div>
 
-        <div class="flex-md-column px-5">
-            <h1 class="">{{ formatted_name }}</h1>
+        <div class="flex-md-column px-5" style="max-width: 500px; min-width: 400px" >
+            <h1 class="" >{{ formatted_name }}</h1>
             {{ query_result["rating"]|round }}
             {% for n in range((query_result["rating"]|round)|int) %}
             ⭐
             {% endfor %}
             ({{ query_result["ratings"] }})
+        <div class="w-100">
             <div id="businessPositionMap"></div>
-
+            <p class="muted">{{ query_result.address }}, {{ query_result.city }}</p>
+        </div>
             <script type="text/javascript">
                 /* LEAFLET */
                 let businessPositionMap = L.map('businessPositionMap').setView([0, 0], 1);
@@ -50,7 +52,6 @@
                 centerLeafletMapOnMarker(businessPositionMap, mark)
             </script>
 
-            <p class="muted">{{ query_result.address }}, {{ query_result.city }}</p>
         </div>
     </div>
 
