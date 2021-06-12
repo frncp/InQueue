@@ -1,21 +1,19 @@
 let cacheName = 'pwa_2021';
 let filesToCache = [
-    'static/css/bootstrap.css',
-    'static/css/leaflet.css',
-    'static/js/leaflet.js',
-    'static/js/jquery.js',
-    'static/js/plugin.min.js',
-    'static/js/d3.min.js',
-    'static/images/waiter.png',
-    'static/images/soccer-field.png',
-    'static/images/OOjs_UI_icon_upload.svg.png',
-    'static/images/museum.png',
-    'static/images/nail-polish.png',
-    'static/images/muscle.png',
-    'static/images/mechanic.png',
-    'static/images/lawyer.png',
-    'static/images/barbershop.jpg',
-    'static/images/barber.png'
+    '/static/css/bootstrap.css',
+    '/static/css/style.css',
+    '/static/css/leaflet.css',
+    '/static/js/leaflet.js',
+    '/static/js/star-rating.js',
+    '/static/css/star-rating.css',
+    '/static/js/autocomplete.js',
+    '/static/images/soccer-field.png',
+    '/static/images/column.png',
+    '/static/images/nail-polish.png',
+    '/static/images/muscle.png',
+    '/static/images/mechanic.png',
+    '/static/images/lawyer.png',
+    '/static/images/barber.png'
 ];
 
 
