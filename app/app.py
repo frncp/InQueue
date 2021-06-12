@@ -119,6 +119,45 @@ def decorate_business_name(business_name):
     return business_name + "$" + id_generator()
 
 
+def create_booking_pdf(booking_id):
+    pdf_query = PDFs_collection.find_one({"_id": booking_id})
+    temp_path = curr_path + "/temp/"
+    str_booking_result_id = str(booking_id)
+    pdf_file_name = temp_path + str_booking_result_id + ".pdf"
+    if pdf_query is None:
+        pdf_data = bookings_collection.find_one({"_id": ObjectId(booking_id)})
+        qr_file_name = temp_path + str_booking_result_id + ".jpg"
+        # PDF creation
+        canvas = Canvas(pdf_file_name, pagesize=(612.0, 792.0))
+        canvas.drawImage(curr_path + "/logo.png", 280, 720, 50, 50, [0, 0, 0, 0, 0, 0])
+        canvas.drawString(280, 700, "InQueue")
+        canvas.drawString(250, 650, "IL TUO BIGLIETTO")
+        canvas.drawString(100, 600, "Hai prenotato il servizio " + pdf_data["service"])
+        canvas.drawString(100, 580, "Presso " + pdf_data["business_name"][:-9])
+        canvas.drawString(100, 560, "In data " + pdf_data["day"] + " alle ore " + pdf_data["time"])
+        canvas.drawString(50, 400, "Hai prenotato come " + pdf_data["name"] + ' ' + pdf_data["surname"] + ' (' + pdf_data["email"] + ')')
+        qr_img = qrcode.make("BOOKING ID: " + str_booking_result_id + "\nNAME: " + pdf_data["name"] + "\nSURNAME: " + pdf_data["surname"] + "\nDAY: " +pdf_data["day"] + "\nTIME: " + pdf_data["time"] + "\nSERVICE: " + pdf_data["service"])
+        qr_img.save(qr_file_name)
+        canvas.drawImage(qr_file_name, 450, 150, 100, 100)
+        canvas.save()
+        pdf_fd = open(pdf_file_name, "rb")
+        # DB insert and retrieval
+        document = {"_id": booking_id, "pdf": pdf_fd.read()}
+        PDFs_collection.insert_one(document)
+        os.remove(qr_file_name)
+    else:
+        pdf_fd = open(pdf_file_name, "wb")
+        pdf_fd.write(pdf_query["pdf"])
+        pdf_fd.close()
+        pdf_fd = open(pdf_file_name, "rb")
+    return pdf_fd, pdf_file_name
+
+
+def destroy_booking_pdf(pdf_fd, pdf_filename):
+    pdf_fd.close()
+    os.remove(pdf_filename)
+
+
 class User(flask_login.UserMixin):
     pass
 
@@ -372,12 +411,17 @@ def business_page(business_name):
             server_name = "http://localhost:5000"
         else:
             server_name = SERVER_DOMAIN_NAME
-        rating_link = server_name + "/rating/" + str(booking_result.inserted_id)
+        str_booking_result_id = str(booking_result.inserted_id)
+        rating_link = server_name + "/rating/" + str_booking_result_id
         msg = Message(subject="Come valuti "+business_name[:-9]+"?",
                       html=render_template('email-inlined.html', user_name=fname, rating_link=rating_link),
                       recipients=[email])
+        pdf_fd, pdf_filename = create_booking_pdf(booking_result.inserted_id)
+        with app.open_resource("temp/"+str_booking_result_id+".pdf") as opened_resource:
+            msg.attach(str_booking_result_id+".pdf", "application/pdf", opened_resource.read())
+        destroy_booking_pdf(pdf_fd, pdf_filename)  # Temp file deletion
         mail.send(msg)
-        return redirect("/booking_confirmation/"+str(booking_result.inserted_id))
+        return redirect("/booking_confirmation/"+str_booking_result_id)
     else:
         query_result = businesses_collection.find_one({"business_name": business_name})
         today = str(date.today()).replace("/", "-", 3)
@@ -387,35 +431,9 @@ def business_page(business_name):
 
 @app.route('/files/tickets/<booking_id>.pdf')
 def send_booking_pdf(booking_id):
+    pdf_fd, pdf_filename = create_booking_pdf(booking_id)
     pdf_query = PDFs_collection.find_one({"_id": booking_id})
-    pdf_data = bookings_collection.find_one({"_id": ObjectId(booking_id)})
-    # if pdf_query is None:
-    if pdf_query is None:
-        temp_path = curr_path + "/temp/"
-        pdf_file_name = temp_path + booking_id + ".pdf"
-        qr_file_name = temp_path + booking_id + ".jpg"
-        # PDF creation
-        canvas = Canvas(pdf_file_name, pagesize=(612.0, 792.0))
-        canvas.drawImage(curr_path+"/logo.png", 280, 720, 50, 50, [0, 0, 0, 0, 0, 0])
-        canvas.drawString(280, 700, "InQueue")
-        canvas.drawString(250, 650, "IL TUO BIGLIETTO")
-        canvas.drawString(100, 600, "Hai prenotato il servizio " + pdf_data["service"])
-        canvas.drawString(100, 580, "Presso " + pdf_data["business_name"][:-9])
-        canvas.drawString(100, 560, "In data " + pdf_data["day"] + " alle ore " + pdf_data["time"])
-        canvas.drawString(50, 400, "Hai prenotato come " + pdf_data["name"] + ' ' + pdf_data["surname"] + ' (' + pdf_data["email"] + ')')
-        qr_img = qrcode.make("BOOKING ID: "+booking_id+"\nNAME: "+pdf_data["name"]+"\nSURNAME: "+pdf_data["surname"]+"\nDAY: "+pdf_data["day"]+"\nTIME: "+pdf_data["time"]+"\nSERVICE: "+pdf_data["service"])
-        qr_img.save(qr_file_name)
-        canvas.drawImage(qr_file_name, 450, 150, 100, 100)
-        canvas.save()
-        file = open(pdf_file_name, "rb")
-        # DB insert and retrieval
-        document = {"_id": booking_id, "pdf": file.read()}
-        PDFs_collection.insert_one(document)
-        pdf_query = PDFs_collection.find_one({"_id": booking_id})
-        # Temp file deletion
-        file.close()
-        os.remove(pdf_file_name)
-        os.remove(qr_file_name)
+    destroy_booking_pdf(pdf_fd, pdf_filename) # Temp file deletion
     return send_file(BytesIO(pdf_query["pdf"]), mimetype="application/pdf")
 
 
