@@ -32,6 +32,15 @@ If you don't have Docker installed, follow [these instructions](https://docs.doc
 The MongoDB Atlas database is filled with some fake data using the init_db() function.
 To get an empty database you must comment line 34 in '/app/app.py'.
 
+Below are some fake credentials in order to know how the business' side works. The passwords
+match the mail provider.
+
+° 'saul@test.com'
+° 'link@test.com'
+° 'jack@test.com'
+° 'pied@test.com'
+° 'maurizio@test.com'
+
 ## Technologies
 To build this app the following technologies have been used:
 - HTML5
