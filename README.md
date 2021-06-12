@@ -24,22 +24,35 @@ Make sure you've added your IP address to the project's IP Access List.
 **Requirements**: Docker.
 If you don't have Docker installed, follow [these instructions](https://docs.docker.com/engine/install/) to start.
 
-1. Add your MongoDB Atlas and smtp.gmail.com account credentials to the `docker/.env.dev` file
-2. Run `docker-compose -f docker-compose.yml --env-file ./ .env.dev up --build` on your terminal
-3. Open your browser and connect to [localhost:5000](http://localhost:5000)
+    1. Add your MongoDB Atlas and smtp.gmail.com account credentials to the `docker/.env.dev` file
+    2. Run `docker-compose -f docker-compose.yml --env-file ./ .env.dev up --build` on your terminal
+    3. Open your browser and connect to [localhost:5000](http://localhost:5000)
 
 ### Database
 The MongoDB Atlas database is filled with some fake data using the init_db() function.
 To get an empty database you must comment line 34 in '/app/app.py'.
+The entries are:
+
+    ° 5 accounts
+    ° 5 bookings
+    ° 2 business in Rome
+    ° 13 business in Naples
+    ° 1 business in Bacoli
+    ° 2 business in Lacco Ameno
+    ° 1 business in Ischia
+    ° 1 business in Piano di Sorrento
+    ° 1 business in Casoria
+    ° 2 business inn Vico Equense
+    
 
 Below are some fake credentials in order to know how the business' side works. The passwords
 match the mail provider.
 
-° 'saul@test.com'
-° 'link@test.com'
-° 'jack@test.com'
-° 'pied@test.com'
-° 'maurizio@test.com'
+    ° 'maurizio@test.com' - Parco Sommerso di Gaiola
+    ° 'saul@test.com' - Saul Goodman
+    ° 'link@test.com' - ZeldaHair
+    ° 'jack@test.com' - LostGym
+    ° 'pied@test.com' - Pied Piper
 
 ## Technologies
 To build this app the following technologies have been used:
