@@ -1,5 +1,11 @@
 {
   "name": "InQueue",
+  "icons": [{
+      "src": "/static/images/favicons/android-chrome-256x256.png",
+      "type": "image/png",
+      "sizes": "256x256",
+      "purpose": "any maskable"
+  }],
   "theme_color": "#8d85ff",
   "background_color": "#8d85ff",
   "display": "standalone",
