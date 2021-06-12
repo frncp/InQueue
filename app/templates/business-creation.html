@@ -27,11 +27,11 @@ Aggiungi la tua attività su InQueue
             <div class="row">
                 <div class="col-md mt-3">
                     <label for="business_name">Nome attività</label>
-                    <input required type="text" pattern="[A-Za-z0-9 ]*" autocomplete="activity-name" class="form-control" id="business_name" name="business_name" placeholder="Nome attività">
+                    <input required type="text" pattern="[A-Za-z0-9À-Ùà-ù ]*" autocomplete="activity-name" class="form-control" id="business_name" name="business_name" placeholder="Nome attività">
                 </div>
                 <div class="col mt-3">
                     <label for="type">Tipologia</label>
-                    <select class="form-select form-select-md mb-3" id="type" name="type" onchange="disableByType(this)">
+                    <select class="form-select form-select-md mb-3" id="type" name="type">
                         <option value="" disabled selected>Seleziona una tipologia per la tua attività</option>>
                         <option value="barber">Barbiere</option>
                         <option value="beautician">Estetista</option>
@@ -61,7 +61,7 @@ Aggiungi la tua attività su InQueue
              <div class="col">
                 <label for="address">Indirizzo</label>
                 <div class="input-group mb-3">
-              <button class="btn btn-outline-secondary" type="button" onclick="businessGPS()" id="GPSButton">Localizzami</button>
+              <button class="btn btn-outline-secondary" type="button" onclick="businessGPS()" id="GPSButton">-o-</button>
                 <input type="text" class="form-control" name="address" id="address" placeholder="Via Roma" required autocomplete="no">
                 </div>
               </div>
@@ -141,7 +141,7 @@ Aggiungi la tua attività su InQueue
                 <div class="col-sm" id="services-container">
                     <label for="service">Servizio</label>
                     <input type="text" class="form-control" id="service" name="service" autocomplete="no" required>
-                    <button type="button" class="btn btn-primary mt-3" onclick="addForm('service', 'num_of_services')">Aggiungi</button>
+                    <button id="add_service_button"type="button" class="btn btn-primary mt-3" onclick="addForm('service', 'num_of_services')">Aggiungi</button>
                     <input hidden class="d-none" name="num_of_services" id="num_of_services" type="text" value="1">
                 </div>
                 <div class="col-sm">
@@ -206,13 +206,27 @@ Aggiungi la tua attività su InQueue
     function validateFirstForm() {
         let business_name = (document.getElementById('business_name').checkValidity())
         let addr = ((document.getElementById('address').value).length > 0)
-        let city = ((document.getElementById('city').value).length > 0)
-        let inlat = document.getElementById('lat').value
-        let inlon = document.getElementById('lon').value
+        let city = document.getElementById('city')
+        let inlat = Number(document.getElementById('lat').value)
+        let inlon = Number(document.getElementById('lon').value)
+        let type = document.getElementById('type')
 
 
-        if (business_name && addr && city){
-            if((inlat > -90 && inlat < 90) && (inlon > -180 && inlon < 180))
+        if (type.value === ""){
+            type.setCustomValidity("Invalid")
+        } else {
+            type.setCustomValidity("")
+        }
+
+        if (!(countries.includes(city.value)))
+            city.setCustomValidity("Invalid")
+        else
+            city.setCustomValidity("")
+
+        if (business_name && addr && ((city.value).length > 0)){
+            if(!inlat)
+                alert("La posizione del business non è stata ancora determinata")
+            else
                 return true
         }
         addValidateCSS('form1')
@@ -220,37 +234,40 @@ Aggiungi la tua attività su InQueue
     }
 
     function validateSecondForm() {
-        return true
 
-       let morningOpenTime = document.getElementById('open-time1')
+        let morningOpenTime = document.getElementById('open-time1')
         let morningCloseTime = document.getElementById('close-time1')
         let eveningOpenTime = document.getElementById('open-time2')
         let eveningCloseTime = document.getElementById('close-time2')
 
-        if (morningCloseTime.value < morningOpenTime.value) {
+        if (Number((morningCloseTime.value).replace(':','')) < Number((morningOpenTime.value).replace(':',''))) {
             morningOpenTime.setCustomValidity("Invalid field.")
             morningCloseTime.setCustomValidity("Invalid field.")
+            addValidateCSS('form2')
             return false
         }
 
-        if (eveningCloseTime.value < eveningOpenTime.value) {
+        if (Number((eveningCloseTime.value).replace(':','')) < Number((eveningOpenTime.value).replace(':',''))) {
             eveningOpenTime.setCustomValidity("Invalid field.")
             eveningCloseTime.setCustomValidity("Invalid field.")
+            addValidateCSS('form2')
             return false
         }
 
 
-        if (morningCloseTime > eveningOpenTime) {
+        if (Number((morningCloseTime.value).replace(':','')) > Number((eveningOpenTime.value).replace(':',''))) {
             eveningOpenTime.setCustomValidity("Invalid field.")
             morningCloseTime.setCustomValidity("Invalid field.")
+            addValidateCSS('form2')
             return false
         }
 
 
 
-        openTime.setCustomValidity("")
-        closeTime.setCustomValidity("")
-        addValidateCSS('form2')
+        eveningOpenTime.setCustomValidity("")
+        morningCloseTime.setCustomValidity("")
+        eveningCloseTime.setCustomValidity("")
+        morningOpenTime.setCustomValidity("")
         return true
     }
 
@@ -309,20 +326,7 @@ function getLatLonAndAddToBusiness(position) {
 }
 
 
-function disableByType(element) {
-    if (element.value == 'field')
-        disable(document.getElementById('operator'))
-    else 
-        enable(document.getElementById('operator'))
-}
 
-function disable(element) {
-    element.disabled = true 
-}
-
-function enable(element) {
-    element.disabled = false 
-}
 
 
 businessPositionMap.on('click', positionClick)
@@ -385,15 +389,18 @@ function addForm(idForm, counter) {
     let num = Number(numElement.value)
     let currInp = document.getElementById(idForm+'_'+num)
     let newInp
-    if (currInp) {
-        if (num == 1)
+    let button = document.getElementById('add_service_button')
+    if (currInp){
+        if (num == 1) {
             currInp = document.getElementById(idForm)
-        newInp = currInp.parentNode.insertBefore(input, currInp.nextSibling)
+        }
+        newInp = currInp.parentNode.insertBefore(input, button)
         num = num + 1
-    } else {
+    }
+    else  {
         num = 1
         currInp = document.getElementById(idForm)
-        newInp = currInp.parentNode.insertBefore(input, currInp.nextSibling)
+        newInp = currInp.parentNode.insertBefore(input, button)
     }
     newInp.classList.add('form-control')
     newInp.classList.add('mt-2')
