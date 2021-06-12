@@ -81,7 +81,6 @@ Here's a list of the assets we used and their authors:
 - *static/images/calendar.png, static/images/column.png, static/images/nail-polish.png, static/images/settings.png* made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a>
 - *static/images/muscle.png* made by <a href="https://www.flaticon.com/authors/darius-dan" title="Darius Dan">Darius Dan</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a>
 - *static/images/logout.png* made by <a href="https://www.flaticon.com/authors/pixel-perfect" title="Pixel perfect">Pixel perfect</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a>
-- *static/images/down-arrow.png* made by <a href="https://smashicons.com/" title="Smashicons">Smashicons</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a>
 - *inqueue.svg* drawed from references by Maria Pollasto
 
 ## Authors
