@@ -149,6 +149,12 @@ def request_loader(request):
     return user
 
 
+@app.route('/sw.js', methods=['GET'])
+def sw_provider():
+    sw = open(curr_path+'/static/sw.js', "rb")
+    return send_file(sw, mimetype="text/javascript")
+
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'GET':
